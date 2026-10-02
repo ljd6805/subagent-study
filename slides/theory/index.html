@@ -1,443 +1,1031 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Subagent — Theory Slides</title>
-  <style>
-    :root{--bg:#090d13;--panel:#121923;--panel2:#172131;--line:#293445;--text:#f0f4f8;--muted:#98a6b7;--green:#7ee787;--blue:#58a6ff;--yellow:#e3b341;--red:#ff7b72;--purple:#bc8cff}
-    *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",ui-sans-serif,system-ui,sans-serif}
-    .deck{height:100%;position:relative}
-    .slide{display:none;height:100%;padding:5vh 6vw 15vh;position:absolute;inset:0;overflow:hidden}
-    .slide.active{display:flex;flex-direction:column;justify-content:center}
-    h1{font-size:clamp(2.8rem,6.4vw,6.2rem);line-height:1.02;margin:0 0 2vh;letter-spacing:-.04em}
-    h2{font-size:clamp(1.8rem,3.6vw,3.4rem);line-height:1.12;margin:0 0 2.6vh;letter-spacing:-.03em}
-    h3{font-size:clamp(1.05rem,1.7vw,1.5rem);margin:0 0 .8vh}
-    .kicker{color:var(--green);font-weight:800;letter-spacing:.13em;text-transform:uppercase;font-size:clamp(.72rem,1vw,.92rem);margin-bottom:1.6vh}
-    .lead{font-size:clamp(1.02rem,1.65vw,1.55rem);line-height:1.5;color:#cbd5df;max-width:1180px;margin:1.4vh 0 0}
-    .muted{color:var(--muted)}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.6vw}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vw}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2vw}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.6vw 1.7vw;min-height:0}
-    .card strong{display:block;color:#fff;font-size:clamp(1rem,1.5vw,1.35rem);margin-bottom:.8vh}
-    .card p,.card li{font-size:clamp(.85rem,1.2vw,1.1rem);line-height:1.5;margin:0;color:#c2ccd7}
-    .card ul{margin:.4vh 0 0;padding-left:1.1em}
-    .card.green{border-color:#2f7d45}.card.blue{border-color:#2b5f97}.card.yellow{border-color:#765d20}.card.red{border-color:#7f3531}.card.purple{border-color:#5b3f8f}
-    .diagram{display:flex;align-items:center;justify-content:center;gap:.9vw;flex-wrap:wrap;margin:1.6vh 0}
-    .box{padding:1.1vh 1.3vw;border:1px solid var(--line);background:var(--panel);border-radius:12px;font-size:clamp(.88rem,1.3vw,1.2rem);font-weight:700;text-align:center}
-    .box small{display:block;font-weight:500;color:var(--muted);font-size:.78em;margin-top:.3vh}
-    .box.green{border-color:#2f7d45;color:var(--green)}.box.blue{border-color:#2b5f97;color:var(--blue)}.box.yellow{border-color:#765d20;color:var(--yellow)}.box.red{border-color:#7f3531;color:var(--red)}.box.purple{border-color:#5b3f8f;color:var(--purple)}
-    .arrow{color:#56677a;font-size:clamp(1.1rem,1.8vw,1.8rem)}
-    pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;background:#070a0f;border:1px solid var(--line);border-radius:12px;padding:1.2vw 1.3vw;font-size:clamp(.7rem,.98vw,.95rem);line-height:1.5;white-space:pre-wrap;margin:.6vh 0;color:#dce6f0}
-    code{font-family:"SFMono-Regular",Consolas,monospace;background:#1a2433;border-radius:5px;padding:.05em .35em;font-size:.9em;color:#e6edf3}
-    pre code{background:none;padding:0;font-size:1em}
-    .c{color:#6e7f94}.k{color:var(--blue)}.s{color:var(--green)}.v{color:var(--yellow)}.r{color:var(--red)}.p{color:var(--purple)}
-    .quote{font-size:clamp(1.6rem,3.2vw,3.1rem);line-height:1.28;font-weight:800;max-width:1250px}.quote em{font-style:normal;color:var(--green)}
-    .accent{color:var(--green)}.blue{color:var(--blue)}.yellow{color:var(--yellow)}.red{color:var(--red)}.purple{color:var(--purple)}
-    .label{font-size:.74rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8vh;font-weight:700}
-    ul.big{font-size:clamp(.98rem,1.5vw,1.38rem);line-height:1.55;margin:1vh 0;padding-left:1.3em}ul.big li{margin:.4vh 0}
-    table{width:100%;border-collapse:collapse;font-size:clamp(.74rem,1.05vw,1rem);line-height:1.4}
-    th,td{border-bottom:1px solid var(--line);padding:.85vh .8vw;text-align:left;vertical-align:top}
-    th{color:var(--muted);font-weight:700;font-size:.86em;letter-spacing:.04em;background:var(--panel)}
-    td:first-child{color:#fff;font-weight:700;white-space:nowrap}
-    .tag{display:inline-block;font-size:.72em;font-weight:800;padding:.1em .55em;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:.4em;vertical-align:middle;letter-spacing:.04em}
-    .tag.oc{color:#ffa657;border-color:#7a4a1e}.tag.cx{color:var(--blue);border-color:#2b5f97}.tag.cc{color:var(--purple);border-color:#5b3f8f}
-    .study{position:absolute;left:6vw;right:6vw;bottom:5vh;display:grid;grid-template-columns:auto 1fr;gap:.5vh 1.2vw;align-items:start;border-top:1px dashed #2a3646;padding-top:1.2vh;font-size:clamp(.7rem,.92vw,.88rem);line-height:1.45;color:#8b9aac}
-    .study b{color:#c9d4df;font-weight:700;white-space:nowrap}
-    .study a{color:var(--blue);text-decoration:none;margin-right:1em}.study a:hover{text-decoration:underline}
-    .slideNo{position:absolute;right:2vw;bottom:1.6vh;color:#627083;font-size:.78rem}
-    .part{position:absolute;left:2vw;bottom:1.6vh;color:#4f5d6e;font-size:.74rem;letter-spacing:.08em}
-    .bar{position:fixed;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--green));width:0;transition:.25s;z-index:30}
-    .hint{position:fixed;right:18px;top:14px;color:#4c5a6b;font-size:.75rem;z-index:40}
-    .divider h1{font-size:clamp(2.6rem,5.6vw,5.4rem)}.divider .num{font-size:clamp(5rem,12vw,11rem);font-weight:900;color:#1b2533;line-height:1;margin-bottom:-2vh;letter-spacing:-.05em}
-    .ctx{display:grid;grid-template-columns:1fr 1.1fr;gap:2vw;align-items:center}
-    .win{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:1.2vh 1vw}
-    .win .row{border-radius:8px;padding:.7vh .8vw;margin:.5vh 0;font-size:clamp(.78rem,1.1vw,1rem);font-weight:600}
-    .row.sys{background:#1d2a3d;color:#9cc7ff}.row.usr{background:#1f2b22;color:#a9e7b0}.row.tool{background:#2b2617;color:#ecd08a}.row.res{background:#24202f;color:#cfb7ff}.row.dim{background:#151c26;color:#5c6b7d;text-decoration:line-through}
-    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:.6vw;align-items:stretch;margin:1.4vh 0}
-    .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.2vh .9vw;font-size:clamp(.8rem,1.1vw,1.02rem);line-height:1.4}
-    .step .n{font-weight:900;color:var(--green);font-size:1.3em;display:block;margin-bottom:.4vh}
-    .step p{margin:0;color:#c2ccd7}
-    @media(max-width:860px){.grid2,.grid3,.grid4,.ctx,.flow{grid-template-columns:1fr}.slide{padding:4vh 5vw 20vh;overflow:auto}.study{left:5vw;right:5vw;grid-template-columns:1fr}td:first-child{white-space:normal}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Subagent — Theory Slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e14;--panel:#121a24;--panel2:#18222f;--panel3:#1f2b3a;--line:#263243;--line2:#34445a;
+  --text:#eef2f6;--sub:#c3cdd8;--muted:#8e9cae;--dim:#5a687a;
+  --green:#7ee787;--blue:#58a6ff;--yellow:#e3b341;--red:#ff7b72;--purple:#bc8cff;--orange:#ffa657;--cyan:#56d4dd;
+  --g-bg:#11261a;--b-bg:#0f2036;--y-bg:#2a2210;--r-bg:#2d1513;--p-bg:#21183a;--o-bg:#2c1d0e;
+  --sans:Inter,"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#05080c;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center center;background:var(--bg);overflow:hidden;box-shadow:0 0 0 1px #111a25}
+.slide{position:absolute;inset:0;display:none;padding:84px 88px 92px;flex-direction:column;word-break:keep-all;
+  background:radial-gradient(1200px 600px at 100% 0%,rgba(88,166,255,.06),transparent 60%),radial-gradient(900px 500px at 0% 100%,rgba(126,231,135,.045),transparent 60%),var(--bg)}
+.slide.active{display:flex}
+.slide::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;
+  mask-image:linear-gradient(180deg,#000,transparent 70%)}
+.slide>*{position:relative}
+
+/* chrome */
+.chrome-top{position:absolute;left:88px;right:88px;top:30px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--dim);z-index:2}
+.chrome-top span{padding:4px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.chrome-top span.on{color:var(--text);border-color:var(--line2);background:var(--panel)}
+.chrome-top .sep{flex:1}
+.pageno{position:absolute;right:88px;bottom:30px;font:600 13px var(--mono);color:var(--dim);z-index:2}
+.bar{position:absolute;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--green));z-index:3;transition:width .25s}
+
+/* type */
+.kicker{font-size:15px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:22px;height:3px;border-radius:2px;background:currentColor}
+h1{font-size:96px;line-height:1.04;letter-spacing:-.045em;margin:0 0 26px;font-weight:800}
+h2{font-size:48px;line-height:1.16;letter-spacing:-.03em;margin:0 0 30px;font-weight:800}
+h3{font-size:24px;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+.lead{font-size:25px;line-height:1.55;color:var(--sub);margin:0;max-width:1300px}
+.lead b,.card b,li b{color:var(--text)}
+p{margin:0}
+.muted{color:var(--muted)}.dim{color:var(--dim)}
+.green{color:var(--green)}.blue{color:var(--blue)}.yellow{color:var(--yellow)}.red{color:var(--red)}.purple{color:var(--purple)}.orange{color:var(--orange)}.cyan{color:var(--cyan)}
+.hl{background:linear-gradient(transparent 62%,rgba(126,231,135,.25) 62%)}
+code{font-family:var(--mono);font-size:.86em;background:#1b2635;border:1px solid #26354a;border-radius:6px;padding:.04em .36em;color:#e6edf3}
+h2 code{font-size:.8em}
+
+/* layout */
+.body{flex:1;min-height:0;display:flex;flex-direction:column;gap:26px}
+.row{display:flex;gap:28px;min-height:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center;flex:1;min-height:0}
+.split.r{grid-template-columns:1fr 1.15fr}
+.center{display:flex;align-items:center;justify-content:center}
+.fill{flex:1;min-height:0}
+.mt-auto{margin-top:auto}
+
+/* card */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;display:flex;flex-direction:column;gap:10px}
+.card .lbl{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card h3{margin:0}
+.card p,.card li{font-size:19px;line-height:1.55;color:var(--sub)}
+.card ul{margin:0;padding-left:1.1em}.card li{margin:4px 0}
+.card.c-green{border-color:#2c6b3c;background:linear-gradient(180deg,var(--g-bg),var(--panel) 70%)}.card.c-green .lbl{color:var(--green)}
+.card.c-blue{border-color:#27578a;background:linear-gradient(180deg,var(--b-bg),var(--panel) 70%)}.card.c-blue .lbl{color:var(--blue)}
+.card.c-yellow{border-color:#6e5719;background:linear-gradient(180deg,var(--y-bg),var(--panel) 70%)}.card.c-yellow .lbl{color:var(--yellow)}
+.card.c-red{border-color:#743230;background:linear-gradient(180deg,var(--r-bg),var(--panel) 70%)}.card.c-red .lbl{color:var(--red)}
+.card.c-purple{border-color:#553a85;background:linear-gradient(180deg,var(--p-bg),var(--panel) 70%)}.card.c-purple .lbl{color:var(--purple)}
+.card.c-orange{border-color:#78481b;background:linear-gradient(180deg,var(--o-bg),var(--panel) 70%)}.card.c-orange .lbl{color:var(--orange)}
+.card .big{font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--panel3);border:1px solid var(--line2)}
+
+/* list */
+ul.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+ul.pts li{font-size:22px;line-height:1.5;color:var(--sub);padding-left:34px;position:relative}
+ul.pts li::before{content:"";position:absolute;left:6px;top:.55em;width:12px;height:12px;border-radius:3px;background:var(--green);transform:rotate(45deg)}
+ul.pts.b li::before{background:var(--blue)}ul.pts.y li::before{background:var(--yellow)}ul.pts.r li::before{background:var(--red)}ul.pts.p li::before{background:var(--purple)}
+ol.num{list-style:none;margin:0;padding:0;counter-reset:n;display:flex;flex-direction:column;gap:14px}
+ol.num li{counter-increment:n;font-size:21px;line-height:1.5;color:var(--sub);padding-left:46px;position:relative}
+ol.num li::before{content:counter(n);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--panel3);border:1px solid var(--line2);font:700 15px var(--mono);color:var(--green);display:grid;place-items:center}
+
+/* code */
+pre{font-family:var(--mono);font-size:18px;line-height:1.6;background:#070b11;border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin:0;color:#dce6f0;white-space:pre;overflow:hidden;position:relative}
+pre .fn{position:absolute;top:0;right:0;font:600 12px var(--mono);color:var(--muted);background:var(--panel2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0 16px 0 10px;padding:6px 12px}
+pre.sm{font-size:16px;padding:18px 22px}
+pre.xs{font-size:14.5px;padding:16px 18px;line-height:1.55}
+.c{color:#6b7d93}.k{color:#79c0ff}.s{color:#a5d6ff}.v{color:var(--yellow)}.r{color:var(--red)}.p{color:var(--purple)}.gk{color:var(--green)}
+.mark{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font:800 13px var(--sans);color:#0a0e14;background:var(--green);margin-left:8px;vertical-align:1px}
+.mark.b{background:var(--blue)}.mark.y{background:var(--yellow)}.mark.p{background:var(--purple)}.mark.r{background:var(--red)}.mark.o{background:var(--orange)}
+
+/* table */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:19px;line-height:1.45;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+th,td{padding:13px 18px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--panel2)}
+td{color:var(--sub)}
+td.h{color:var(--text);font-weight:700;white-space:nowrap;background:rgba(255,255,255,.015)}
+table.tight th,table.tight td{padding:10px 16px}
+table.sm{font-size:17px}
+
+/* tool tags */
+.t{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:800;letter-spacing:.04em;padding:4px 11px;border-radius:999px;border:1px solid;white-space:nowrap;vertical-align:middle}
+.t::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.t.oc{color:var(--orange);border-color:#78481b;background:var(--o-bg)}
+.t.cx{color:var(--blue);border-color:#27578a;background:var(--b-bg)}
+.t.cc{color:var(--purple);border-color:#553a85;background:var(--p-bg)}
+.pill{display:inline-block;font-size:14px;font-weight:700;padding:4px 12px;border-radius:999px;background:var(--panel3);border:1px solid var(--line2);color:var(--sub)}
+
+/* footer note */
+.note{position:absolute;left:88px;right:200px;bottom:26px;display:flex;align-items:center;gap:14px;font-size:15px;color:var(--muted);line-height:1.4;z-index:2}
+.note .nt{flex:none;font-size:12px;font-weight:800;letter-spacing:.1em;padding:5px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line2);color:var(--sub)}
+.note .nt.doc{color:var(--blue);border-color:#27578a}
+.note .nt.try{color:var(--yellow);border-color:#6e5719}
+.note a{color:var(--blue);text-decoration:none;margin-right:14px}.note a:hover{text-decoration:underline}
+.note code{font-size:.92em}
+
+/* callout / quote */
+.callout{border-left:4px solid var(--green);background:linear-gradient(90deg,rgba(126,231,135,.08),transparent);padding:16px 22px;border-radius:0 14px 14px 0;font-size:23px;line-height:1.5;color:var(--sub)}
+.callout b{color:var(--text)}
+.callout.y{border-color:var(--yellow);background:linear-gradient(90deg,rgba(227,179,65,.09),transparent)}
+.callout.r{border-color:var(--red);background:linear-gradient(90deg,rgba(255,123,114,.09),transparent)}
+.callout.b{border-color:var(--blue);background:linear-gradient(90deg,rgba(88,166,255,.09),transparent)}
+.callout.p{border-color:var(--purple);background:linear-gradient(90deg,rgba(188,140,255,.09),transparent)}
+.quote{font-size:44px;line-height:1.3;font-weight:800;letter-spacing:-.025em}
+.quote em{font-style:normal;color:var(--green)}
+
+/* divider */
+.divider{justify-content:center}
+.divider .num{position:absolute;right:70px;top:40px;font:900 340px/1 var(--sans);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px #1d2836}
+.divider h1{font-size:110px}
+.divider .toc{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px;max-width:1300px}
+.divider .toc span{font-size:19px;font-weight:600;padding:10px 18px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--sub)}
+.divider .toc span b{font-family:var(--mono);color:var(--muted);margin-right:10px;font-weight:600}
+
+/* svg helpers */
+svg{display:block;overflow:visible}
+svg text{font-family:var(--sans);fill:var(--sub)}
+svg .mono{font-family:var(--mono)}
+.sb{fill:var(--panel);stroke:var(--line2);stroke-width:1.5}
+.sb2{fill:var(--panel2);stroke:var(--line2);stroke-width:1.5}
+.ln{stroke:var(--line2);stroke-width:2;fill:none}
+.ar{stroke:var(--muted);stroke-width:2.5;fill:none}
+
+/* overview */
+#ov{position:fixed;inset:0;background:rgba(3,6,10,.94);z-index:50;display:none;overflow:auto;padding:30px}
+#ov.on{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;align-content:start}
+#ov a{display:block;background:#101721;border:1px solid #233042;border-radius:10px;padding:12px 14px;color:#c9d3de;text-decoration:none;font:500 13px/1.45 var(--sans)}
+#ov a:hover,#ov a.cur{border-color:var(--green)}
+#ov a b{display:block;font:700 11px var(--mono);color:#6d7c8f;margin-bottom:4px}
+.help{position:fixed;right:14px;top:10px;color:#3e4b5b;font:500 12px var(--sans);z-index:40}
+</style>
 </head>
 <body>
-<div class="hint">← → / Space · Home / End</div>
-<div class="deck" id="deck">
+<div class="help">← → Space · O 목차 · F 전체화면</div>
+<div id="stage">
 
-<!-- ============ 오프닝 ============ -->
-<section class="slide active" data-part="Opening">
-  <div class="kicker">Subagent · Personal Study · Theory</div>
-  <h1>한 에이전트에서,<br><span class="accent">위임하는</span> 에이전트로</h1>
-  <p class="lead">Subagent를 OpenCode · Codex · Claude Code 공통의 <b>동작 원리</b>로 먼저 이해하고, 마지막에 세 도구가 그 원리를 어떻게 다르게 구현했는지 비교한다.</p>
-  <div class="study"><b>읽는 법</b><span>각 장 하단의 <b>📎 공식 문서</b>는 근거, <b>🔍 직접 확인</b>은 실습 전에 손으로 확인해 볼 한 가지. 도구별 내용은 2026-10 기준 <b>공식 문서</b>만 근거로 했다.</span></div>
+<!-- ============ 01 표지 ============ -->
+<section class="slide active" data-sec="Opening">
+  <div class="split" style="grid-template-columns:1.25fr 1fr;gap:30px">
+    <div>
+      <div class="kicker">Subagent · Personal Study · Theory</div>
+      <h1 style="font-size:86px">한 에이전트에서,<br><span class="green">위임하는</span> 에이전트로</h1>
+      <p class="lead">Subagent를 OpenCode · Codex · Claude Code 공통의 <b>동작 원리</b>로 먼저 이해하고, 세 도구가 그 원리를 어떻게 다르게 구현했는지 비교한다.</p>
+      <div style="display:flex;gap:10px;margin-top:34px"><span class="t oc">OpenCode</span><span class="t cx">Codex</span><span class="t cc">Claude Code</span></div>
+    </div>
+    <svg viewBox="0 0 620 560" width="100%">
+      <defs>
+        <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#58a6ff"/></marker>
+        <marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7ee787"/></marker>
+      </defs>
+      <!-- parent window -->
+      <rect x="20" y="170" width="230" height="230" rx="18" class="sb"/>
+      <rect x="20" y="170" width="230" height="38" rx="18" fill="#1f2b3a"/><rect x="20" y="190" width="230" height="18" fill="#1f2b3a"/>
+      <circle cx="42" cy="189" r="5" fill="#ff7b72"/><circle cx="58" cy="189" r="5" fill="#e3b341"/><circle cx="74" cy="189" r="5" fill="#7ee787"/>
+      <text x="135" y="194" text-anchor="middle" font-size="14" font-weight="700" fill="#eef2f6">Parent</text>
+      <rect x="40" y="226" width="190" height="14" rx="4" fill="#27578a"/>
+      <rect x="40" y="250" width="150" height="14" rx="4" fill="#2c6b3c"/>
+      <rect x="40" y="274" width="170" height="14" rx="4" fill="#34445a"/>
+      <rect x="40" y="298" width="120" height="14" rx="4" fill="#34445a"/>
+      <rect x="40" y="342" width="190" height="40" rx="8" fill="#11261a" stroke="#7ee787" stroke-dasharray="4 4"/>
+      <text x="135" y="367" text-anchor="middle" font-size="14" font-weight="700" fill="#7ee787">결과 3줄</text>
+      <!-- children -->
+      <g>
+        <rect x="400" y="30" width="200" height="130" rx="16" class="sb2"/>
+        <text x="420" y="60" font-size="14" font-weight="800" fill="#58a6ff">explore</text>
+        <rect x="420" y="74" width="160" height="10" rx="3" fill="#34445a"/><rect x="420" y="92" width="130" height="10" rx="3" fill="#34445a"/><rect x="420" y="110" width="150" height="10" rx="3" fill="#34445a"/><rect x="420" y="128" width="100" height="10" rx="3" fill="#34445a"/>
+      </g>
+      <g>
+        <rect x="400" y="215" width="200" height="130" rx="16" class="sb2"/>
+        <text x="420" y="245" font-size="14" font-weight="800" fill="#e3b341">reviewer</text>
+        <rect x="420" y="259" width="140" height="10" rx="3" fill="#34445a"/><rect x="420" y="277" width="160" height="10" rx="3" fill="#34445a"/><rect x="420" y="295" width="110" height="10" rx="3" fill="#34445a"/><rect x="420" y="313" width="150" height="10" rx="3" fill="#34445a"/>
+      </g>
+      <g>
+        <rect x="400" y="400" width="200" height="130" rx="16" class="sb2"/>
+        <text x="420" y="430" font-size="14" font-weight="800" fill="#bc8cff">worker</text>
+        <rect x="420" y="444" width="160" height="10" rx="3" fill="#34445a"/><rect x="420" y="462" width="120" height="10" rx="3" fill="#34445a"/><rect x="420" y="480" width="150" height="10" rx="3" fill="#34445a"/><rect x="420" y="498" width="90" height="10" rx="3" fill="#34445a"/>
+      </g>
+      <path d="M252,225 C320,200 330,110 396,100" stroke="#58a6ff" stroke-width="2.5" fill="none" marker-end="url(#m1)"/>
+      <path d="M252,270 C320,270 330,275 396,275" stroke="#58a6ff" stroke-width="2.5" fill="none" marker-end="url(#m1)"/>
+      <path d="M252,315 C320,340 330,455 396,462" stroke="#58a6ff" stroke-width="2.5" fill="none" marker-end="url(#m1)"/>
+      <path d="M398,140 C330,170 300,330 254,350" stroke="#7ee787" stroke-width="2" stroke-dasharray="6 5" fill="none" marker-end="url(#m2)"/>
+      <path d="M398,320 C340,330 300,355 254,360" stroke="#7ee787" stroke-width="2" stroke-dasharray="6 5" fill="none" marker-end="url(#m2)"/>
+      <path d="M398,500 C330,480 300,385 254,372" stroke="#7ee787" stroke-width="2" stroke-dasharray="6 5" fill="none" marker-end="url(#m2)"/>
+      <text x="300" y="150" font-size="13" font-weight="700" fill="#58a6ff">브리프</text>
+      <text x="282" y="470" font-size="13" font-weight="700" fill="#7ee787">결과만</text>
+    </svg>
+  </div>
+  <div class="note"><span class="nt">읽는 법</span><span>장 하단 <b class="blue">DOCS</b>는 근거 문서, <b class="yellow">TRY</b>는 실습 전에 손으로 확인해 볼 한 가지. 도구별 내용은 2026-10 기준 공식 문서만 근거로 했다. <b>O</b> 키로 전체 목차.</span></div>
 </section>
 
-<section class="slide" data-part="Opening">
+<!-- ============ 02 Why now ============ -->
+<section class="slide" data-sec="Opening">
   <div class="kicker">Why now</div>
-  <h2>컨텍스트는 예산이다.<br>아끼는 것만으로 끝나지 않는 일이 있다</h2>
-  <div class="grid3">
-    <div class="card"><div class="label">SKILL 심화에서 배운 것</div><strong>넣지 않기</strong><p>레퍼런스 계층화, 스크립트 위임, 외부 기억, 지도 우선 탐색으로 한 창 안의 낭비를 줄였다.</p></div>
-    <div class="card yellow"><div class="label">그래도 남는 문제</div><strong>한 창에 다 안 들어간다</strong><p>리포 전체 점검, 30건 이슈 분석처럼 일 자체가 크면 줄여도 넘친다. 앞 작업의 잔해가 다음 판단을 오염시킨다.</p></div>
-    <div class="card green"><div class="label">이번 주제</div><strong>창을 나눈다</strong><p>일을 쪼개 <b>별도 컨텍스트</b>에 맡기고, 결과만 돌려받는다. 이것이 subagent다.</p></div>
+  <h2>컨텍스트는 예산이다.<br>아끼는 것만으로 <span class="yellow">끝나지 않는 일</span>이 있다</h2>
+  <div class="split r">
+    <svg viewBox="0 0 640 470" width="100%">
+      <text x="10" y="22" font-size="14" font-weight="800" fill="#8e9cae" letter-spacing="2">한 창에서 다 할 때</text>
+      <text x="360" y="22" font-size="14" font-weight="800" fill="#8e9cae" letter-spacing="2">창을 나눌 때</text>
+      <!-- limit line -->
+      <line x1="0" y1="90" x2="640" y2="90" stroke="#ff7b72" stroke-width="2" stroke-dasharray="7 6"/>
+      <text x="636" y="80" text-anchor="end" font-size="13" font-weight="700" fill="#ff7b72">컨텍스트 한도</text>
+      <!-- single bar -->
+      <rect x="40" y="40" width="150" height="410" rx="10" fill="none" stroke="#34445a" stroke-width="1.5"/>
+      <rect x="40" y="380" width="150" height="70" rx="0" fill="#27578a"/><text x="115" y="420" text-anchor="middle" font-size="14" font-weight="700" fill="#eef2f6">대화·지시</text>
+      <rect x="40" y="170" width="150" height="210" fill="#5a4514"/><text x="115" y="270" text-anchor="middle" font-size="14" font-weight="700" fill="#e3b341">검색·파일 읽기</text><text x="115" y="290" text-anchor="middle" font-size="13" fill="#e3b341">잔해</text>
+      <rect x="40" y="60" width="150" height="110" fill="#5c2420"/><text x="115" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#ff7b72">넘침</text>
+      <rect x="40" y="40" width="150" height="20" rx="10" fill="#5c2420"/>
+      <!-- split bars -->
+      <rect x="300" y="160" width="110" height="290" rx="10" fill="none" stroke="#34445a" stroke-width="1.5"/>
+      <rect x="300" y="380" width="110" height="70" fill="#27578a"/><text x="355" y="420" text-anchor="middle" font-size="13" font-weight="700" fill="#eef2f6">대화·지시</text>
+      <rect x="300" y="335" width="110" height="45" fill="#2c6b3c"/><text x="355" y="362" text-anchor="middle" font-size="13" font-weight="700" fill="#eef2f6">결과 요약</text>
+      <text x="355" y="150" text-anchor="middle" font-size="14" font-weight="800" fill="#eef2f6">Parent</text>
+      <g font-size="12" font-weight="700" text-anchor="middle">
+        <rect x="450" y="250" width="54" height="200" rx="8" fill="none" stroke="#34445a"/><rect x="450" y="300" width="54" height="150" fill="#5a4514"/>
+        <rect x="514" y="250" width="54" height="200" rx="8" fill="none" stroke="#34445a"/><rect x="514" y="330" width="54" height="120" fill="#5a4514"/>
+        <rect x="578" y="250" width="54" height="200" rx="8" fill="none" stroke="#34445a"/><rect x="578" y="280" width="54" height="170" fill="#5a4514"/>
+        <text x="477" y="240" fill="#8e9cae">child</text><text x="541" y="240" fill="#8e9cae">child</text><text x="605" y="240" fill="#8e9cae">child</text>
+      </g>
+      <path d="M450,350 L420,350" stroke="#7ee787" stroke-width="2.5" stroke-dasharray="5 4"/>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card"><div class="lbl">SKILL 심화에서 배운 것</div><h3>넣지 않기</h3><p>레퍼런스 계층화, 스크립트 위임, 외부 기억, 지도 우선 탐색으로 <b>한 창 안의 낭비</b>를 줄였다.</p></div>
+      <div class="card c-yellow"><div class="lbl">그래도 남는 문제</div><h3>일 자체가 크다</h3><p>리포 전체 점검, 30건 이슈 분석은 줄여도 넘친다. 앞 작업의 잔해가 다음 판단을 오염시킨다.</p></div>
+      <div class="card c-green"><div class="lbl">이번 주제</div><h3>창을 나눈다</h3><p>일을 쪼개 <b>별도 컨텍스트</b>에 맡기고 결과만 돌려받는다. 이것이 subagent다.</p></div>
+    </div>
   </div>
-  <p class="lead">SKILL 심화 ⑤ "쪼개서 위임"을 기법이 아니라 <span class="accent">실행 구조</span>로 깊게 본다.</p>
-  <div class="study"><b>🔍 직접 확인</b><span>최근 긴 세션 하나를 떠올려 보자. 컨텍스트를 가장 많이 먹은 것은 "결과"였나, "결과를 찾는 과정(검색·파일 읽기)"이었나?</span></div>
+  <div class="note"><span class="nt try">TRY</span><span>최근 긴 세션 하나를 떠올려 보자. 컨텍스트를 가장 많이 먹은 것은 "결과"였나, "결과를 찾는 과정"이었나?</span></div>
 </section>
 
-<section class="slide" data-part="Opening">
-  <div class="kicker">Definition · 짧게</div>
-  <h2>Subagent = 별도 컨텍스트에서 위임받은 일을 끝내고<br><span class="accent">결과만 돌려주는</span> 에이전트 인스턴스</h2>
-  <div class="grid4">
-    <div class="card"><div class="label">Tool</div><strong>무엇으로?</strong><p>읽기, 쓰기, 실행 같은 단일 동작</p></div>
-    <div class="card"><div class="label">Skill</div><strong>어떻게?</strong><p>절차와 기준을 담은 작업 매뉴얼</p></div>
-    <div class="card"><div class="label">MCP</div><strong>어디에 연결?</strong><p>외부 데이터·도구와의 공용 규격</p></div>
-    <div class="card green"><div class="label">Subagent</div><strong>누가?</strong><p>자기 프롬프트·도구·모델을 가진 <b>또 하나의 작업자</b></p></div>
+<!-- ============ 03 Definition ============ -->
+<section class="slide" data-sec="Opening">
+  <div class="kicker">Definition</div>
+  <h2>Subagent = 별도 컨텍스트에서 위임받은 일을 끝내고<br><span class="green">결과만 돌려주는</span> 에이전트 인스턴스</h2>
+  <div class="body">
+    <div class="g3">
+      <div class="card c-blue"><div class="lbl">① 별도 컨텍스트</div><div class="big">새 창에서 시작</div><p>부모의 대화 기록을 물려받지 않는다. 자기 시스템 프롬프트와 부모가 쓴 지시만 가지고 출발한다.</p></div>
+      <div class="card c-yellow"><div class="lbl">② 위임</div><div class="big">부모가 시킨다</div><p>사용자가 아니라 <b>부모 에이전트</b>가 일을 주고, 언제 부를지·누구를 부를지 판단한다.</p></div>
+      <div class="card c-green"><div class="lbl">③ 결과만 반환</div><div class="big">한 덩어리로 끝</div><p>중간 과정은 자식 창에 남고, 부모는 마지막 보고만 받는다. 이 성질이 예산을 아껴 준다.</p></div>
+    </div>
+    <table class="tight">
+      <tr><th style="width:16%">구성 요소</th><th style="width:20%">답하는 질문</th><th>한 줄 정의</th></tr>
+      <tr><td class="h">Tool</td><td>무엇으로?</td><td>읽기 · 쓰기 · 실행 같은 단일 동작</td></tr>
+      <tr><td class="h">Skill</td><td>어떻게?</td><td>절차와 기준을 담은 작업 매뉴얼 (같은 창 안에서 로드)</td></tr>
+      <tr><td class="h">MCP</td><td>어디에 연결?</td><td>외부 데이터 · 도구와 연결하는 공용 규격</td></tr>
+      <tr><td class="h green">Subagent</td><td class="green"><b>누가?</b></td><td>자기 프롬프트 · 도구 · 모델을 가진 <b>또 하나의 작업자</b> (다른 창에서 실행)</td></tr>
+    </table>
   </div>
-  <p class="lead">핵심 단어는 셋: <b>별도 컨텍스트</b> · <b>위임</b> · <b>결과만 반환</b>. 나머지는 모두 이 셋에서 파생된다.</p>
-  <div class="study"><b>📎 공식 문서</b><span><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a><a href="https://code.claude.com/docs/en/sub-agents">Claude Code Subagents</a></span></div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a><a href="https://code.claude.com/docs/en/sub-agents">Claude Code Subagents</a></span></div>
 </section>
 
-<section class="slide" data-part="Opening">
+<!-- ============ 04 Map ============ -->
+<section class="slide" data-sec="Opening">
   <div class="kicker">Map</div>
-  <h2>이번 덱은 네 개의 질문을 순서대로 푼다</h2>
-  <div class="diagram">
-    <div class="box blue">① 동작 메커니즘<small>호출되면 무슨 일이?</small></div><div class="arrow">→</div>
-    <div class="box yellow">② 조립 원리<small>무엇으로 만들어지나?</small></div><div class="arrow">→</div>
-    <div class="box purple">③ 선언 방법<small>어떻게 정의하나?</small></div><div class="arrow">→</div>
-    <div class="box green">④ 운용 원리<small>어떻게 잘 쓰나?</small></div><div class="arrow">→</div>
-    <div class="box">Part 2<small>도구별 특화</small></div>
+  <h2>이 덱은 네 개의 질문을 순서대로 풀고,<br>마지막에 세 도구를 비교한다</h2>
+  <div class="body">
+    <div class="g4" style="flex:1">
+      <div class="card c-blue"><div class="lbl">Part 1 · 01</div><div class="big">동작 메커니즘</div><p>호출되면 무슨 일이 일어나나? 수명주기, 격리, 반환, 병렬, 상한.</p></div>
+      <div class="card c-yellow"><div class="lbl">Part 1 · 02</div><div class="big">구성 요소</div><p>자식은 무엇으로 만들어지나? 지시문 · 도구 · 모델 · 첫 메시지.</p></div>
+      <div class="card c-purple"><div class="lbl">Part 1 · 03</div><div class="big">선언 방법</div><p>어디에, 어떤 필드로 정의하나? 위치 · 필드 대응 · 해부도.</p></div>
+      <div class="card c-green"><div class="lbl">Part 1 · 04</div><div class="big">운용 원리</div><p>어떻게 잘 쓰나? 브리프 · 반환 계약 · 패턴 · 위임 판단.</p></div>
+    </div>
+    <div class="g3">
+      <div class="card c-orange" style="flex-direction:row;align-items:center;gap:18px"><span class="t oc">OpenCode</span><p>mode · permission.task · child session</p></div>
+      <div class="card c-blue" style="flex-direction:row;align-items:center;gap:18px"><span class="t cx">Codex</span><p>명시 요청 · 역할 TOML · /agent</p></div>
+      <div class="card c-purple" style="flex-direction:row;align-items:center;gap:18px"><span class="t cc">Claude Code</span><p>범위 우선순위 · frontmatter · hooks</p></div>
+    </div>
+    <div class="callout">도구별 차이는 대부분 <b>"같은 원리, 다른 기본값과 이름"</b>이다. 원리를 먼저 잡으면 Part 2는 비교표 읽기가 된다.</div>
   </div>
-  <p class="lead">①~④는 세 도구 공통이다. 도구별 차이는 대부분 <b>"같은 원리, 다른 기본값과 이름"</b>이므로 Part 2에서 한꺼번에 비교한다.</p>
 </section>
 
-<!-- ============ Part 1-① 동작 메커니즘 ============ -->
-<section class="slide divider" data-part="Part 1 · 메커니즘">
+<!-- ============ Part 1-01 동작 메커니즘 ============ -->
+<section class="slide divider" data-sec="메커니즘">
   <div class="num">01</div>
   <div class="kicker">Part 1 · Common</div>
   <h1>동작 메커니즘</h1>
-  <p class="lead">Subagent 호출은 마법이 아니다. 부모 Agent Loop 안의 <b>도구 호출 하나</b>로 시작해서, <b>도구 결과 하나</b>로 끝난다.</p>
+  <p class="lead">Subagent 호출은 마법이 아니다. 부모 Agent Loop 안의 <b>도구 호출 하나</b>로 시작해서 <b>도구 결과 하나</b>로 끝난다.</p>
+  <div class="toc"><span><b>1</b>도구 호출 하나</span><span><b>2</b>수명주기 5단계</span><span><b>3</b>넘어가지 않는 것</span><span><b>4</b>마지막 메시지</span><span><b>5</b>한 번 따라가기</span><span><b>6</b>병렬 fan-out</span><span><b>7</b>깊이와 동시 실행 상한</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 메커니즘">
-  <div class="kicker">Mechanism 1</div>
-  <h2>Subagent는 부모 입장에서<br>그냥 <span class="blue">도구 호출 하나</span>다</h2>
-  <pre>User → <span class="k">Parent Agent Loop</span>
-          │
-          ├─ tool_use: read / grep / bash ...        (평범한 도구)
-          │
-          ├─ tool_use: <span class="s">task / Agent</span>                  ← 위임 도구
-          │      │
-          │      └──▶ <span class="p">Child Agent Loop</span> (새 컨텍스트에서 자체 loop)
-          │                 ... tool_use ↔ result 반복 ...
-          │           ◀── final message
-          │
-          └─ tool_result: "<span class="v">자식의 마지막 메시지</span>"  → 부모 loop 계속</pre>
-  <p class="lead">부모는 자식 내부의 수십 번 도구 호출을 보지 않는다. 받는 것은 <b>tool_result 한 덩어리</b>뿐이다.</p>
-  <div class="study"><b>📎 위임 도구 이름</b><span><span class="tag oc">OpenCode</span> <code>task</code> &nbsp; <span class="tag cx">Codex</span> 사용자가 명시 요청하면 spawn (문서에 도구명 없음) &nbsp; <span class="tag cc">Claude</span> <code>Agent</code> (구 <code>Task</code>)</span></div>
+<!-- Mechanism 1 -->
+<section class="slide" data-sec="메커니즘">
+  <div class="kicker">Mechanism 1 · Tool call</div>
+  <h2>Subagent는 부모 입장에서 그냥 <span class="blue">도구 호출 하나</span>다</h2>
+  <svg viewBox="0 0 1424 470" width="100%">
+    <defs>
+      <marker id="a-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#58a6ff"/></marker>
+      <marker id="a-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7ee787"/></marker>
+      <marker id="a-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5a687a"/></marker>
+    </defs>
+    <!-- lanes -->
+    <rect x="0" y="20" width="1424" height="140" rx="18" fill="#0f2036" stroke="#27578a" stroke-width="1.5"/>
+    <text x="24" y="52" font-size="15" font-weight="800" fill="#58a6ff" letter-spacing="2">PARENT LOOP</text>
+    <rect x="300" y="250" width="830" height="200" rx="18" fill="#21183a" stroke="#553a85" stroke-width="1.5"/>
+    <text x="324" y="282" font-size="15" font-weight="800" fill="#bc8cff" letter-spacing="2">CHILD LOOP · 새 컨텍스트</text>
+    <line x1="40" y1="110" x2="1390" y2="110" stroke="#34445a" stroke-width="2" marker-end="url(#a-m)"/>
+    <!-- parent steps -->
+    <g font-size="15" font-weight="700" text-anchor="middle">
+      <rect x="40" y="85" width="120" height="50" rx="10" fill="#18222f" stroke="#34445a"/><text x="100" y="116" fill="#eef2f6">사용자 요청</text>
+      <rect x="180" y="85" width="80" height="50" rx="10" fill="#18222f" stroke="#34445a"/><text x="220" y="116" fill="#c3cdd8">read</text>
+      <rect x="300" y="78" width="170" height="64" rx="12" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="385" y="106" fill="#7ee787">tool_use</text><text x="385" y="128" class="mono" font-size="14" fill="#eef2f6">task / Agent</text>
+      <rect x="490" y="85" width="620" height="50" rx="10" fill="none" stroke="#34445a" stroke-dasharray="6 6"/><text x="800" y="116" fill="#5a687a" font-weight="600">부모는 기다린다 · 자식 내부 호출은 부모 창에 쌓이지 않는다</text>
+      <rect x="1130" y="78" width="150" height="64" rx="12" fill="#2a2210" stroke="#e3b341" stroke-width="2"/><text x="1205" y="106" fill="#e3b341">tool_result</text><text x="1205" y="128" font-size="13" fill="#eef2f6">결과 한 덩어리</text>
+      <rect x="1300" y="85" width="90" height="50" rx="10" fill="#18222f" stroke="#34445a"/><text x="1345" y="116" fill="#c3cdd8">계속</text>
+    </g>
+    <!-- child steps -->
+    <g font-size="14" font-weight="700" text-anchor="middle">
+      <rect x="324" y="310" width="150" height="56" rx="10" fill="#18222f" stroke="#553a85"/><text x="399" y="334" fill="#eef2f6">시스템 프롬프트</text><text x="399" y="354" fill="#bc8cff">+ 브리프</text>
+      <rect x="494" y="318" width="64" height="40" rx="8" fill="#18222f" stroke="#34445a"/><text x="526" y="343" fill="#c3cdd8">grep</text>
+      <rect x="566" y="318" width="64" height="40" rx="8" fill="#18222f" stroke="#34445a"/><text x="598" y="343" fill="#c3cdd8">read</text>
+      <rect x="638" y="318" width="64" height="40" rx="8" fill="#18222f" stroke="#34445a"/><text x="670" y="343" fill="#c3cdd8">read</text>
+      <rect x="710" y="318" width="64" height="40" rx="8" fill="#18222f" stroke="#34445a"/><text x="742" y="343" fill="#c3cdd8">bash</text>
+      <rect x="782" y="318" width="64" height="40" rx="8" fill="#18222f" stroke="#34445a"/><text x="814" y="343" fill="#c3cdd8">read</text>
+      <text x="880" y="343" fill="#5a687a" font-size="22">···</text>
+      <rect x="920" y="310" width="190" height="56" rx="10" fill="#2a2210" stroke="#e3b341"/><text x="1015" y="334" fill="#e3b341">final message</text><text x="1015" y="354" font-size="13" fill="#c3cdd8">도구 호출 없는 응답</text>
+      <text x="715" y="410" font-size="15" font-weight="600" fill="#8e9cae">tool_use ↔ tool_result 를 스스로 반복하는 독립 Agent Loop</text>
+    </g>
+    <path d="M385,144 L385,250 L395,306" stroke="#58a6ff" stroke-width="2.5" fill="none" marker-end="url(#a-b)"/>
+    <text x="395" y="205" font-size="14" font-weight="700" fill="#58a6ff">① 위임 (브리프 전달)</text>
+    <path d="M1015,308 L1015,250 L1195,146" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-g)"/>
+    <text x="1060" y="205" font-size="14" font-weight="700" fill="#7ee787">② 마지막 메시지 = tool_result</text>
+  </svg>
+  <div class="callout b" style="margin-top:24px">부모 창에 남는 것은 <b>호출 1번 + 결과 1개</b>뿐이다. 자식이 수십 번 검색하고 읽어도 그 잔해는 자식 창에서 끝난다.</div>
+  <div class="note"><span class="nt doc">위임 도구</span><span><span class="t oc">OpenCode</span> <code>task</code> &nbsp; <span class="t cx">Codex</span> 사용자가 명시 요청하면 스레드 생성 (문서에 도구명 없음) &nbsp; <span class="t cc">Claude</span> <code>Agent</code> (구 <code>Task</code>)</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 메커니즘">
+<!-- Mechanism 2 -->
+<section class="slide" data-sec="메커니즘">
   <div class="kicker">Mechanism 2 · Lifecycle</div>
-  <h2>수명주기는 다섯 단계로 같다</h2>
-  <div class="flow">
-    <div class="step"><span class="n">1 Spawn</span><p>부모가 위임 도구를 호출. <b>어떤 agent</b>에게 <b>무슨 지시</b>를 줄지 인자로 넘긴다.</p></div>
-    <div class="step"><span class="n">2 Assemble</span><p>Harness가 자식용 시스템 프롬프트·도구·모델을 조립하고 <b>빈 대화</b>를 만든다.</p></div>
-    <div class="step"><span class="n">3 Loop</span><p>자식이 독립적으로 Agent Loop를 돈다. 자기 권한 안에서 읽고, 실행하고, 판단한다.</p></div>
-    <div class="step"><span class="n">4 Return</span><p>도구 호출 없는 마지막 메시지가 나오면 종료. 그 텍스트가 부모의 tool_result가 된다.</p></div>
-    <div class="step"><span class="n">5 Resume / Close</span><p>ID로 이어서 지시하거나, 닫아서 자원을 반납한다.</p></div>
+  <h2>수명주기는 세 도구 모두 <span class="green">다섯 단계</span>로 같다</h2>
+  <div class="body">
+    <svg viewBox="0 0 1424 120" width="100%">
+      <line x1="140" y1="50" x2="1284" y2="50" stroke="#34445a" stroke-width="3"/>
+      <g font-weight="800" text-anchor="middle">
+        <circle cx="140" cy="50" r="38" fill="#0f2036" stroke="#58a6ff" stroke-width="3"/><text x="140" y="58" font-size="24" fill="#58a6ff">1</text>
+        <circle cx="426" cy="50" r="38" fill="#2a2210" stroke="#e3b341" stroke-width="3"/><text x="426" y="58" font-size="24" fill="#e3b341">2</text>
+        <circle cx="712" cy="50" r="38" fill="#21183a" stroke="#bc8cff" stroke-width="3"/><text x="712" y="58" font-size="24" fill="#bc8cff">3</text>
+        <circle cx="998" cy="50" r="38" fill="#11261a" stroke="#7ee787" stroke-width="3"/><text x="998" y="58" font-size="24" fill="#7ee787">4</text>
+        <circle cx="1284" cy="50" r="38" fill="#18222f" stroke="#8e9cae" stroke-width="3"/><text x="1284" y="58" font-size="24" fill="#c3cdd8">5</text>
+        <text x="140" y="114" font-size="22" fill="#eef2f6">Spawn</text>
+        <text x="426" y="114" font-size="22" fill="#eef2f6">Assemble</text>
+        <text x="712" y="114" font-size="22" fill="#eef2f6">Loop</text>
+        <text x="998" y="114" font-size="22" fill="#eef2f6">Return</text>
+        <text x="1284" y="114" font-size="22" fill="#eef2f6">Resume / Close</text>
+      </g>
+    </svg>
+    <div class="g5">
+      <div class="card"><p>부모가 위임 도구를 호출한다. <b>어떤 agent</b>에게 <b>무슨 지시</b>를 줄지 인자로 넘긴다.</p></div>
+      <div class="card"><p>Harness가 자식용 시스템 프롬프트 · 도구 · 모델을 조립하고 <b>빈 대화</b>를 만든다.</p></div>
+      <div class="card"><p>자식이 독립적으로 Agent Loop를 돈다. 자기 권한 안에서 읽고, 실행하고, 판단한다.</p></div>
+      <div class="card"><p>도구 호출이 없는 마지막 메시지가 나오면 종료. 그 텍스트가 부모의 <b>tool_result</b>가 된다.</p></div>
+      <div class="card"><p>ID로 이어서 지시하거나, 닫아서 자원을 반납한다. 기록은 남아 사후 추적할 수 있다.</p></div>
+    </div>
+    <table class="tight sm">
+      <tr><th style="width:18%">5단계를 다루는 법</th><th>이어서 지시 · 들여다보기</th><th>기록이 남는 곳</th></tr>
+      <tr><td class="h"><span class="t oc">OpenCode</span></td><td>자식이 <b>child session</b>으로 남아 TUI에서 직접 들어간다</td><td>세션 목록 (부모 · 자식 트리)</td></tr>
+      <tr><td class="h"><span class="t cx">Codex</span></td><td><code>/agent</code>로 활성 agent <b>스레드</b>를 전환해 들여다본다</td><td>agent 스레드</td></tr>
+      <tr><td class="h"><span class="t cc">Claude</span></td><td><code>SendMessage</code>로 agent ID에 이어서 지시한다</td><td><code>~/.claude/projects/…/subagents/agent-{id}.jsonl</code></td></tr>
+    </table>
   </div>
-  <p class="lead">5단계의 이름은 도구마다 다르다. OpenCode는 child session으로 들어가서, Codex는 <code>/agent</code>로 스레드를 전환해서, Claude는 <code>SendMessage</code>로 이어서 지시한다.</p>
-  <div class="study"><b>🔍 직접 확인</b><span>자식 세션 기록이 어디 남는지 찾아보자. Claude: <code>~/.claude/projects/…/subagents/agent-{id}.jsonl</code> · OpenCode: child session (<code>&lt;Leader&gt;+↓</code>)</span></div>
+  <div class="note"><span class="nt try">TRY</span><span>자식 세션 기록이 실제로 어디 남는지 세 도구에서 각각 찾아보자.</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 메커니즘">
+<!-- Mechanism 3 -->
+<section class="slide" data-sec="메커니즘">
   <div class="kicker">Mechanism 3 · Context boundary</div>
-  <h2>격리의 핵심은 "무엇이 <span class="red">넘어가지 않는가</span>"다</h2>
-  <div class="ctx">
-    <div>
-      <div class="label">Parent 컨텍스트</div>
-      <div class="win"><div class="row sys">시스템 프롬프트 (부모용)</div><div class="row usr">사용자와의 대화 전체</div><div class="row tool">이미 읽은 파일 30개</div><div class="row tool">검색 결과, 시행착오</div><div class="row res">위임 지시 (브리프)</div></div>
-    </div>
-    <div>
-      <div class="label">Child 컨텍스트 (새로 시작)</div>
-      <div class="win"><div class="row sys">자식 전용 시스템 프롬프트</div><div class="row usr">부모가 쓴 위임 지시 = 첫 user 메시지</div><div class="row dim">부모의 대화 기록</div><div class="row dim">부모가 읽은 파일 내용</div><div class="row dim">부모의 중간 추론</div></div>
-      <p class="lead" style="font-size:clamp(.9rem,1.25vw,1.1rem)">→ 자식은 <b>브리프에 쓰인 것만</b> 안다. 브리프가 빈약하면 자식은 처음부터 다시 찾는다.</p>
-    </div>
-  </div>
-  <div class="study"><b>예외: fork</b><span>부모 기록을 통째로 물려주는 모드도 있다. <span class="tag cc">Claude</span> 내장 <code>fork</code> agent가 대표적이다. 격리를 포기하는 대신 브리프가 필요 없다.</span></div>
+  <h2>격리의 핵심은 무엇이 <span class="red">넘어가지 않는가</span>다</h2>
+  <svg viewBox="0 0 1424 480" width="100%">
+    <defs><marker id="a-g3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7ee787"/></marker></defs>
+    <!-- parent window -->
+    <rect x="0" y="0" width="560" height="480" rx="20" class="sb"/>
+    <text x="28" y="40" font-size="15" font-weight="800" fill="#58a6ff" letter-spacing="2">PARENT 컨텍스트</text>
+    <g font-size="18" font-weight="700">
+      <rect x="28" y="64" width="504" height="58" rx="10" fill="#0f2036"/><text x="50" y="100" fill="#9cc7ff">시스템 프롬프트 (부모용)</text>
+      <rect x="28" y="134" width="504" height="58" rx="10" fill="#11261a"/><text x="50" y="170" fill="#a9e7b0">사용자와의 대화 전체</text>
+      <rect x="28" y="204" width="504" height="58" rx="10" fill="#2a2210"/><text x="50" y="240" fill="#ecd08a">이미 읽은 파일 30개</text>
+      <rect x="28" y="274" width="504" height="58" rx="10" fill="#2a2210"/><text x="50" y="310" fill="#ecd08a">검색 결과 · 시행착오 · 중간 추론</text>
+      <rect x="28" y="380" width="504" height="70" rx="10" fill="#18222f" stroke="#7ee787" stroke-width="2"/><text x="50" y="422" fill="#7ee787">위임 지시 (브리프) 를 작성</text>
+    </g>
+    <!-- wall -->
+    <rect x="690" y="0" width="16" height="480" rx="8" fill="#5c2420"/>
+    <g font-size="30" font-weight="900" fill="#ff7b72" text-anchor="middle">
+      <text x="698" y="110">✕</text><text x="698" y="180">✕</text><text x="698" y="250">✕</text><text x="698" y="320">✕</text>
+    </g>
+    <g stroke="#5a687a" stroke-width="2" stroke-dasharray="5 6"><line x1="534" y1="100" x2="680" y2="100"/><line x1="534" y1="170" x2="680" y2="170"/><line x1="534" y1="240" x2="680" y2="240"/><line x1="534" y1="310" x2="680" y2="310"/></g>
+    <path d="M534,415 L850,415" stroke="#7ee787" stroke-width="4" fill="none" marker-end="url(#a-g3)"/>
+    <text x="610" y="400" font-size="16" font-weight="800" fill="#7ee787">이것만 통과</text>
+    <!-- child window -->
+    <rect x="864" y="0" width="560" height="480" rx="20" fill="#21183a" stroke="#553a85" stroke-width="1.5"/>
+    <text x="892" y="40" font-size="15" font-weight="800" fill="#bc8cff" letter-spacing="2">CHILD 컨텍스트 · 새로 시작</text>
+    <g font-size="18" font-weight="700">
+      <rect x="892" y="64" width="504" height="58" rx="10" fill="#0f2036"/><text x="914" y="100" fill="#9cc7ff">자식 전용 시스템 프롬프트</text>
+      <rect x="892" y="134" width="504" height="58" rx="10" fill="#151c26"/><text x="914" y="170" fill="#4b5868" text-decoration="line-through">부모의 대화 기록</text>
+      <rect x="892" y="204" width="504" height="58" rx="10" fill="#151c26"/><text x="914" y="240" fill="#4b5868" text-decoration="line-through">부모가 읽은 파일 내용</text>
+      <rect x="892" y="274" width="504" height="58" rx="10" fill="#151c26"/><text x="914" y="310" fill="#4b5868" text-decoration="line-through">부모의 중간 추론</text>
+      <rect x="892" y="380" width="504" height="70" rx="10" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="914" y="422" fill="#a9e7b0">브리프 = 자식의 첫 user 메시지</text>
+    </g>
+  </svg>
+  <div class="callout" style="margin-top:22px">자식은 <b>브리프에 쓰인 것만</b> 안다. 부모가 아는 것을 적어 주지 않으면 자식은 처음부터 다시 찾는다.</div>
+  <div class="note"><span class="nt">예외 · fork</span><span>부모 기록을 통째로 물려주는 모드도 있다. <span class="t cc">Claude</span> 내장 <code>fork</code> agent가 대표적이다. 격리를 포기하는 대신 브리프가 필요 없다.</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 메커니즘">
+<!-- Mechanism 4 -->
+<section class="slide" data-sec="메커니즘">
   <div class="kicker">Mechanism 4 · Return</div>
   <h2>돌아오는 것은 <span class="yellow">마지막 메시지 한 덩어리</span>뿐이다</h2>
-  <div class="grid2">
-    <div>
-      <div class="label">부모가 받는 tool_result (개념 예시)</div>
-<pre><span class="c">tool_result (subagent: explore)</span>
-결론: 결제 한도 검사는 src/pay/limits.py:42 에서만 수행.
-근거: validate.py는 limits.check()를 호출만 함.
-미확인: queue.py 재시도 경로는 보지 못함.</pre>
+  <div class="split" style="grid-template-columns:1fr 1fr;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <svg viewBox="0 0 660 250" width="100%">
+        <defs><marker id="a-y4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#e3b341"/></marker></defs>
+        <text x="0" y="18" font-size="14" font-weight="800" fill="#bc8cff" letter-spacing="2">자식이 한 일 (40 step)</text>
+        <g fill="#34445a">
+          <rect x="0" y="34" width="44" height="22" rx="4"/><rect x="50" y="34" width="44" height="22" rx="4"/><rect x="100" y="34" width="44" height="22" rx="4"/><rect x="150" y="34" width="44" height="22" rx="4"/><rect x="200" y="34" width="44" height="22" rx="4"/><rect x="250" y="34" width="44" height="22" rx="4"/><rect x="300" y="34" width="44" height="22" rx="4"/><rect x="350" y="34" width="44" height="22" rx="4"/>
+          <rect x="0" y="62" width="44" height="22" rx="4"/><rect x="50" y="62" width="44" height="22" rx="4"/><rect x="100" y="62" width="44" height="22" rx="4"/><rect x="150" y="62" width="44" height="22" rx="4"/><rect x="200" y="62" width="44" height="22" rx="4"/><rect x="250" y="62" width="44" height="22" rx="4"/><rect x="300" y="62" width="44" height="22" rx="4"/><rect x="350" y="62" width="44" height="22" rx="4"/>
+          <rect x="0" y="90" width="44" height="22" rx="4"/><rect x="50" y="90" width="44" height="22" rx="4"/><rect x="100" y="90" width="44" height="22" rx="4"/><rect x="150" y="90" width="44" height="22" rx="4"/><rect x="200" y="90" width="44" height="22" rx="4"/><rect x="250" y="90" width="44" height="22" rx="4"/><rect x="300" y="90" width="44" height="22" rx="4"/>
+        </g>
+        <rect x="300" y="90" width="94" height="22" rx="4" fill="#e3b341"/>
+        <text x="347" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="#0a0e14">final</text>
+        <path d="M400,100 C480,100 470,190 530,190" stroke="#e3b341" stroke-width="3" fill="none" marker-end="url(#a-y4)"/>
+        <rect x="536" y="160" width="124" height="60" rx="10" fill="#2a2210" stroke="#e3b341" stroke-width="2"/>
+        <text x="598" y="186" text-anchor="middle" font-size="14" font-weight="800" fill="#e3b341">tool_result</text>
+        <text x="598" y="206" text-anchor="middle" font-size="12" fill="#c3cdd8">부모가 받는 전부</text>
+        <text x="0" y="150" font-size="14" fill="#5a687a">검색 · 읽기 · 실행 · 시행착오는</text>
+        <text x="0" y="172" font-size="14" fill="#5a687a">자식 창에서 사라진다</text>
+      </svg>
+      <pre class="sm"><span class="fn">tool_result (개념 예시)</span><span class="c">subagent: explore</span>
+<span class="k">결론</span>: 결제 한도 검사는 src/pay/limits.py:42 에서만 수행.
+<span class="k">근거</span>: validate.py 는 limits.check() 를 호출만 함.
+<span class="k">미확인</span>: queue.py 재시도 경로는 보지 못함.</pre>
     </div>
-    <div class="card">
-      <strong>세 가지 결과</strong>
-      <ul>
-        <li><b>사용자에게 바로 안 보인다.</b> 부모가 다시 요약해서 전달한다.</li>
-        <li><b>중간 과정은 사라진다.</b> 자식이 근거를 결과에 안 적으면 부모는 검증할 수 없다.</li>
-        <li><b>길면 다시 부모 예산을 먹는다.</b> 요약이 짧아야 격리의 이득이 남는다.</li>
-      </ul>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><div class="lbl">결과 ①</div><h3>사용자에게 바로 보이지 않는다</h3><p>부모가 다시 읽고 요약해서 전달한다. 자식 보고서는 부모를 위한 글이다.</p></div>
+      <div class="card"><div class="lbl">결과 ②</div><h3>중간 과정은 사라진다</h3><p>자식이 근거를 결과에 적지 않으면 부모는 검증할 수 없다.</p></div>
+      <div class="card"><div class="lbl">결과 ③</div><h3>길면 다시 부모 예산을 먹는다</h3><p>요약이 짧아야 격리의 이득이 남는다.</p></div>
+      <div class="callout y" style="font-size:20px">그래서 반환 형식 <b>결론 · 근거 위치 · 미확인</b>을 브리프에서 미리 정한다.</div>
     </div>
   </div>
-  <p class="lead">그래서 결과는 <b>"결론 · 근거 위치 · 미확인 사항"</b> 형식을 브리프에서 미리 정해 두는 편이 좋다.</p>
-  <div class="study"><b>📎 공식 문서</b><span><a href="https://code.claude.com/docs/en/sub-agents">Claude: final report만 부모에 반환</a></span></div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://code.claude.com/docs/en/sub-agents">Claude: 자식의 final report만 부모에 반환</a></span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 메커니즘">
-  <div class="kicker">Mechanism 5 · Parallel</div>
-  <h2>한 턴에 여러 번 호출하면<br><span class="accent">병렬 fan-out</span>이 된다</h2>
-  <pre>Parent (한 번의 응답에 위임 도구 3회)
-  ├─ task(explore, "auth 모듈에서 토큰 검증 위치 찾기")   ─┐
-  ├─ task(explore, "pay 모듈에서 한도 검사 위치 찾기")     ├─ 동시에 실행
-  └─ task(explore, "order 모듈에서 재시도 정책 찾기")     ─┘
-                          ↓ 세 개의 tool_result
-Parent: 세 결과를 합쳐 하나의 답 작성 (gather)</pre>
-  <div class="grid2">
-    <div class="card green"><strong>잘 맞는 일</strong><p>서로 독립적인 조사·탐색·리뷰. 결과끼리 의존이 없을수록 이득이 크다.</p></div>
-    <div class="card red"><strong>안 맞는 일</strong><p>같은 파일을 동시에 고치는 일. 마지막에 쓴 쪽이 이기고, 서로의 변경을 모른다.</p></div>
+<!-- Mechanism 5 : NEW trace -->
+<section class="slide" data-sec="메커니즘">
+  <div class="kicker">Mechanism 5 · Walk-through</div>
+  <h2>위임 한 번을 처음부터 끝까지 <span class="green">따라가 보면</span></h2>
+  <div class="body">
+    <p class="lead" style="font-size:21px">상황: "한도를 넘는 결제가 통과된다"는 버그 보고. 부모는 원인 조사를 explore 자식에게 맡긴다. <span class="dim">(개념 예시)</span></p>
+    <table>
+      <tr><th style="width:6%">#</th><th style="width:16%">단계</th><th style="width:39%">부모 창에 쌓이는 것</th><th>자식 창에 쌓이는 것</th></tr>
+      <tr><td class="h">1</td><td class="h">요청</td><td>사용자 메시지 "한도 초과 결제가 통과돼"</td><td class="dim">아직 없음</td></tr>
+      <tr><td class="h">2</td><td class="h">고르기</td><td>agent 목록의 <b>description</b>을 보고 explore 선택</td><td class="dim">아직 없음</td></tr>
+      <tr><td class="h blue">3</td><td class="h blue">위임</td><td><code>task(explore, 브리프 5줄)</code> 호출 1건</td><td>자식 시스템 프롬프트 + <b>브리프</b></td></tr>
+      <tr><td class="h purple">4</td><td class="h purple">자식 작업</td><td class="dim">변화 없음 (기다림)</td><td>grep 3회 · 파일 6개 읽기 · 막다른 길 2번 <span class="yellow">← 무거운 부분</span></td></tr>
+      <tr><td class="h yellow">5</td><td class="h yellow">반환</td><td><b>tool_result 3줄</b>: 결론 · 근거 · 미확인</td><td>마지막 메시지 작성 후 종료</td></tr>
+      <tr><td class="h green">6</td><td class="h green">계속</td><td>3줄을 바탕으로 수정 계획을 세운다</td><td class="dim">닫힘 (기록만 남음)</td></tr>
+    </table>
+    <div class="callout">무거운 4단계가 <b>통째로 자식 창</b>에 있다. 부모가 얻은 것은 3단계의 호출과 5단계의 3줄뿐이다.</div>
   </div>
-  <div class="study"><b>🔍 직접 확인</b><span>Codex 내장 역할은 <code>explorer</code>(읽기 위주 탐색)와 <code>worker</code>(구현·수정)로 나뉜다. 병렬 쓰기는 작업자마다 담당 파일을 나눠 주는 것이 기본 해법이다.</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 메커니즘">
-  <div class="kicker">Mechanism 6 · Limits</div>
-  <h2>중첩과 동시 실행에는 <span class="yellow">상한</span>이 있다</h2>
-  <table>
-    <tr><th></th><th>자식이 또 위임? (기본 깊이)</th><th>동시 실행 상한</th><th>조절 방법</th></tr>
-    <tr><td><span class="tag oc">OpenCode</span></td><td><b>불가</b> · <code>subagent_depth</code> 기본 1</td><td>명시 상한 없음 (한 메시지 다중 호출)</td><td><code>subagent_depth: 2</code> + 자식 permission에 <code>task</code> 허용</td></tr>
-    <tr><td><span class="tag cx">Codex</span></td><td><b>불가</b> · <code>max_depth</code> 기본 1 (root=0)</td><td><code>max_threads</code> 기본 6 (동시에 열린 스레드)</td><td><code>[agents]</code> 테이블</td></tr>
-    <tr><td><span class="tag cc">Claude</span></td><td><b>가능</b> · 메인 아래 3단계까지</td><td>20개</td><td><code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code>, <code>…_MAX_CONCURRENT_SUBAGENTS</code></td></tr>
-  </table>
-  <p class="lead">상한이 있는 이유는 비용과 통제다. 재귀 위임은 토큰을 기하급수로 쓰고, 누가 무엇을 했는지 추적하기 어려워진다.</p>
-  <div class="study"><b>📎 근거</b><span>OpenCode config 문서 · Codex subagents 문서 · Claude Code sub-agents 문서 (2026-10 확인)</span></div>
+<!-- Mechanism 6 -->
+<section class="slide" data-sec="메커니즘">
+  <div class="kicker">Mechanism 6 · Parallel</div>
+  <h2>한 턴에 여러 번 호출하면 <span class="green">병렬 fan-out</span>이 된다</h2>
+  <div class="split" style="grid-template-columns:1.25fr 1fr">
+    <svg viewBox="0 0 760 470" width="100%">
+      <defs><marker id="a-b6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#58a6ff"/></marker><marker id="a-g6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7ee787"/></marker></defs>
+      <rect x="0" y="175" width="150" height="90" rx="14" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/>
+      <text x="75" y="213" text-anchor="middle" font-size="17" font-weight="800" fill="#eef2f6">Parent</text>
+      <text x="75" y="238" text-anchor="middle" font-size="13" fill="#9cc7ff">한 응답에 task ×3</text>
+      <g font-size="15" font-weight="700">
+        <rect x="250" y="40" width="260" height="76" rx="12" class="sb2"/><text x="270" y="72" fill="#58a6ff">explore · auth</text><text x="270" y="96" font-size="13" fill="#8e9cae">토큰 검증 위치 찾기</text>
+        <rect x="250" y="182" width="260" height="76" rx="12" class="sb2"/><text x="270" y="214" fill="#58a6ff">explore · pay</text><text x="270" y="238" font-size="13" fill="#8e9cae">한도 검사 위치 찾기</text>
+        <rect x="250" y="324" width="260" height="76" rx="12" class="sb2"/><text x="270" y="356" fill="#58a6ff">explore · order</text><text x="270" y="380" font-size="13" fill="#8e9cae">재시도 정책 찾기</text>
+      </g>
+      <path d="M152,205 C200,205 200,78 246,78" stroke="#58a6ff" stroke-width="2.5" fill="none" marker-end="url(#a-b6)"/>
+      <path d="M152,220 L246,220" stroke="#58a6ff" stroke-width="2.5" fill="none" marker-end="url(#a-b6)"/>
+      <path d="M152,235 C200,235 200,362 246,362" stroke="#58a6ff" stroke-width="2.5" fill="none" marker-end="url(#a-b6)"/>
+      <rect x="610" y="175" width="150" height="90" rx="14" fill="#11261a" stroke="#7ee787" stroke-width="2"/>
+      <text x="685" y="213" text-anchor="middle" font-size="17" font-weight="800" fill="#eef2f6">Gather</text>
+      <text x="685" y="238" text-anchor="middle" font-size="13" fill="#a9e7b0">결과 3개 → 답 1개</text>
+      <path d="M512,78 C560,78 560,205 606,205" stroke="#7ee787" stroke-width="2.5" stroke-dasharray="6 5" fill="none" marker-end="url(#a-g6)"/>
+      <path d="M512,220 L606,220" stroke="#7ee787" stroke-width="2.5" stroke-dasharray="6 5" fill="none" marker-end="url(#a-g6)"/>
+      <path d="M512,362 C560,362 560,235 606,235" stroke="#7ee787" stroke-width="2.5" stroke-dasharray="6 5" fill="none" marker-end="url(#a-g6)"/>
+      <!-- timeline -->
+      <text x="0" y="440" font-size="13" font-weight="800" fill="#8e9cae" letter-spacing="1">순차</text>
+      <rect x="60" y="428" width="140" height="16" rx="4" fill="#34445a"/><rect x="204" y="428" width="140" height="16" rx="4" fill="#34445a"/><rect x="348" y="428" width="140" height="16" rx="4" fill="#34445a"/>
+      <text x="0" y="466" font-size="13" font-weight="800" fill="#7ee787" letter-spacing="1">병렬</text>
+      <rect x="60" y="454" width="140" height="16" rx="4" fill="#2c6b3c"/><text x="212" y="467" font-size="13" fill="#7ee787" font-weight="700">← 가장 긴 하나만큼만 기다린다</text>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card c-green"><div class="lbl">잘 맞는 일</div><h3>서로 독립적인 조사 · 탐색 · 리뷰</h3><p>결과끼리 의존이 없을수록 이득이 크다. 지연은 가장 오래 걸리는 자식 하나로 줄어든다.</p></div>
+      <div class="card c-red"><div class="lbl">안 맞는 일</div><h3>같은 파일을 동시에 고치기</h3><p>마지막에 쓴 쪽이 이기고 서로의 변경을 모른다. 쓰기 병렬은 작업자마다 <b>담당 파일을 나눠</b> 준다.</p></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt try">TRY</span><span>Codex 내장 역할은 <code>explorer</code>(읽기 위주 탐색)와 <code>worker</code>(구현 · 수정)로 나뉜다. 병렬로 맡길 때 어느 쪽을 고를지 생각해 보자.</span></div>
 </section>
 
-<!-- ============ Part 1-② 조립 원리 ============ -->
-<section class="slide divider" data-part="Part 1 · 조립 원리">
+<!-- Mechanism 7 -->
+<section class="slide" data-sec="메커니즘">
+  <div class="kicker">Mechanism 7 · Limits</div>
+  <h2>중첩 깊이와 동시 실행에는 <span class="yellow">상한</span>이 있다</h2>
+  <div class="split" style="grid-template-columns:.8fr 1.2fr">
+    <svg viewBox="0 0 520 470" width="100%">
+      <g font-size="15" font-weight="800" text-anchor="middle">
+        <text x="40" y="58" text-anchor="start" fill="#5a687a" font-size="13">depth 0</text>
+        <text x="40" y="188" text-anchor="start" fill="#5a687a" font-size="13">depth 1</text>
+        <text x="40" y="318" text-anchor="start" fill="#5a687a" font-size="13">depth 2</text>
+        <text x="40" y="448" text-anchor="start" fill="#5a687a" font-size="13">depth 3</text>
+        <line x1="290" y1="74" x2="200" y2="156" stroke="#34445a" stroke-width="2.5"/><line x1="290" y1="74" x2="380" y2="156" stroke="#34445a" stroke-width="2.5"/>
+        <line x1="200" y1="204" x2="200" y2="286" stroke="#e3b341" stroke-width="2.5" stroke-dasharray="6 5"/>
+        <line x1="200" y1="334" x2="200" y2="416" stroke="#bc8cff" stroke-width="2.5" stroke-dasharray="6 5"/>
+        <rect x="220" y="30" width="140" height="46" rx="12" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/><text x="290" y="59" fill="#eef2f6">메인</text>
+        <rect x="140" y="158" width="120" height="46" rx="12" class="sb2"/><text x="200" y="187" fill="#eef2f6">자식</text>
+        <rect x="320" y="158" width="120" height="46" rx="12" class="sb2"/><text x="380" y="187" fill="#eef2f6">자식</text>
+        <rect x="140" y="288" width="120" height="46" rx="12" fill="#18222f" stroke="#e3b341" stroke-dasharray="5 4"/><text x="200" y="317" fill="#e3b341">손자</text>
+        <rect x="140" y="418" width="120" height="46" rx="12" fill="#18222f" stroke="#bc8cff" stroke-dasharray="5 4"/><text x="200" y="447" fill="#bc8cff">증손자</text>
+        <text x="285" y="317" text-anchor="start" font-size="14" fill="#e3b341">OpenCode · Codex 기본값에선 막힘</text>
+        <text x="285" y="447" text-anchor="start" font-size="14" fill="#bc8cff">Claude는 메인 아래 3단계까지</text>
+      </g>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <table class="sm">
+        <tr><th></th><th>자식이 또 위임? (기본)</th><th>동시 실행 상한</th><th>조절</th></tr>
+        <tr><td class="h"><span class="t oc">OpenCode</span></td><td><b>불가</b> · <code>subagent_depth</code> 1</td><td>명시 상한 없음</td><td><code>subagent_depth: 2</code> + 자식 <code>task</code> 허용</td></tr>
+        <tr><td class="h"><span class="t cx">Codex</span></td><td><b>불가</b> · <code>max_depth</code> 1 (root=0)</td><td><code>max_threads</code> 6</td><td><code>[agents]</code> 테이블</td></tr>
+        <tr><td class="h"><span class="t cc">Claude</span></td><td><b>가능</b> · 3단계까지</td><td>20개</td><td><code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code> 등 환경변수</td></tr>
+      </table>
+      <div class="callout y">상한이 있는 이유는 <b>비용과 통제</b>다. 재귀 위임은 토큰을 기하급수로 쓰고, 누가 무엇을 했는지 추적하기 어려워진다.</div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span>OpenCode config 문서 · Codex subagents 문서 · Claude Code sub-agents 문서 (2026-10 확인)</span></div>
+</section>
+
+<!-- ============ Part 1-02 구성 요소 ============ -->
+<section class="slide divider" data-sec="구성">
   <div class="num">02</div>
   <div class="kicker">Part 1 · Common</div>
-  <h1>조립 원리</h1>
-  <p class="lead">Harness는 정의 파일을 읽어 <b>네 가지 재료</b>로 자식을 조립한다. 정의 파일의 필드는 전부 이 재료 중 하나를 바꾸는 손잡이다.</p>
+  <h1>구성 요소</h1>
+  <p class="lead">자식 agent는 <b>네 가지</b>로 만들어진다. 정의 파일에 적는 필드는 모두 이 네 가지 중 하나를 정하는 설정이다.</p>
+  <div class="toc"><span><b>1</b>네 가지 구성 요소</span><span><b>2</b>description으로 고르기</span><span><b>3</b>권한 좁히기</span><span><b>4</b>모델이 정해지는 순서</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 조립 원리">
-  <div class="kicker">Assembly 1</div>
-  <h2>Subagent = 프롬프트 + 도구 + 모델 + 첫 메시지</h2>
-  <div class="grid4">
-    <div class="card blue"><div class="label">① System prompt</div><strong>정체성</strong><p>정의 파일 본문. "너는 읽기 전용 리뷰어다…" 역할·절차·반환 형식.</p></div>
-    <div class="card yellow"><div class="label">② Tools / Permission</div><strong>손발</strong><p>쓸 수 있는 도구와 허용·확인·거부 규칙. 부모보다 좁게.</p></div>
-    <div class="card purple"><div class="label">③ Model / Effort</div><strong>두뇌 크기</strong><p>역할에 맞는 모델과 추론 강도. 미지정이면 부모 것을 상속.</p></div>
-    <div class="card green"><div class="label">④ First message</div><strong>이번 일</strong><p>부모가 호출 시점에 쓰는 위임 지시. 정의 파일이 아니라 <b>런타임</b>에 정해진다.</p></div>
+<!-- Build 1 -->
+<section class="slide" data-sec="구성">
+  <div class="kicker">Components 1</div>
+  <h2>자식 agent = <span class="blue">지시문</span> + <span class="yellow">도구</span> + <span class="purple">모델</span> + <span class="green">첫 메시지</span></h2>
+  <svg viewBox="0 0 1424 330" width="100%">
+    <defs><marker id="a-c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8e9cae"/></marker></defs>
+    <g font-weight="800">
+      <rect x="0" y="20" width="330" height="62" rx="12" fill="#0f2036" stroke="#27578a"/><text x="22" y="58" font-size="19" fill="#58a6ff">① 시스템 프롬프트</text><text x="310" y="58" text-anchor="end" font-size="14" fill="#8e9cae">역할 · 절차</text>
+      <rect x="0" y="94" width="330" height="62" rx="12" fill="#2a2210" stroke="#6e5719"/><text x="22" y="132" font-size="19" fill="#e3b341">② 도구 · 권한</text><text x="310" y="132" text-anchor="end" font-size="14" fill="#8e9cae">무엇을 할 수 있나</text>
+      <rect x="0" y="168" width="330" height="62" rx="12" fill="#21183a" stroke="#553a85"/><text x="22" y="206" font-size="19" fill="#bc8cff">③ 모델 · 추론 강도</text><text x="310" y="206" text-anchor="end" font-size="14" fill="#8e9cae">어떤 모델로</text>
+      <rect x="0" y="258" width="330" height="62" rx="12" fill="#11261a" stroke="#2c6b3c"/><text x="22" y="296" font-size="19" fill="#7ee787">④ 첫 메시지 (브리프)</text><text x="310" y="296" text-anchor="end" font-size="14" fill="#8e9cae">이번 일</text>
+    </g>
+    <path d="M345,24 L360,24 L360,226 L345,226" stroke="#5a687a" stroke-width="2" fill="none"/>
+    <text x="374" y="120" font-size="15" font-weight="700" fill="#c3cdd8">정의 파일에</text><text x="374" y="142" font-size="15" font-weight="700" fill="#c3cdd8">미리 적는다</text>
+    <path d="M345,262 L360,262 L360,316 L345,316" stroke="#5a687a" stroke-width="2" fill="none"/>
+    <text x="374" y="286" font-size="15" font-weight="700" fill="#7ee787">부모가 부를 때</text><text x="374" y="308" font-size="15" font-weight="700" fill="#7ee787">정한다</text>
+    <path d="M500,170 L620,170" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-c1)"/>
+    <rect x="630" y="100" width="260" height="140" rx="18" fill="#18222f" stroke="#34445a" stroke-width="2"/>
+    <text x="760" y="160" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">Harness</text>
+    <text x="760" y="188" text-anchor="middle" font-size="14" fill="#8e9cae">도구 실행기 (OpenCode 등)</text>
+    <path d="M900,170 L1020,170" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-c1)"/>
+    <rect x="1030" y="60" width="394" height="220" rx="20" fill="#21183a" stroke="#bc8cff" stroke-width="2"/>
+    <text x="1227" y="104" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">자식 agent</text>
+    <g font-size="14" font-weight="700">
+      <rect x="1056" y="124" width="342" height="30" rx="7" fill="#0f2036"/><text x="1070" y="144" fill="#9cc7ff">system: 너는 읽기 전용 리뷰어다 …</text>
+      <rect x="1056" y="160" width="165" height="30" rx="7" fill="#2a2210"/><text x="1070" y="180" fill="#ecd08a">Read · Grep</text>
+      <rect x="1233" y="160" width="165" height="30" rx="7" fill="#21183a" stroke="#553a85"/><text x="1247" y="180" fill="#cfb7ff">sonnet</text>
+      <rect x="1056" y="196" width="342" height="30" rx="7" fill="#11261a"/><text x="1070" y="216" fill="#a9e7b0">user: src/pay 변경을 검토해줘 …</text>
+      <text x="1070" y="256" fill="#8e9cae">→ 이 상태로 Agent Loop 시작</text>
+    </g>
+  </svg>
+  <div class="g4" style="margin-top:22px">
+    <div class="card c-blue"><div class="lbl">① 시스템 프롬프트</div><p>정의 파일 본문. 맡은 역할, 작업 순서, 결과를 돌려줄 형식을 적는다.</p></div>
+    <div class="card c-yellow"><div class="lbl">② 도구 · 권한</div><p>쓸 수 있는 도구와 허용 · 확인 · 거부 규칙. 부모보다 좁게 준다.</p></div>
+    <div class="card c-purple"><div class="lbl">③ 모델 · 추론 강도</div><p>역할에 맞는 모델. 적지 않으면 부모의 모델을 그대로 쓴다.</p></div>
+    <div class="card c-green"><div class="lbl">④ 첫 메시지</div><p>부모가 호출할 때 쓰는 지시. 파일이 아니라 <b>실행 중에</b> 정해진다.</p></div>
   </div>
-  <p class="lead">①~③은 <b>정의 시점</b>(파일)에, ④는 <b>호출 시점</b>(부모의 판단)에 정해진다. 좋은 subagent는 둘 다 좋아야 한다.</p>
-  <div class="study"><b>추가 재료</b><span>도구마다 더 얹을 수 있다: 프로젝트 지시문(CLAUDE.md/AGENTS.md), 미리 실을 skill, 전용 MCP 서버, 턴 상한, 영구 메모리 등. Part 2에서 다룬다.</span></div>
+  <div class="note"><span class="nt">추가 구성</span><span>도구에 따라 더 넣을 수 있다: 프로젝트 지시문(CLAUDE.md · AGENTS.md), 미리 불러올 skill, 전용 MCP 서버, 턴 상한, 영구 메모리. Part 2에서 다룬다.</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 조립 원리">
-  <div class="kicker">Assembly 2 · Routing</div>
-  <h2>부모가 보는 것은 이름과 <span class="accent">description</span> 목록뿐이다</h2>
-  <div class="grid2">
-    <div>
-      <div class="label">부모의 위임 도구 설명에 실리는 내용 (개념도)</div>
-<pre>Available agents:
-- <span class="s">explore</span>: 코드베이스를 빠르게 검색하는 읽기 전용 agent
-- <span class="s">reviewer</span>: 변경 후 코드 품질을 검토. 코드 수정 직후 사용
-- <span class="s">doc-writer</span>: API 문서를 작성
-<span class="c">(본문 프롬프트는 호출될 때만 로드)</span></pre>
+<!-- Build 2 -->
+<section class="slide" data-sec="구성">
+  <div class="kicker">Components 2 · Routing</div>
+  <h2>부모는 <span class="green">이름과 description</span>만 보고 누구에게 맡길지 고른다</h2>
+  <div class="split" style="grid-template-columns:1.1fr 1fr">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:14px 22px;background:var(--panel2);border-bottom:1px solid var(--line);font:700 14px var(--mono);color:var(--muted)">부모가 보는 위임 도구 설명 (개념도)</div>
+        <div style="padding:18px 22px;display:flex;flex-direction:column;gap:10px;font-size:19px">
+          <div style="padding:12px 16px;border-radius:10px;background:var(--panel2)"><b class="blue" style="font-family:var(--mono)">explore</b> <span class="muted">— 코드베이스를 빠르게 검색하는 읽기 전용 agent</span></div>
+          <div style="padding:12px 16px;border-radius:10px;background:var(--g-bg);border:2px solid var(--green)"><b class="green" style="font-family:var(--mono)">reviewer</b> <span style="color:var(--sub)">— 코드 수정 <b>직후</b> 품질을 검토한다. 수정은 하지 않는다</span> <span class="pill" style="margin-left:6px;color:var(--green)">선택됨</span></div>
+          <div style="padding:12px 16px;border-radius:10px;background:var(--panel2)"><b class="blue" style="font-family:var(--mono)">doc-writer</b> <span class="muted">— API 문서를 작성한다</span></div>
+          <div style="padding:10px 16px;font-size:16px;color:var(--dim)">본문(시스템 프롬프트)은 호출될 때만 불러온다</div>
+        </div>
+      </div>
+      <div class="callout" style="font-size:20px">요청: "방금 고친 결제 코드 검토해줘" → 부모는 <b>"수정 직후 · 검토"</b>가 적힌 reviewer를 고른다.</div>
     </div>
-    <div class="card">
-      <strong>Skill과 같은 원리</strong>
-      <p>Skill이 name·description만 먼저 보이고 본문은 필요할 때 읽히듯, subagent도 <b>description이 라우터</b> 역할을 한다.</p>
-      <ul style="margin-top:1vh"><li><b>언제</b> 써야 하는지 적는다 ("코드 수정 직후")</li><li>다른 agent와 <b>겹치지 않게</b> 쓴다</li><li>너무 길면 모든 턴의 예산을 먹는다</li></ul>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-blue"><div class="lbl">Skill과 같은 방식</div><p>Skill이 name · description만 먼저 보이고 본문은 필요할 때 읽히듯, subagent도 <b>description으로 선택된다</b>.</p></div>
+      <div class="card"><div class="lbl">description 잘 쓰는 법</div>
+        <ul class="pts" style="gap:10px"><li style="font-size:19px"><b>언제</b> 쓰는지 적는다 ("코드 수정 직후")</li><li style="font-size:19px">다른 agent와 <b>겹치지 않게</b> 쓴다</li><li style="font-size:19px">짧게 쓴다. 목록은 매 턴 부모 예산을 먹는다</li></ul></div>
+      <div class="callout y" style="font-size:20px">엉뚱한 agent가 불리면 본문보다 <b>description부터</b> 고친다.</div>
     </div>
   </div>
-  <p class="lead">자동 위임이 안 되거나 엉뚱한 agent가 불리면 프롬프트보다 <b>description부터</b> 고친다.</p>
-  <div class="study"><b>🔍 직접 확인</b><span>Claude Code는 description 합계가 15,000 토큰을 넘으면 시작 시 경고한다. Claude는 "use proactively" 문구, OpenCode는 <code>description</code> 필수 필드로 같은 역할을 한다.</span></div>
+  <div class="note"><span class="nt try">TRY</span><span>Claude Code는 description 합계가 15,000 토큰을 넘으면 시작할 때 경고한다. "use proactively" 문구가 자동 위임 빈도를 바꾸는지도 보자.</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 조립 원리">
-  <div class="kicker">Assembly 3 · Permission</div>
-  <h2>권한은 <span class="yellow">부모를 넘을 수 없고</span>,<br>역할에 맞게 더 좁힌다</h2>
-  <div class="grid3">
-    <div class="card"><div class="label">탐색가</div><strong>읽기만</strong><p>read · grep · glob. 수정·실행 거부. 실수해도 피해가 없다.</p></div>
-    <div class="card"><div class="label">리뷰어</div><strong>읽기 + 제한 실행</strong><p>테스트·린트만 허용. 코드 수정은 거부해 판정이 독립적이게 한다.</p></div>
-    <div class="card"><div class="label">작업자</div><strong>쓰기 허용</strong><p>담당 범위의 파일만. push·배포 같은 되돌릴 수 없는 동작은 거부.</p></div>
+<!-- Build 3 -->
+<section class="slide" data-sec="구성">
+  <div class="kicker">Components 3 · Permission</div>
+  <h2>권한은 부모를 넘을 수 없고, <span class="yellow">역할에 맞게 더 좁힌다</span></h2>
+  <div class="split" style="grid-template-columns:.95fr 1.05fr">
+    <svg viewBox="0 0 640 470" width="100%">
+      <rect x="0" y="0" width="640" height="470" rx="24" fill="#0f2036" stroke="#27578a" stroke-width="2"/>
+      <text x="26" y="40" font-size="16" font-weight="800" fill="#58a6ff" letter-spacing="1">부모 권한 (사용자가 허용한 범위)</text>
+      <g font-size="15" font-weight="700">
+        <rect x="26" y="66" width="588" height="378" rx="18" fill="#2a2210" stroke="#6e5719" stroke-width="2"/>
+        <text x="48" y="100" fill="#e3b341" font-weight="800">작업자 · 담당 파일 쓰기 + 테스트 실행</text>
+        <rect x="48" y="122" width="544" height="300" rx="16" fill="#21183a" stroke="#553a85" stroke-width="2"/>
+        <text x="70" y="156" fill="#bc8cff" font-weight="800">리뷰어 · 읽기 + 테스트 · 린트만</text>
+        <rect x="70" y="178" width="500" height="222" rx="14" fill="#11261a" stroke="#2c6b3c" stroke-width="2"/>
+        <text x="92" y="212" fill="#7ee787" font-weight="800">탐색가 · 읽기만 (read · grep · glob)</text>
+        <text x="92" y="262" fill="#a9e7b0" font-size="14" font-weight="600">실수해도 피해가 없다.</text>
+        <text x="92" y="286" fill="#a9e7b0" font-size="14" font-weight="600">작은 모델에 맡기기 좋다.</text>
+      </g>
+      <text x="320" y="462" text-anchor="middle" font-size="13" fill="#5a687a">안쪽으로 갈수록 할 수 있는 일이 적다</text>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="g3">
+        <div class="card c-green" style="padding:18px"><div class="lbl">탐색가</div><p>수정 · 실행 거부</p></div>
+        <div class="card c-purple" style="padding:18px"><div class="lbl">리뷰어</div><p>코드 수정 거부해 판정을 독립시킨다</p></div>
+        <div class="card c-yellow" style="padding:18px"><div class="lbl">작업자</div><p>push · 배포는 거부</p></div>
+      </div>
+      <table class="sm">
+        <tr><th style="width:22%"></th><th>부모 권한과의 관계</th></tr>
+        <tr><td class="h"><span class="t oc">OpenCode</span></td><td>자식 정의의 <code>permission</code>으로 지정. 부모는 <code>permission.task</code>로 위임할 수 있는 대상을 제한</td></tr>
+        <tr><td class="h"><span class="t cx">Codex</span></td><td>현재 sandbox 정책과 부모 턴의 실행 설정을 물려받는다. 역할 파일의 <code>sandbox_mode</code>로 따로 지정 가능</td></tr>
+        <tr><td class="h"><span class="t cc">Claude</span></td><td>부모가 bypass · acceptEdits · auto 모드면 자식의 <code>permissionMode</code>는 무시된다</td></tr>
+      </table>
+    </div>
   </div>
-  <table style="margin-top:1.6vh">
-    <tr><th></th><th>부모 권한과의 관계</th></tr>
-    <tr><td><span class="tag oc">OpenCode</span></td><td>자식 정의의 <code>permission</code>으로 지정. 부모는 <code>permission.task</code>로 위임 가능한 대상을 제한</td></tr>
-    <tr><td><span class="tag cx">Codex</span></td><td>현재 sandbox 정책과 부모 턴의 런타임 오버라이드를 상속. 역할 파일의 <code>sandbox_mode</code>로 따로 지정 가능</td></tr>
-    <tr><td><span class="tag cc">Claude</span></td><td>부모가 bypass·acceptEdits·auto 모드면 자식의 <code>permissionMode</code>는 무시됨</td></tr>
-  </table>
 </section>
 
-<section class="slide" data-part="Part 1 · 조립 원리">
-  <div class="kicker">Assembly 4 · Model</div>
-  <h2>모델은 "가장 구체적인 지정"이 이긴다</h2>
-  <div class="diagram">
-    <div class="box green">호출 시 인자<small>이번 한 번</small></div><div class="arrow">›</div>
-    <div class="box blue">정의 파일<small>model / effort</small></div><div class="arrow">›</div>
-    <div class="box yellow">전역 기본값<small>환경변수 · config</small></div><div class="arrow">›</div>
-    <div class="box">부모 모델<small>최종 fallback</small></div>
+<!-- Build 4 -->
+<section class="slide" data-sec="구성">
+  <div class="kicker">Components 4 · Model</div>
+  <h2>모델은 <span class="purple">가장 구체적으로 지정한 값</span>이 쓰인다</h2>
+  <div class="body">
+    <svg viewBox="0 0 1424 170" width="100%">
+      <defs><marker id="a-c4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5a687a"/></marker></defs>
+      <text x="0" y="16" font-size="14" font-weight="800" fill="#7ee787">우선순위 높음</text><text x="1424" y="16" text-anchor="end" font-size="14" font-weight="800" fill="#5a687a">낮음</text>
+      <g font-weight="800" text-anchor="middle">
+        <rect x="0" y="34" width="320" height="120" rx="16" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="160" y="84" font-size="22" fill="#eef2f6">호출 시 지정</text><text x="160" y="116" font-size="15" fill="#a9e7b0" font-weight="600">이번 한 번만</text>
+        <rect x="368" y="34" width="320" height="120" rx="16" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/><text x="528" y="84" font-size="22" fill="#eef2f6">정의 파일</text><text x="528" y="116" font-size="15" fill="#9cc7ff" font-weight="600">model · effort 필드</text>
+        <rect x="736" y="34" width="320" height="120" rx="16" fill="#2a2210" stroke="#e3b341" stroke-width="2"/><text x="896" y="84" font-size="22" fill="#eef2f6">전역 기본값</text><text x="896" y="116" font-size="15" fill="#ecd08a" font-weight="600">환경변수 · config</text>
+        <rect x="1104" y="34" width="320" height="120" rx="16" fill="#18222f" stroke="#5a687a" stroke-width="2"/><text x="1264" y="84" font-size="22" fill="#eef2f6">부모 모델</text><text x="1264" y="116" font-size="15" fill="#8e9cae" font-weight="600">아무것도 없으면</text>
+      </g>
+      <path d="M324,94 L362,94" stroke="#5a687a" stroke-width="3" marker-end="url(#a-c4)"/><path d="M692,94 L730,94" stroke="#5a687a" stroke-width="3" marker-end="url(#a-c4)"/><path d="M1060,94 L1098,94" stroke="#5a687a" stroke-width="3" marker-end="url(#a-c4)"/>
+    </svg>
+    <div class="g3">
+      <div class="card c-orange"><span class="t oc" style="align-self:flex-start">OpenCode</span><p><code>model: provider/model-id</code><br>적지 않으면 호출한 primary의 모델</p></div>
+      <div class="card c-blue"><span class="t cx" style="align-self:flex-start">Codex</span><p><code>model</code>, <code>model_reasoning_effort</code><br>적지 않으면 부모에게서 물려받음</p></div>
+      <div class="card c-purple"><span class="t cc" style="align-self:flex-start">Claude</span><p><code>model: haiku|sonnet|opus|inherit</code>, <code>effort</code><br>전역: <code>CLAUDE_CODE_SUBAGENT_MODEL</code></p></div>
+    </div>
+    <div class="g3">
+      <div class="card"><div class="lbl">찾기 · 모으기</div><h3>작고 빠른 모델 · 낮은 추론 강도</h3><p>explore, 로그 요약처럼 양은 많고 판단은 단순한 일.</p></div>
+      <div class="card"><div class="lbl">구현 · 수정</div><h3>부모와 같은 모델 (inherit)</h3><p>담당 범위가 정해진 작업자. 품질을 부모와 맞춘다.</p></div>
+      <div class="card"><div class="lbl">판단 · 검토</div><h3>큰 모델 · 높은 추론 강도</h3><p>리뷰어, 설계 검토처럼 틀리면 비싼 일.</p></div>
+    </div>
+    <div class="callout p">원칙: <b>찾기 · 모으기는 작고 빠른 모델</b>, <b>판단 · 설계는 큰 모델</b>. 예전에 해 본 Codex 모델 라우팅 실험과 같은 생각이다.</div>
   </div>
-  <div class="grid3">
-    <div class="card"><div class="label">OpenCode</div><p><code>model: provider/model-id</code><br>미지정 시 호출한 primary의 모델</p></div>
-    <div class="card"><div class="label">Codex</div><p><code>model</code>, <code>model_reasoning_effort</code><br>미지정 시 부모에게서 상속</p></div>
-    <div class="card"><div class="label">Claude</div><p><code>model: haiku|sonnet|opus|inherit</code>, <code>effort</code><br><code>CLAUDE_CODE_SUBAGENT_MODEL</code></p></div>
-  </div>
-  <p class="lead">원칙: <b>탐색·수집은 작고 빠른 모델</b>, <b>판단·설계는 큰 모델</b>. 기존 Codex 모델 라우팅 실험과 같은 발상이다.</p>
 </section>
 
-<!-- ============ Part 1-③ 선언 방법 ============ -->
-<section class="slide divider" data-part="Part 1 · 선언">
+<!-- ============ Part 1-03 선언 방법 ============ -->
+<section class="slide divider" data-sec="선언">
   <div class="num">03</div>
   <div class="kicker">Part 1 · Common</div>
   <h1>선언 방법</h1>
-  <p class="lead">세 도구 모두 <b>"파일 하나 = agent 하나"</b>다. 위치와 포맷만 다르고, 들어가는 필드는 거의 일대일로 대응한다.</p>
+  <p class="lead">세 도구 모두 <b>파일 하나 = agent 하나</b>다. 위치와 형식만 다르고, 들어가는 필드는 거의 일대일로 대응한다.</p>
+  <div class="toc"><span><b>1</b>어디에 두나</span><span><b>2</b>필드 대응표</span><span><b>3</b>정의 파일 해부</span><span><b>4</b>같은 agent, 세 가지 형식</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 선언">
+<!-- Declare 1 -->
+<section class="slide" data-sec="선언">
   <div class="kicker">Declare 1 · Where</div>
-  <h2>프로젝트에 두면 팀 것, 홈에 두면 내 것</h2>
-  <table>
-    <tr><th></th><th>프로젝트 범위</th><th>개인(전역) 범위</th><th>포맷</th><th>이름 결정</th></tr>
-    <tr><td><span class="tag oc">OpenCode</span></td><td><code>.opencode/agents/*.md</code><br>또는 <code>opencode.json</code>의 <code>"agent"</code></td><td><code>~/.config/opencode/agents/</code></td><td>Markdown + YAML<br>또는 JSON</td><td><b>파일명</b></td></tr>
-    <tr><td><span class="tag cx">Codex</span></td><td><code>.codex/agents/*.toml</code></td><td><code>~/.codex/agents/</code><br>또는 <code>config.toml</code>의 <code>[agents.이름]</code></td><td>TOML</td><td><code>name</code> 필드</td></tr>
-    <tr><td><span class="tag cc">Claude</span></td><td><code>.claude/agents/*.md</code></td><td><code>~/.claude/agents/</code></td><td>Markdown + YAML</td><td><code>name</code> 필드</td></tr>
-  </table>
-  <p class="lead">같은 이름이 여러 곳에 있으면 <b>더 가까운(구체적인) 쪽</b>이 이긴다. Skill의 경로별 적용 범위와 같은 규칙이다.</p>
-  <div class="study"><b>🔍 직접 확인</b><span>OpenCode는 단수 <code>agent/</code> 폴더도 하위 호환으로 읽는다. 내 기존 OpenCode 실습 리포가 어느 쪽을 쓰는지 확인해 보자.</span></div>
+  <h2>프로젝트에 두면 <span class="green">팀 공용</span>, 홈에 두면 <span class="blue">나만 쓰는</span> agent</h2>
+  <div class="body">
+    <div class="g3">
+      <div class="card c-orange" style="gap:14px"><span class="t oc" style="align-self:flex-start">OpenCode</span>
+<pre class="xs">my-repo/
+├─ <span class="gk">.opencode/agents/</span>
+│   └─ review.md      <span class="c"># 이름 = 파일명</span>
+└─ <span class="gk">opencode.json</span>     <span class="c"># "agent": {…}</span>
+
+~/.config/opencode/
+└─ <span class="k">agents/</span>           <span class="c"># 개인</span></pre>
+        <p>Markdown + YAML 또는 JSON. <b>파일명</b>이 이름이 된다.</p></div>
+      <div class="card c-blue" style="gap:14px"><span class="t cx" style="align-self:flex-start">Codex</span>
+<pre class="xs">my-repo/
+└─ <span class="gk">.codex/agents/</span>
+    └─ reviewer.toml  <span class="c"># name 필드</span>
+
+~/.codex/
+├─ <span class="k">agents/</span>           <span class="c"># 개인</span>
+└─ <span class="k">config.toml</span>       <span class="c"># [agents.이름]</span></pre>
+        <p>TOML. 이름은 <code>name</code> 필드로 정한다.</p></div>
+      <div class="card c-purple" style="gap:14px"><span class="t cc" style="align-self:flex-start">Claude Code</span>
+<pre class="xs">my-repo/
+└─ <span class="gk">.claude/agents/</span>
+    └─ reviewer.md    <span class="c"># name 필드</span>
+
+~/.claude/
+└─ <span class="k">agents/</span>           <span class="c"># 개인</span>
+
+claude --agents '{…}' <span class="c"># 이번 세션만</span></pre>
+        <p>Markdown + YAML. 이름은 <code>name</code> 필드로 정한다.</p></div>
+    </div>
+    <div class="callout">같은 이름이 여러 곳에 있으면 <b>더 가까운(구체적인) 쪽</b>이 이긴다. Skill의 경로별 적용 범위와 같은 규칙이다.</div>
+  </div>
+  <div class="note"><span class="nt try">TRY</span><span>OpenCode는 단수형 <code>agent/</code> 폴더도 하위 호환으로 읽는다. 기존 OpenCode 실습 리포가 어느 쪽을 쓰는지 확인해 보자.</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 선언">
+<!-- Declare 2 -->
+<section class="slide" data-sec="선언">
   <div class="kicker">Declare 2 · Field mapping</div>
-  <h2>필드 이름은 달라도 <span class="accent">하는 일은 같다</span></h2>
+  <h2>필드 이름은 달라도 <span class="green">하는 일은 같다</span></h2>
   <table>
-    <tr><th>역할</th><th>OpenCode</th><th>Codex</th><th>Claude Code</th></tr>
-    <tr><td>이름</td><td>파일명 / JSON 키</td><td><code>name</code></td><td><code>name</code></td></tr>
-    <tr><td>라우팅</td><td><code>description</code> (필수)</td><td><code>description</code> (필수)</td><td><code>description</code> (필수)</td></tr>
-    <tr><td>시스템 프롬프트</td><td>본문 / <code>prompt</code></td><td><code>developer_instructions</code></td><td>본문</td></tr>
-    <tr><td>도구·권한</td><td><code>permission</code> (allow/ask/deny)</td><td><code>sandbox_mode</code>, <code>mcp_servers</code>, <code>skills.config</code></td><td><code>tools</code>, <code>disallowedTools</code>, <code>permissionMode</code></td></tr>
-    <tr><td>모델</td><td><code>model</code>, <code>temperature</code></td><td><code>model</code>, <code>model_reasoning_effort</code></td><td><code>model</code>, <code>effort</code></td></tr>
-    <tr><td>반복 상한</td><td><code>steps</code></td><td>—</td><td><code>maxTurns</code></td></tr>
-    <tr><td>호출 모드</td><td><code>mode: subagent|primary|all</code></td><td>— (모두 위임 대상)</td><td>— (<code>--agent</code>로 메인 실행 가능)</td></tr>
+    <tr><th style="width:15%">정하는 것</th><th style="width:7%"></th><th><span class="t oc">OpenCode</span></th><th><span class="t cx">Codex</span></th><th><span class="t cc">Claude Code</span></th></tr>
+    <tr><td class="h">이름</td><td></td><td>파일명 / JSON 키</td><td><code>name</code></td><td><code>name</code></td></tr>
+    <tr><td class="h">언제 부를지</td><td><span class="mark">①</span></td><td><code>description</code> (필수)</td><td><code>description</code> (필수)</td><td><code>description</code> (필수)</td></tr>
+    <tr><td class="h">시스템 프롬프트</td><td><span class="mark b">②</span></td><td>본문 / <code>prompt</code></td><td><code>developer_instructions</code></td><td>본문</td></tr>
+    <tr><td class="h">도구 · 권한</td><td><span class="mark y">③</span></td><td><code>permission</code> (allow / ask / deny)</td><td><code>sandbox_mode</code>, <code>mcp_servers</code>, <code>skills.config</code></td><td><code>tools</code>, <code>disallowedTools</code>, <code>permissionMode</code></td></tr>
+    <tr><td class="h">모델</td><td><span class="mark p">④</span></td><td><code>model</code>, <code>temperature</code></td><td><code>model</code>, <code>model_reasoning_effort</code></td><td><code>model</code>, <code>effort</code></td></tr>
+    <tr><td class="h">반복 상한</td><td></td><td><code>steps</code></td><td class="dim">없음</td><td><code>maxTurns</code></td></tr>
+    <tr><td class="h">호출 방식</td><td></td><td><code>mode: subagent | primary | all</code></td><td class="dim">모두 위임 대상</td><td><code>--agent</code>로 메인 세션 실행 가능</td></tr>
   </table>
-  <div class="study"><b>📎 근거</b><span><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a><a href="https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields">Claude frontmatter</a></span></div>
+  <div class="callout b" style="margin-top:24px">①~④는 앞에서 본 구성 요소와 그대로 겹친다. 새 도구를 만나도 <b>이 네 칸에 해당하는 필드</b>부터 찾으면 된다.</div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a><a href="https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields">Claude frontmatter</a></span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 선언">
+<!-- Declare 3 -->
+<section class="slide" data-sec="선언">
   <div class="kicker">Declare 3 · Anatomy</div>
-  <h2>좋은 정의 파일은 <span class="accent">언제 · 무엇을 · 어떤 손으로 · 무엇을 돌려줄지</span>가 선명하다</h2>
-<pre><span class="c">---</span>
+  <h2>좋은 정의 파일은 <span class="green">언제 · 무엇을 · 무슨 도구로 · 어떤 형식으로</span>가 분명하다</h2>
+  <div class="split" style="grid-template-columns:1.35fr 1fr;align-items:start">
+<pre><span class="fn">.claude/agents/code-reviewer.md</span><span class="c">---</span>
 <span class="k">name</span>: <span class="s">code-reviewer</span>
-<span class="k">description</span>: <span class="s">코드 변경 직후 품질과 버그를 검토한다. 수정은 하지 않는다.</span>   <span class="c"># ← 언제 (라우터)</span>
-<span class="k">tools</span>: <span class="s">Read, Grep, Glob, Bash</span>   <span class="c"># ← 어떤 손으로</span>
-<span class="k">model</span>: <span class="s">sonnet</span>   <span class="c"># ← 두뇌 크기</span>
+<span class="k">description</span>: <span class="s">코드 변경 직후 품질과 버그를 검토한다.</span>   <span class="mark">1</span>
+             <span class="s">수정은 하지 않는다.</span>
+<span class="k">tools</span>: <span class="s">Read, Grep, Glob, Bash</span>              <span class="mark y">2</span>
+<span class="k">model</span>: <span class="s">sonnet</span>                              <span class="mark p">3</span>
 <span class="c">---</span>
-너는 읽기 전용 코드 리뷰어다.   <span class="c"># ← 정체성</span>
-1. git diff로 변경 범위만 확인한다. 범위 밖 파일은 읽지 않는다.   <span class="c"># ← 무엇을 (절차)</span>
-2. 테스트는 실행할 수 있지만 코드는 절대 고치지 않는다.
-3. 결과는 아래 형식으로만 반환한다.   <span class="c"># ← 무엇을 돌려줄지</span>
+너는 읽기 전용 코드 리뷰어다.                      <span class="mark b">4</span>
+1. git diff로 변경 범위만 확인한다.               <span class="mark b">5</span>
+   범위 밖 파일은 읽지 않는다.
+2. 테스트는 실행해도 되지만 코드는 고치지 않는다.
+3. 결과는 아래 형식으로만 돌려준다.              <span class="mark">6</span>
    - 판정: PASS | FAIL
-   - 문제: 파일:줄 — 한 줄 설명 (최대 10개)
+   - 문제: 파일:줄 · 한 줄 설명 (최대 10개)
    - 미확인: 보지 못한 것</pre>
-  <div class="study"><b>🔍 직접 확인</b><span>이 파일을 세 도구 포맷으로 옮겨 보자. OpenCode는 <code>tools</code> 대신 <code>permission</code>, Codex는 본문을 <code>developer_instructions</code>로 옮겨야 한다.</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card" style="padding:16px 20px;flex-direction:row;gap:14px;align-items:baseline"><span class="mark" style="margin:0;flex:none">1</span><p><b>언제 부를지</b>. 부모가 이 줄만 보고 고른다.</p></div>
+      <div class="card" style="padding:16px 20px;flex-direction:row;gap:14px;align-items:baseline"><span class="mark y" style="margin:0;flex:none">2</span><p><b>쓸 수 있는 도구</b>. Edit · Write가 빠져 있어 고칠 수 없다.</p></div>
+      <div class="card" style="padding:16px 20px;flex-direction:row;gap:14px;align-items:baseline"><span class="mark p" style="margin:0;flex:none">3</span><p><b>사용할 모델</b>. 생략하면 부모 모델을 쓴다.</p></div>
+      <div class="card" style="padding:16px 20px;flex-direction:row;gap:14px;align-items:baseline"><span class="mark b" style="margin:0;flex:none">4</span><p><b>역할</b>. 한 문장으로 정체를 정한다.</p></div>
+      <div class="card" style="padding:16px 20px;flex-direction:row;gap:14px;align-items:baseline"><span class="mark b" style="margin:0;flex:none">5</span><p><b>작업 순서와 범위</b>. 어디까지 볼지 정한다.</p></div>
+      <div class="card c-green" style="padding:16px 20px;flex-direction:row;gap:14px;align-items:baseline"><span class="mark" style="margin:0;flex:none">6</span><p><b>돌려줄 형식</b>. 부모가 받을 결과를 미리 약속한다.</p></div>
+    </div>
+  </div>
 </section>
 
-<!-- ============ Part 1-④ 운용 원리 ============ -->
-<section class="slide divider" data-part="Part 1 · 운용">
+<!-- Declare 4 : NEW -->
+<section class="slide" data-sec="선언">
+  <div class="kicker">Declare 4 · Same agent, three formats</div>
+  <h2>같은 리뷰어를 세 도구 형식으로 옮기면</h2>
+  <div class="body">
+    <div class="g3" style="align-items:stretch">
+<pre class="sm" style="font-size:16px"><span class="fn">.opencode/agents/code-reviewer.md</span><span class="c">---</span>
+<span class="k">description</span>: <span class="s">코드 변경 직후 품질과
+  버그를 검토한다. 수정하지 않는다.</span>
+<span class="k">mode</span>: <span class="s">subagent</span>
+<span class="k">permission</span>:
+  <span class="k">edit</span>: <span class="r">deny</span>
+  <span class="k">bash</span>:
+    <span class="s">"*"</span>: <span class="v">ask</span>
+    <span class="s">"git diff *"</span>: <span class="gk">allow</span>
+<span class="c">---</span>
+너는 읽기 전용 코드 리뷰어다.
+… (절차 · 반환 형식)</pre>
+<pre class="sm" style="font-size:16px"><span class="fn">.codex/agents/code-reviewer.toml</span><span class="k">name</span> = <span class="s">"code-reviewer"</span>
+<span class="k">description</span> = <span class="s">"""코드 변경 직후
+품질과 버그를 검토한다.
+수정하지 않는다."""</span>
+<span class="k">sandbox_mode</span> = <span class="s">"read-only"</span>
+<span class="k">model_reasoning_effort</span> = <span class="s">"high"</span>
+<span class="k">developer_instructions</span> = <span class="s">"""
+너는 읽기 전용 코드 리뷰어다.
+… (절차 · 반환 형식)
+"""</span></pre>
+<pre class="sm" style="font-size:16px"><span class="fn">.claude/agents/code-reviewer.md</span><span class="c">---</span>
+<span class="k">name</span>: <span class="s">code-reviewer</span>
+<span class="k">description</span>: <span class="s">코드 변경 직후 품질과
+  버그를 검토한다. 수정하지 않는다.</span>
+<span class="k">tools</span>: <span class="s">Read, Grep, Glob, Bash</span>
+<span class="k">model</span>: <span class="s">sonnet</span>
+<span class="c">---</span>
+너는 읽기 전용 코드 리뷰어다.
+… (절차 · 반환 형식)</pre>
+    </div>
+    <div class="g3">
+      <div class="card c-orange" style="padding:18px 22px"><p>이름은 <b>파일명</b>. 권한은 도구 목록이 아니라 <b>규칙</b>(edit deny, bash ask)으로 막는다.</p></div>
+      <div class="card c-blue" style="padding:18px 22px"><p>본문이 따로 없어 지시문은 <code>developer_instructions</code>에 넣는다. 읽기 전용은 <b>sandbox</b>로 막는다.</p></div>
+      <div class="card c-purple" style="padding:18px 22px"><p>쓸 수 있는 도구를 <b>목록으로</b> 준다. 목록에 없는 Edit · Write는 쓸 수 없다.</p></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt try">TRY</span><span>실습 첫 과제 후보: 이 세 파일을 각자 리포에 두고, 같은 diff를 검토시켜 결과 형식이 지켜지는지 비교한다.</span></div>
+</section>
+
+<!-- ============ Part 1-04 운용 원리 ============ -->
+<section class="slide divider" data-sec="운용">
   <div class="num">04</div>
   <div class="kicker">Part 1 · Common</div>
   <h1>운용 원리</h1>
-  <p class="lead">정의 파일이 좋아도 <b>브리프(첫 메시지)</b>와 <b>반환 계약</b>이 나쁘면 위임은 실패한다.</p>
+  <p class="lead">정의 파일이 좋아도 <b>브리프(첫 메시지)</b>와 <b>반환 약속</b>이 나쁘면 위임은 실패한다.</p>
+  <div class="toc"><span><b>1</b>브리프 쓰는 법</span><span><b>2</b>결과 받는 법</span><span><b>3</b>네 가지 패턴</span><span><b>4</b>위임할까, 직접 할까</span><span><b>5</b>비용과 피할 패턴</span></div>
 </section>
 
-<section class="slide" data-part="Part 1 · 운용">
+<!-- Operate 1 -->
+<section class="slide" data-sec="운용">
   <div class="kicker">Operate 1 · Brief</div>
-  <h2>브리프는 "맥락이 전혀 없는 동료"에게 쓰는 메모다</h2>
-  <div class="grid2">
-    <div class="card red"><div class="label">Before</div><pre style="margin:0">"결제 쪽 버그 좀 찾아줘"</pre><p style="margin-top:1vh">어떤 버그? 어디까지? 언제 멈추지? 자식은 리포 전체를 뒤진다.</p></div>
-    <div class="card green"><div class="label">After</div><pre style="margin:0"><span class="k">목표</span>: 한도 초과 결제가 통과되는 원인 찾기
-<span class="k">범위</span>: src/pay/ 만. 수정 금지
-<span class="k">알려진 것</span>: limits.py:42 에서 검사함
-<span class="k">완료 조건</span>: 원인 후보 1~3개 + 근거 줄번호
-<span class="k">반환 형식</span>: 결론 / 근거 / 미확인</pre></div>
+  <h2>브리프는 <span class="green">맥락을 전혀 모르는 동료</span>에게 쓰는 메모다</h2>
+  <div class="split" style="grid-template-columns:.9fr 1.1fr;align-items:stretch">
+    <div class="card c-red" style="justify-content:center;gap:18px">
+      <div class="lbl">Before</div>
+      <div style="font-size:34px;font-weight:800;color:var(--text)">"결제 쪽 버그 좀 찾아줘"</div>
+      <ul class="pts r" style="gap:10px"><li style="font-size:20px">어떤 버그? 증상이 없다</li><li style="font-size:20px">어디까지? 리포 전체를 뒤진다</li><li style="font-size:20px">언제 멈추지? 끝이 없다</li><li style="font-size:20px">무엇을 돌려주지? 장문 보고서가 온다</li></ul>
+    </div>
+    <div class="card c-green" style="gap:12px">
+      <div class="lbl">After · 다섯 칸</div>
+      <div style="display:grid;grid-template-columns:150px 1fr;gap:10px;font-size:20px;align-items:center">
+        <span class="pill" style="text-align:center;color:var(--blue)">목표</span><span>한도 초과 결제가 통과되는 원인 찾기</span>
+        <span class="pill" style="text-align:center;color:var(--blue)">범위</span><span><code>src/pay/</code> 만. 수정 금지</span>
+        <span class="pill" style="text-align:center;color:var(--blue)">알려진 것</span><span><code>limits.py:42</code> 에서 검사한다</span>
+        <span class="pill" style="text-align:center;color:var(--blue)">완료 조건</span><span>원인 후보 1~3개 + 근거 줄번호</span>
+        <span class="pill" style="text-align:center;color:var(--blue)">반환 형식</span><span>결론 / 근거 / 미확인</span>
+      </div>
+      <div class="callout" style="font-size:19px;margin-top:8px"><b>알려진 것</b> 칸이 특히 중요하다. 부모가 이미 아는 것을 안 적으면 자식은 그것을 <b>다시 비용을 들여</b> 알아낸다.</div>
+    </div>
   </div>
-  <p class="lead">부모가 이미 아는 것을 브리프에 적어 주지 않으면, 자식은 그것을 <b>다시 비용을 들여</b> 알아낸다. 격리의 대가다.</p>
 </section>
 
-<section class="slide" data-part="Part 1 · 운용">
+<!-- Operate 2 -->
+<section class="slide" data-sec="운용">
   <div class="kicker">Operate 2 · Return contract</div>
-  <h2>결과는 파일로, 요약은 짧게, <span class="accent">판정은 코드로</span></h2>
-  <div class="diagram">
-    <div class="box purple">Subagent<small>작업 수행</small></div><div class="arrow">→</div>
-    <div class="box">output/result.json<small>약속된 파일</small></div><div class="arrow">→</div>
-    <div class="box yellow">validator.py<small>구조·근거 검사</small></div><div class="arrow">→</div>
-    <div class="box green">"PASS output/…"<small>한 줄만 부모에게</small></div>
-  </div>
-  <div class="grid3">
-    <div class="card"><strong>왜 파일인가</strong><p>tool_result는 부모 예산을 먹는다. 큰 산출물은 파일에 두고 경로만 넘긴다. (SKILL 심화 ⑥ 산출물 약속)</p></div>
-    <div class="card"><strong>왜 코드 판정인가</strong><p>"완료했습니다"는 증거가 아니다. 자식의 자기 보고를 validator로 확인한다. (Harness: completion ≠ success)</p></div>
-    <div class="card"><strong>Hook으로 강제</strong><p>Claude의 <code>SubagentStop</code> hook은 검사 실패 시 <code>decision:"block"</code>으로 자식을 계속 일하게 할 수 있다.</p></div>
+  <h2>결과는 파일로, 요약은 짧게, <span class="green">판정은 코드로</span></h2>
+  <div class="body">
+    <svg viewBox="0 0 1424 150" width="100%">
+      <defs><marker id="a-o2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8e9cae"/></marker></defs>
+      <g font-weight="800" text-anchor="middle">
+        <rect x="0" y="20" width="290" height="110" rx="16" fill="#21183a" stroke="#bc8cff" stroke-width="2"/><text x="145" y="68" font-size="22" fill="#eef2f6">Subagent</text><text x="145" y="98" font-size="15" fill="#cfb7ff" font-weight="600">작업 수행</text>
+        <rect x="378" y="20" width="290" height="110" rx="16" fill="#18222f" stroke="#5a687a" stroke-width="2"/><text x="523" y="68" font-size="20" class="mono" fill="#eef2f6">output/result.json</text><text x="523" y="98" font-size="15" fill="#8e9cae" font-weight="600">약속한 위치의 파일</text>
+        <rect x="756" y="20" width="290" height="110" rx="16" fill="#2a2210" stroke="#e3b341" stroke-width="2"/><text x="901" y="68" font-size="20" class="mono" fill="#eef2f6">validator.py</text><text x="901" y="98" font-size="15" fill="#ecd08a" font-weight="600">구조 · 근거 검사</text>
+        <rect x="1134" y="20" width="290" height="110" rx="16" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="1279" y="68" font-size="20" class="mono" fill="#eef2f6">PASS output/…</text><text x="1279" y="98" font-size="15" fill="#a9e7b0" font-weight="600">부모에게는 한 줄만</text>
+      </g>
+      <path d="M294,75 L372,75" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-o2)"/><path d="M672,75 L750,75" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-o2)"/><path d="M1050,75 L1128,75" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-o2)"/>
+    </svg>
+    <div class="g3">
+      <div class="card"><div class="lbl">왜 파일인가</div><h3>부모 예산을 지킨다</h3><p>tool_result는 부모 창에 쌓인다. 큰 산출물은 파일에 두고 경로만 넘긴다. (SKILL 심화 ⑥ 산출물 약속)</p></div>
+      <div class="card"><div class="lbl">왜 코드 판정인가</div><h3>"완료했습니다"는 증거가 아니다</h3><p>자식의 자기 보고를 validator로 확인한다. (Harness: 완료 ≠ 성공)</p></div>
+      <div class="card c-purple"><div class="lbl">Hook으로 강제</div><h3>통과 전에는 못 끝낸다</h3><p>Claude의 <code>SubagentStop</code> hook은 검사가 실패하면 <code>decision: "block"</code>으로 자식이 계속 일하게 한다.</p></div>
+    </div>
+    <div class="g2">
+<pre class="xs"><span class="fn">output/result.json · 자식이 쓴다</span>{
+  <span class="k">"verdict"</span>: <span class="s">"FAIL"</span>,
+  <span class="k">"issues"</span>: [{ <span class="k">"file"</span>: <span class="s">"src/pay/limits.py"</span>, <span class="k">"line"</span>: <span class="v">42</span>,
+               <span class="k">"why"</span>: <span class="s">"경계값 &gt;= 가 &gt; 로 바뀜"</span> }],
+  <span class="k">"unchecked"</span>: [<span class="s">"queue.py 재시도 경로"</span>]
+}</pre>
+<pre class="xs"><span class="fn">부모 창에 남는 것 (개념 예시)</span><span class="c">$ python validator.py output/result.json</span>
+<span class="gk">PASS</span>  필수 키 3개 있음 · issues 1건 모두 file:line 있음
+
+<span class="c">tool_result</span>
+FAIL 1건 · 상세는 output/result.json</pre>
+    </div>
   </div>
 </section>
 
-<section class="slide" data-part="Part 1 · 운용">
+<!-- Operate 3 -->
+<section class="slide" data-sec="운용">
   <div class="kicker">Operate 3 · Patterns</div>
-  <h2>자주 쓰이는 형태는 네 가지로 정리된다</h2>
-  <div class="grid4">
-    <div class="card blue"><div class="label">① Explore</div><strong>찾기만 맡긴다</strong><p>읽기 전용 + 작은 모델. 검색 잔해는 자식 창에 남기고 위치만 받는다.</p></div>
-    <div class="card green"><div class="label">② Fan-out</div><strong>나눠서 동시에</strong><p>독립적인 조각을 병렬 위임하고 결과를 합친다.</p></div>
-    <div class="card yellow"><div class="label">③ Reviewer</div><strong>오염 안 된 눈</strong><p>작성 과정을 모르는 자식이 결과만 보고 판정한다. 독립 검증.</p></div>
-    <div class="card purple"><div class="label">④ Orchestrator–Worker</div><strong>순서는 부모, 일은 자식</strong><p>부모는 목록·순서·PASS/FAIL만, 한 건씩 새 worker에게. (기존 OpenCode 가이드)</p></div>
+  <h2>자주 쓰는 형태는 <span class="green">네 가지</span>로 정리된다</h2>
+  <div class="g4" style="flex:1">
+    <div class="card c-blue">
+      <svg viewBox="0 0 300 150" width="100%"><rect x="10" y="55" width="80" height="40" rx="8" fill="#0f2036" stroke="#58a6ff"/><text x="50" y="80" text-anchor="middle" font-size="13" font-weight="800" fill="#eef2f6">부모</text><rect x="190" y="20" width="100" height="110" rx="10" fill="#18222f" stroke="#34445a"/><g fill="#34445a"><rect x="202" y="34" width="76" height="8" rx="3"/><rect x="202" y="50" width="60" height="8" rx="3"/><rect x="202" y="66" width="70" height="8" rx="3"/><rect x="202" y="82" width="50" height="8" rx="3"/></g><rect x="202" y="104" width="76" height="14" rx="3" fill="#2c6b3c"/><path d="M92,70 L186,50" stroke="#58a6ff" stroke-width="2"/><path d="M186,112 L92,82" stroke="#7ee787" stroke-width="2" stroke-dasharray="5 4"/><text x="140" y="140" text-anchor="middle" font-size="12" fill="#8e9cae">위치만 돌아온다</text></svg>
+      <div class="lbl">① Explore</div><h3>찾기만 맡긴다</h3><p>읽기 전용 + 작은 모델. 검색 잔해는 자식 창에 두고 위치만 받는다.</p></div>
+    <div class="card c-green">
+      <svg viewBox="0 0 300 150" width="100%"><rect x="10" y="55" width="70" height="40" rx="8" fill="#0f2036" stroke="#58a6ff"/><g fill="#18222f" stroke="#34445a"><rect x="120" y="10" width="70" height="30" rx="6"/><rect x="120" y="60" width="70" height="30" rx="6"/><rect x="120" y="110" width="70" height="30" rx="6"/></g><rect x="225" y="55" width="70" height="40" rx="8" fill="#11261a" stroke="#7ee787"/><g stroke="#58a6ff" stroke-width="2"><path d="M80,70 L120,25"/><path d="M80,75 L120,75"/><path d="M80,80 L120,125"/></g><g stroke="#7ee787" stroke-width="2" stroke-dasharray="4 3"><path d="M190,25 L225,70"/><path d="M190,75 L225,75"/><path d="M190,125 L225,80"/></g></svg>
+      <div class="lbl">② Fan-out</div><h3>나눠서 동시에</h3><p>독립적인 조각을 병렬로 맡기고 결과를 합친다.</p></div>
+    <div class="card c-yellow">
+      <svg viewBox="0 0 300 150" width="100%"><rect x="10" y="20" width="110" height="110" rx="10" fill="#18222f" stroke="#34445a"/><text x="65" y="50" text-anchor="middle" font-size="12" fill="#8e9cae">작성 과정</text><g fill="#34445a"><rect x="24" y="62" width="82" height="8" rx="3"/><rect x="24" y="78" width="60" height="8" rx="3"/></g><rect x="24" y="100" width="82" height="18" rx="4" fill="#5a4514"/><text x="65" y="113" text-anchor="middle" font-size="11" font-weight="800" fill="#e3b341">결과물</text><path d="M120,109 L180,90" stroke="#e3b341" stroke-width="2"/><rect x="180" y="55" width="110" height="60" rx="10" fill="#2a2210" stroke="#e3b341"/><text x="235" y="82" text-anchor="middle" font-size="13" font-weight="800" fill="#eef2f6">리뷰어</text><text x="235" y="102" text-anchor="middle" font-size="11" fill="#ecd08a">결과물만 본다</text></svg>
+      <div class="lbl">③ Reviewer</div><h3>선입견 없는 검토</h3><p>작성 과정을 모르는 자식이 결과만 보고 판정한다. 독립 검증.</p></div>
+    <div class="card c-purple">
+      <svg viewBox="0 0 300 150" width="100%"><rect x="10" y="10" width="90" height="130" rx="10" fill="#0f2036" stroke="#58a6ff"/><text x="55" y="34" text-anchor="middle" font-size="12" font-weight="800" fill="#eef2f6">부모</text><g font-size="11" fill="#9cc7ff"><text x="22" y="58">☑ 1번</text><text x="22" y="80">☑ 2번</text><text x="22" y="102">▶ 3번</text><text x="22" y="124">☐ 4번</text></g><rect x="170" y="80" width="120" height="44" rx="8" fill="#21183a" stroke="#bc8cff"/><text x="230" y="107" text-anchor="middle" font-size="12" font-weight="800" fill="#eef2f6">새 worker</text><path d="M100,98 L170,100" stroke="#bc8cff" stroke-width="2"/><text x="230" y="60" text-anchor="middle" font-size="11" fill="#8e9cae">한 건씩 새로</text></svg>
+      <div class="lbl">④ Orchestrator–Worker</div><h3>순서는 부모, 일은 자식</h3><p>부모는 목록 · 순서 · PASS/FAIL만 관리하고 한 건씩 새 worker에게 맡긴다.</p></div>
   </div>
-  <p class="lead">세 도구의 내장 agent가 이미 이 패턴이다. <b>explore</b>(①)와 <b>general/worker</b>(②④)는 세 도구 모두에 비슷한 이름으로 있다.</p>
+  <div class="callout" style="margin-top:22px">세 도구의 내장 agent가 이미 이 패턴이다. <b>explore</b>(①)와 <b>general / worker</b>(②④)는 세 도구 모두에 비슷한 이름으로 있다.</div>
 </section>
 
-<section class="slide" data-part="Part 1 · 운용">
-  <div class="kicker">Operate 4 · Cost &amp; anti-patterns</div>
-  <h2>위임은 공짜가 아니다.<br><span class="red">안 나누는 편이 나은</span> 경우가 있다</h2>
-  <div class="grid2">
-    <div class="card"><strong>비용 세 가지</strong><ul><li><b>토큰</b>: 자식마다 시스템 프롬프트·지시문을 새로 싣는다</li><li><b>지연</b>: 자식이 처음부터 맥락을 다시 모은다</li><li><b>전달 손실</b>: 요약이 정보를 깎는다. 근거 없는 결론은 검증 불가</li></ul></div>
-    <div class="card red"><strong>안티패턴</strong><ul><li>파일 하나 읽는 일을 위임 (호출 비용 &gt; 이득)</li><li>여러 자식이 같은 파일을 동시에 수정</li><li>부모가 자식 결과를 전부 다시 읽음 (격리 무효)</li><li>자식이 또 자식을 부르는 무한 분할</li></ul></div>
+<!-- Operate 4 : NEW decision -->
+<section class="slide" data-sec="운용">
+  <div class="kicker">Operate 4 · Decide</div>
+  <h2>위임할까, 직접 할까: <span class="green">네 가지 질문</span>으로 정한다</h2>
+  <svg viewBox="0 0 1424 520" width="100%">
+    <defs><marker id="a-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7ee787"/></marker><marker id="a-dr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#ff7b72"/></marker></defs>
+    <g font-weight="700">
+      <rect x="0" y="20" width="300" height="120" rx="16" class="sb2"/><text x="20" y="54" font-size="14" font-weight="800" fill="#8e9cae">Q1</text><text x="20" y="86" font-size="20" fill="#eef2f6">찾는 과정이 결과보다</text><text x="20" y="114" font-size="20" fill="#eef2f6">훨씬 큰가?</text>
+      <rect x="370" y="20" width="300" height="120" rx="16" class="sb2"/><text x="390" y="54" font-size="14" font-weight="800" fill="#8e9cae">Q2</text><text x="390" y="86" font-size="20" fill="#eef2f6">다른 일과 독립적으로</text><text x="390" y="114" font-size="20" fill="#eef2f6">떼어낼 수 있나?</text>
+      <rect x="740" y="20" width="300" height="120" rx="16" class="sb2"/><text x="760" y="54" font-size="14" font-weight="800" fill="#8e9cae">Q3</text><text x="760" y="86" font-size="20" fill="#eef2f6">브리프 몇 줄로</text><text x="760" y="114" font-size="20" fill="#eef2f6">설명이 되나?</text>
+      <rect x="1110" y="20" width="314" height="120" rx="16" class="sb2"/><text x="1130" y="54" font-size="14" font-weight="800" fill="#8e9cae">Q4</text><text x="1130" y="86" font-size="20" fill="#eef2f6">결과가 맞는지</text><text x="1130" y="114" font-size="20" fill="#eef2f6">확인할 방법이 있나?</text>
+    </g>
+    <g stroke="#7ee787" stroke-width="3" fill="none"><path d="M302,80 L364,80" marker-end="url(#a-d)"/><path d="M672,80 L734,80" marker-end="url(#a-d)"/><path d="M1042,80 L1104,80" marker-end="url(#a-d)"/><path d="M1267,142 L1267,330" marker-end="url(#a-d)"/></g>
+    <g font-size="14" font-weight="800" fill="#7ee787"><text x="318" y="70">예</text><text x="688" y="70">예</text><text x="1058" y="70">예</text><text x="1278" y="240">예</text></g>
+    <g stroke="#ff7b72" stroke-width="2.5" fill="none" stroke-dasharray="6 5"><path d="M150,142 L150,330" marker-end="url(#a-dr)"/><path d="M520,142 L520,330" marker-end="url(#a-dr)"/><path d="M890,142 L890,330" marker-end="url(#a-dr)"/></g>
+    <g font-size="14" font-weight="800" fill="#ff7b72"><text x="162" y="240">아니오</text><text x="532" y="240">아니오</text><text x="902" y="240">아니오</text></g>
+    <g font-size="17">
+      <rect x="0" y="336" width="300" height="150" rx="16" fill="#2d1513" stroke="#743230"/><text x="20" y="372" font-weight="800" fill="#ff7b72">직접 한다</text><text x="20" y="404" fill="#c3cdd8">파일 하나 읽는 일은</text><text x="20" y="430" fill="#c3cdd8">호출 비용이 더 크다</text>
+      <rect x="370" y="336" width="300" height="150" rx="16" fill="#2d1513" stroke="#743230"/><text x="390" y="372" font-weight="800" fill="#ff7b72">직접 한다 · 순서를 나눈다</text><text x="390" y="404" fill="#c3cdd8">서로 얽힌 수정은</text><text x="390" y="430" fill="#c3cdd8">한 창에서 하거나 차례로</text>
+      <rect x="740" y="336" width="300" height="150" rx="16" fill="#2a2210" stroke="#6e5719"/><text x="760" y="372" font-weight="800" fill="#e3b341">먼저 쪼갠다</text><text x="760" y="404" fill="#c3cdd8">설명이 길면 일이 너무 크다</text><text x="760" y="430" fill="#c3cdd8">더 작은 단위로 나눈다</text>
+      <rect x="1110" y="336" width="314" height="150" rx="16" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="1130" y="372" font-weight="800" fill="#7ee787">위임한다</text><text x="1130" y="404" fill="#c3cdd8">반환 형식 + 검사 방법을</text><text x="1130" y="430" fill="#c3cdd8">브리프에 함께 적는다</text>
+    </g>
+  </svg>
+  <div class="note"><span class="nt">기준 한 줄</span><span>자식이 쓸 컨텍스트가 <b>부모가 받을 요약보다 훨씬 클 때</b> 위임한다.</span></div>
+</section>
+
+<!-- Operate 5 -->
+<section class="slide" data-sec="운용">
+  <div class="kicker">Operate 5 · Cost &amp; anti-patterns</div>
+  <h2>위임은 공짜가 아니다. <span class="red">나누지 않는 편이 나은</span> 경우가 있다</h2>
+  <div class="split" style="grid-template-columns:1fr 1fr;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="flex:1"><div class="lbl">비용 ① 토큰</div><p>자식마다 시스템 프롬프트와 프로젝트 지시문을 <b>새로</b> 싣는다. 자식 5개면 5번 싣는다.</p></div>
+      <div class="card" style="flex:1"><div class="lbl">비용 ② 시간</div><p>자식은 맥락 없이 시작해 <b>처음부터</b> 다시 모은다.</p></div>
+      <div class="card" style="flex:1"><div class="lbl">비용 ③ 전달 손실</div><p>요약이 정보를 깎는다. 근거 없는 결론은 부모가 검증할 수 없다.</p></div>
+    </div>
+    <div class="card c-red" style="gap:14px"><div class="lbl">피해야 할 패턴</div>
+      <ul class="pts r">
+        <li>파일 하나 읽는 일을 위임한다 <span class="dim">(호출 비용 &gt; 이득)</span></li>
+        <li>여러 자식이 같은 파일을 동시에 고친다</li>
+        <li>부모가 자식 결과를 전부 다시 읽는다 <span class="dim">(격리가 무의미)</span></li>
+        <li>자식이 또 자식을 부르는 무한 분할</li>
+        <li>description이 겹치는 agent를 여러 개 둔다 <span class="dim">(엉뚱한 선택)</span></li>
+      </ul>
+    </div>
   </div>
-  <p class="quote" style="font-size:clamp(1.3rem,2.4vw,2.2rem);margin-top:2vh">판단 기준: 자식이 쓸 컨텍스트가 <em>부모가 받을 요약보다 훨씬 클 때</em> 위임한다.</p>
 </section>
 
 <!-- ============ Part 2 OpenCode ============ -->
-<section class="slide divider" data-part="Part 2 · OpenCode">
+<section class="slide divider" data-sec="OpenCode">
   <div class="num">05</div>
-  <div class="kicker">Part 2 · Tool-specific</div>
-  <h1><span style="color:#ffa657">OpenCode</span></h1>
-  <p class="lead">특징: <b>mode</b>로 primary와 subagent를 같은 체계에서 정의하고, <b>permission</b>으로 위임 대상까지 통제한다. 자식은 <b>child session</b>으로 남아 직접 들어가 볼 수 있다.</p>
+  <div class="kicker" style="color:var(--orange)">Part 2 · Tool-specific</div>
+  <h1 class="orange">OpenCode</h1>
+  <p class="lead"><b>mode</b>로 주 agent와 subagent를 한 체계에서 정의하고, <b>permission</b>으로 위임 대상까지 통제한다. 자식은 <b>child session</b>으로 남아 직접 들어가 볼 수 있다.</p>
+  <div class="toc"><span><b>1</b>mode 세 가지</span><span><b>2</b>JSON과 Markdown</span><span><b>3</b>permission.task</span><span><b>4</b>child session · headless</span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · OpenCode">
-  <div class="kicker">OpenCode 1 · Modes</div>
-  <h2>agent 하나가 <code>mode</code>에 따라<br>주인공도, 위임 대상도 된다</h2>
-  <div class="grid3">
-    <div class="card blue"><div class="label">mode: primary</div><strong>사용자가 직접 대화</strong><p>Tab으로 전환. 내장: <b>build</b>(모든 도구), <b>plan</b>(수정·bash는 ask)</p></div>
-    <div class="card green"><div class="label">mode: subagent</div><strong>위임받아 일함</strong><p>내장: <b>general</b>(다단계 작업, 수정 가능, 병렬용), <b>explore</b>(읽기 전용 빠른 탐색)</p></div>
-    <div class="card"><div class="label">mode: all (기본값)</div><strong>둘 다</strong><p>mode를 생략하면 all. 직접 쓸 수도, 위임할 수도 있다.</p></div>
+<!-- OC 1 -->
+<section class="slide" data-sec="OpenCode">
+  <div class="kicker" style="color:var(--orange)">OpenCode 1 · Modes</div>
+  <h2>agent 하나가 <code>mode</code>에 따라 <span class="orange">주인공도, 위임 대상도</span> 된다</h2>
+  <div class="body">
+    <div class="g3" style="flex:1">
+      <div class="card c-blue" style="gap:14px"><div class="lbl">mode: primary</div><div class="big">사용자가 직접 대화</div>
+        <p>Tab 키로 전환한다.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:auto">
+          <div class="pill" style="font-size:17px"><b class="blue">build</b> 모든 도구 사용</div>
+          <div class="pill" style="font-size:17px"><b class="blue">plan</b> 수정 · bash는 확인 후 실행</div>
+        </div></div>
+      <div class="card c-green" style="gap:14px"><div class="lbl">mode: subagent</div><div class="big">위임받아 일함</div>
+        <p>부모의 <code>task</code> 호출이나 <code>@이름</code>으로 불린다.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:auto">
+          <div class="pill" style="font-size:17px"><b class="green">general</b> 다단계 작업 · 수정 가능 · 병렬용</div>
+          <div class="pill" style="font-size:17px"><b class="green">explore</b> 읽기 전용 빠른 탐색</div>
+          <div class="pill" style="font-size:17px"><b class="green">scout</b> 외부 문서 · 의존성 조사 (읽기 전용)</div>
+        </div></div>
+      <div class="card" style="gap:14px"><div class="lbl">mode: all (기본값)</div><div class="big">둘 다 가능</div>
+        <p>mode를 생략하면 all이다. 직접 대화할 수도, 위임 대상이 될 수도 있다.</p>
+        <div class="callout" style="font-size:18px;margin-top:auto">위임 전용으로 쓰려면 <b>mode: subagent</b>를 명시한다.</div></div>
+    </div>
+    <div class="callout y">숨은 시스템 agent(compaction, title, summary)도 같은 체계로 돈다. OpenCode에서 agent는 <b>일하는 단위 전체</b>를 부르는 이름이다.</div>
   </div>
-  <p class="lead">숨은 시스템 agent(compaction, title, summary)도 같은 체계로 돈다. 외부 문서·의존성을 조사하는 읽기 전용 subagent <b>scout</b>도 내장되어 있다.</p>
-  <div class="study"><b>🔍 직접 확인</b><span><code>opencode agent list</code>로 내 환경의 agent와 mode를 확인해 보자.</span></div>
+  <div class="note"><span class="nt try">TRY</span><span><code>opencode agent list</code>로 내 환경의 agent와 mode를 확인해 보자.</span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · OpenCode">
-  <div class="kicker">OpenCode 2 · Declare</div>
-  <h2>JSON에 모아 쓰거나, Markdown 파일로 나눠 쓴다</h2>
-  <div class="grid2">
-    <div><div class="label">opencode.json</div>
-<pre>{
+<!-- OC 2 -->
+<section class="slide" data-sec="OpenCode">
+  <div class="kicker" style="color:var(--orange)">OpenCode 2 · Declare</div>
+  <h2>JSON에 <span class="orange">모아 쓰거나</span>, Markdown 파일로 <span class="orange">나눠 쓴다</span></h2>
+  <div class="split" style="grid-template-columns:1fr 1fr;align-items:stretch">
+<pre class="sm"><span class="fn">opencode.json</span>{
   <span class="k">"agent"</span>: {
     <span class="k">"review"</span>: {
       <span class="k">"description"</span>: <span class="s">"Reviews code"</span>,
@@ -446,13 +1034,14 @@ Parent: 세 결과를 합쳐 하나의 답 작성 (gather)</pre>
       <span class="k">"prompt"</span>: <span class="s">"{file:./prompts/review.txt}"</span>,
       <span class="k">"permission"</span>: {
         <span class="k">"edit"</span>: <span class="r">"deny"</span>,
-        <span class="k">"bash"</span>: { <span class="s">"*"</span>: <span class="v">"ask"</span>, <span class="s">"git status *"</span>: <span class="s">"allow"</span> }
+        <span class="k">"bash"</span>: { <span class="s">"*"</span>: <span class="v">"ask"</span>,
+                  <span class="s">"git status *"</span>: <span class="gk">"allow"</span> }
       }
     }
   }
-}</pre></div>
-    <div><div class="label">.opencode/agents/review.md</div>
-<pre><span class="c">---</span>
+}</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+<pre class="sm"><span class="fn">.opencode/agents/review.md</span><span class="c">---</span>
 <span class="k">description</span>: <span class="s">Reviews code for quality</span>
 <span class="k">mode</span>: <span class="s">subagent</span>
 <span class="k">temperature</span>: <span class="v">0.1</span>
@@ -462,274 +1051,410 @@ Parent: 세 결과를 합쳐 하나의 답 작성 (gather)</pre>
   <span class="k">bash</span>: <span class="r">deny</span>
 <span class="c">---</span>
 You are in code review mode...</pre>
-      <p class="lead" style="font-size:clamp(.85rem,1.15vw,1.05rem)"><code>tools</code>(true/false)는 <b>deprecated</b>, <code>permission</code>을 쓴다. <code>hidden: true</code>는 @ 자동완성에서만 숨긴다.</p></div>
-  </div>
-  <div class="study"><b>📎 / 🔍</b><span><a href="https://opencode.ai/docs/agents/">opencode.ai/docs/agents</a> · <code>opencode agent create</code>는 범위·설명·권한을 물어 .md를 생성한다. <code>--path --description --mode --permissions</code>를 다 주면 비대화형.</span></div>
-</section>
-
-<section class="slide" data-part="Part 2 · OpenCode">
-  <div class="kicker">OpenCode 3 · Invoke &amp; control</div>
-  <h2><code>permission.task</code>로 "누구에게 위임할 수 있는가"까지 정한다</h2>
-  <div class="grid2">
-    <div>
-      <div class="label">자동 호출</div>
-<pre>primary agent가 subagent의 <span class="k">description</span>을 보고
-<span class="s">task</span> 도구로 위임한다</pre>
-      <div class="label" style="margin-top:1.4vh">사용자가 직접 부르기</div>
-<pre>@general 이 함수가 어디서 호출되는지 찾아줘</pre>
-    </div>
-    <div>
-      <div class="label">위임 대상 제한 (primary agent 설정)</div>
-<pre><span class="k">"permission"</span>: { <span class="k">"task"</span>: {
-  <span class="s">"*"</span>: <span class="r">"deny"</span>,
-  <span class="s">"orchestrator-*"</span>: <span class="s">"allow"</span>,
-  <span class="s">"code-reviewer"</span>: <span class="v">"ask"</span>
-}}</pre>
-      <ul class="big" style="font-size:clamp(.85rem,1.15vw,1.05rem)"><li>마지막으로 매칭된 규칙이 이긴다</li><li>deny된 agent는 task 도구 설명에서 <b>아예 사라진다</b></li><li>사용자의 @mention은 규칙과 무관하게 동작</li></ul>
+      <ul class="pts y" style="gap:10px">
+        <li style="font-size:19px"><code>tools</code>(true / false)는 <b>deprecated</b>. <code>permission</code>을 쓴다</li>
+        <li style="font-size:19px"><code>hidden: true</code>는 @ 자동완성 목록에서만 숨긴다</li>
+        <li style="font-size:19px">긴 프롬프트는 <code>{file:…}</code>로 따로 둔다</li>
+      </ul>
     </div>
   </div>
-  <div class="study"><b>중첩</b><span><code>subagent_depth</code> 기본 1: primary는 subagent를 부를 수 있지만 subagent는 또 부를 수 없다. 2면 한 단계 더, 0이면 위임 전체 금지.</span></div>
+  <div class="note"><span class="nt try">TRY</span><span><code>opencode agent create</code>는 범위 · 설명 · 권한을 물어 .md를 만든다. <code>--path --description --mode --permissions</code>를 모두 주면 묻지 않고 만든다.</span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · OpenCode">
-  <div class="kicker">OpenCode 4 · Sessions &amp; headless</div>
-  <h2>자식은 <span class="accent">child session</span>으로 남아<br>직접 들어가 볼 수 있다</h2>
-  <div class="grid2">
-    <div class="card"><strong>TUI에서 부모·자식 오가기</strong>
-<pre style="margin-top:1vh">&lt;Leader&gt;+↓   첫 번째 child로 들어가기
-→ / ←        child 사이 순환
-↑            부모로 돌아가기</pre>
-      <p>child 제목: <code>"&lt;description&gt; (@agent subagent)"</code>. 자식이 무엇을 읽고 왜 그렇게 결론냈는지 <b>사후에 추적</b>할 수 있다.</p></div>
-    <div class="card"><strong>Headless에서</strong>
-<pre style="margin-top:1vh">opencode run --agent review \
+<!-- OC 3 -->
+<section class="slide" data-sec="OpenCode">
+  <div class="kicker" style="color:var(--orange)">OpenCode 3 · permission.task</div>
+  <h2><code>permission.task</code>로 <span class="orange">누구에게 위임할 수 있는지</span>까지 정한다</h2>
+  <div class="split" style="grid-template-columns:1fr 1.1fr;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px">
+<pre><span class="fn">primary agent 설정</span><span class="k">"permission"</span>: {
+  <span class="k">"task"</span>: {
+    <span class="s">"*"</span>:              <span class="r">"deny"</span>,   <span class="c"># 규칙 1</span>
+    <span class="s">"orchestrator-*"</span>: <span class="gk">"allow"</span>,  <span class="c"># 규칙 2</span>
+    <span class="s">"code-reviewer"</span>:  <span class="v">"ask"</span>     <span class="c"># 규칙 3</span>
+  }
+}</pre>
+      <div class="callout"><b>마지막으로 맞은 규칙</b>이 이긴다. 그래서 넓은 규칙(<code>*</code>)을 먼저, 좁은 규칙을 뒤에 쓴다.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="sm">
+        <tr><th>위임 대상 이름</th><th>맞는 규칙</th><th>결과</th></tr>
+        <tr><td class="h"><code>orchestrator-main</code></td><td>1, 2</td><td><b class="green">allow</b> · 바로 위임</td></tr>
+        <tr><td class="h"><code>code-reviewer</code></td><td>1, 3</td><td><b class="yellow">ask</b> · 사용자 확인 후 위임</td></tr>
+        <tr><td class="h"><code>explore</code></td><td>1</td><td><b class="red">deny</b> · task 설명에서 <b>사라짐</b></td></tr>
+      </table>
+      <div class="g2">
+        <div class="card" style="padding:18px 20px"><div class="lbl">자동 호출</div><p>primary가 description을 보고 <code>task</code> 도구로 위임한다.</p></div>
+        <div class="card" style="padding:18px 20px"><div class="lbl">직접 호출</div><p><code>@general 이 함수 어디서 불려?</code> · @mention은 이 규칙과 상관없이 동작한다.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="note"><span class="nt">중첩</span><span><code>subagent_depth</code> 기본 1: primary는 subagent를 부를 수 있지만 subagent는 또 부를 수 없다. 2면 한 단계 더, 0이면 위임 전체 금지.</span></div>
+</section>
+
+<!-- OC 4 -->
+<section class="slide" data-sec="OpenCode">
+  <div class="kicker" style="color:var(--orange)">OpenCode 4 · Sessions &amp; headless</div>
+  <h2>자식은 <span class="orange">child session</span>으로 남아 직접 들어가 볼 수 있다</h2>
+  <div class="split" style="grid-template-columns:1fr 1fr;align-items:stretch">
+    <div class="card" style="gap:16px">
+      <div class="lbl">TUI에서 부모 · 자식 오가기</div>
+      <svg viewBox="0 0 600 220" width="100%">
+        <rect x="200" y="10" width="200" height="50" rx="10" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/><text x="300" y="41" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">부모 세션</text>
+        <g stroke="#34445a" stroke-width="2"><path d="M300,60 L100,140"/><path d="M300,60 L300,140"/><path d="M300,60 L500,140"/></g>
+        <g font-size="13" font-weight="700" text-anchor="middle">
+          <rect x="10" y="140" width="180" height="56" rx="10" fill="#2c1d0e" stroke="#ffa657" stroke-width="2"/><text x="100" y="164" fill="#ffa657">child 1</text><text x="100" y="184" fill="#c3cdd8" font-size="12">(@explore subagent)</text>
+          <rect x="210" y="140" width="180" height="56" rx="10" class="sb2"/><text x="300" y="164" fill="#c3cdd8">child 2</text>
+          <rect x="410" y="140" width="180" height="56" rx="10" class="sb2"/><text x="500" y="164" fill="#c3cdd8">child 3</text>
+        </g>
+        <text x="150" y="95" font-size="13" font-weight="800" fill="#ffa657">Leader+↓</text>
+        <text x="390" y="95" font-size="13" font-weight="800" fill="#8e9cae">↑ 부모로</text>
+        <text x="300" y="216" text-anchor="middle" font-size="13" font-weight="800" fill="#8e9cae">→ / ← 자식 사이 이동</text>
+      </svg>
+      <p>child 제목은 <code>"&lt;description&gt; (@agent subagent)"</code>. 자식이 무엇을 읽고 왜 그렇게 결론냈는지 <b>나중에 추적</b>할 수 있다.</p>
+    </div>
+    <div class="card" style="gap:16px">
+      <div class="lbl">Headless에서</div>
+<pre class="sm">opencode run --agent review \
   -m anthropic/claude-sonnet-… \
   --format json "변경 사항 리뷰"</pre>
-      <p>기존 Headless Lab의 <code>run</code>/<code>serve</code>와 결합하면, 프로그램이 agent를 골라 부리는 구조가 된다.</p></div>
+      <p>기존 Headless Lab의 <code>run</code> / <code>serve</code>와 합치면 <b>프로그램이 agent를 골라 부리는</b> 구조가 된다.</p>
+      <div class="callout" style="font-size:19px;margin-top:auto">자식 내부를 <b>세션 그대로 열어 볼 수 있어</b>, 실습에서 격리를 눈으로 확인하기 좋다.</div>
+    </div>
   </div>
-  <div class="study"><b>📎 공식 문서</b><span><a href="https://opencode.ai/docs/agents/">Agents</a><a href="https://opencode.ai/docs/permissions/">Permissions</a><a href="https://opencode.ai/docs/cli/">CLI</a></span></div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://opencode.ai/docs/agents/">Agents</a><a href="https://opencode.ai/docs/permissions/">Permissions</a><a href="https://opencode.ai/docs/cli/">CLI</a></span></div>
 </section>
 
 <!-- ============ Part 2 Codex ============ -->
-<section class="slide divider" data-part="Part 2 · Codex">
+<section class="slide divider" data-sec="Codex">
   <div class="num">06</div>
-  <div class="kicker">Part 2 · Tool-specific</div>
-  <h1><span class="blue">Codex</span></h1>
-  <p class="lead">특징: <b>명시적으로 요청할 때만</b> 위임한다. 자식은 <b>agent 스레드</b>로 열리고 <code>/agent</code>로 오가며, 역할은 TOML로 선언한다.</p>
+  <div class="kicker" style="color:var(--blue)">Part 2 · Tool-specific</div>
+  <h1 class="blue">Codex</h1>
+  <p class="lead"><b>명시적으로 요청할 때만</b> 위임한다. 자식은 <b>agent 스레드</b>로 열리고 <code>/agent</code>로 오가며, 역할은 TOML로 선언한다.</p>
+  <div class="toc"><span><b>1</b>명시 요청과 스레드</span><span><b>2</b>역할 TOML · [agents]</span><span><b>3</b>상속 · /agent · exec</span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · Codex">
-  <div class="kicker">Codex 1 · Explicit spawn</div>
-  <h2>Codex는 <span class="blue">명시적으로 요청할 때만</span><br>자식 스레드를 띄운다</h2>
-  <div class="diagram">
-    <div class="box blue">명시 요청<small>"subagent로 나눠서 해줘"</small></div><div class="arrow">→</div>
-    <div class="box">스레드 생성<small>역할: default · worker · explorer</small></div><div class="arrow">→</div>
-    <div class="box yellow">병렬 실행<small>max_threads 6</small></div><div class="arrow">→</div>
-    <div class="box green">결과 취합<small>하나의 답</small></div>
+<!-- CX 1 -->
+<section class="slide" data-sec="Codex">
+  <div class="kicker" style="color:var(--blue)">Codex 1 · Explicit spawn</div>
+  <h2>Codex는 <span class="blue">명시적으로 요청할 때만</span> 자식 스레드를 띄운다</h2>
+  <div class="body">
+    <svg viewBox="0 0 1424 280" width="100%">
+      <defs><marker id="a-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#58a6ff"/></marker><marker id="a-xm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5a687a"/></marker></defs>
+      <!-- row 1 -->
+      <text x="0" y="30" font-size="14" font-weight="800" fill="#8e9cae" letter-spacing="1">그냥 요청</text>
+      <rect x="0" y="44" width="360" height="64" rx="12" class="sb2"/><text x="20" y="83" font-size="18" font-weight="700" fill="#c3cdd8">"auth, pay, order 모듈 점검해줘"</text>
+      <path d="M364,76 L450,76" stroke="#5a687a" stroke-width="2.5" marker-end="url(#a-xm)"/>
+      <rect x="456" y="44" width="420" height="64" rx="12" class="sb2"/><text x="476" y="83" font-size="18" font-weight="700" fill="#c3cdd8">메인 스레드가 혼자 순서대로 처리</text>
+      <!-- row 2 -->
+      <text x="0" y="150" font-size="14" font-weight="800" fill="#58a6ff" letter-spacing="1">명시 요청</text>
+      <rect x="0" y="164" width="360" height="64" rx="12" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/><text x="20" y="203" font-size="18" font-weight="700" fill="#eef2f6">"모듈별로 <tspan fill="#58a6ff">subagent</tspan>를 띄워서 점검해줘"</text>
+      <path d="M364,196 L450,196" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#a-x)"/>
+      <g font-size="15" font-weight="700">
+        <rect x="456" y="122" width="220" height="38" rx="10" fill="#0f2036" stroke="#27578a"/><text x="472" y="147" fill="#9cc7ff">스레드 · auth</text>
+        <rect x="456" y="177" width="220" height="38" rx="10" fill="#0f2036" stroke="#27578a"/><text x="472" y="202" fill="#9cc7ff">스레드 · pay</text>
+        <rect x="456" y="232" width="220" height="38" rx="10" fill="#0f2036" stroke="#27578a"/><text x="472" y="257" fill="#9cc7ff">스레드 · order</text>
+      </g>
+      <path d="M680,196 L760,196" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#a-x)"/>
+      <rect x="766" y="163" width="300" height="66" rx="12" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="786" y="203" font-size="18" font-weight="700" fill="#eef2f6">메인이 결과를 모아 답 1개</text>
+      <text x="1090" y="203" font-size="15" font-weight="700" fill="#8e9cae">열린 스레드 기본 최대 6개</text>
+    </svg>
+    <div class="g2">
+      <div class="card c-blue"><div class="lbl">자동 위임을 하지 않는다</div><p>"Codex only spawns subagents when you explicitly ask it to." description만 보고 알아서 위임하는 OpenCode · Claude와 <b>가장 큰 차이</b>다.</p></div>
+      <div class="card c-yellow"><div class="lbl">상한은 열린 스레드 수</div><p><code>agents.max_threads</code>(기본 6)는 동시에 열려 있는 agent 스레드 수를 제한한다. 비활성 스레드의 승인 요청도 메인 화면에 올라온다.</p></div>
+    </div>
   </div>
-  <div class="grid2">
-    <div class="card"><strong>자동 위임은 하지 않는다</strong><p>"Codex only spawns subagents when you explicitly ask it to." description만 보고 알아서 위임하는 OpenCode·Claude와 가장 큰 차이다.</p></div>
-    <div class="card yellow"><strong>상한은 "열린 스레드" 수</strong><p><code>agents.max_threads</code>(기본 6)는 동시에 열려 있는 agent 스레드 수를 제한한다. 비활성 스레드의 승인 요청도 메인 화면에 올라온다.</p></div>
-  </div>
-  <div class="study"><b>🔍 직접 확인</b><span>같은 일을 "나눠서 해줘" 없이 시켰을 때와 붙여서 시켰을 때, 스레드가 생기는지 <code>/agent</code>로 비교해 보자.</span></div>
+  <div class="note"><span class="nt try">TRY</span><span>같은 일을 "나눠서 해줘" 없이 시킬 때와 붙여서 시킬 때, 스레드가 생기는지 <code>/agent</code>로 비교해 보자.</span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · Codex">
-  <div class="kicker">Codex 2 · Roles</div>
-  <h2>역할은 TOML 파일 하나, 전역 한도는 <code>config.toml</code>의 <code>[agents]</code></h2>
-  <div class="grid2">
-    <div><div class="label">.codex/agents/reviewer.toml</div>
-<pre><span class="k">name</span> = <span class="s">"reviewer"</span>
+<!-- CX 2 -->
+<section class="slide" data-sec="Codex">
+  <div class="kicker" style="color:var(--blue)">Codex 2 · Roles</div>
+  <h2>역할은 <span class="blue">TOML 파일 하나</span>, 전역 한도는 <code>config.toml</code>의 <code>[agents]</code></h2>
+  <div class="split" style="grid-template-columns:1.2fr 1fr;align-items:stretch">
+<pre><span class="fn">.codex/agents/reviewer.toml</span><span class="c"># 필수 세 개</span>
+<span class="k">name</span> = <span class="s">"reviewer"</span>
 <span class="k">description</span> = <span class="s">"Read-only code reviewer; use for PR review."</span>
 <span class="k">developer_instructions</span> = <span class="s">"""
 Review for correctness and tests.
-Never edit files. Return PASS/FAIL + file:line list.
+Never edit files.
+Return PASS/FAIL + file:line list.
 """</span>
+
+<span class="c"># 선택 · 생략하면 부모 값을 물려받는다</span>
 <span class="k">model_reasoning_effort</span> = <span class="s">"high"</span>
 <span class="k">sandbox_mode</span> = <span class="s">"read-only"</span>
-<span class="k">nickname_candidates</span> = [<span class="s">"Ada"</span>, <span class="s">"Linus"</span>]</pre></div>
-    <div><div class="label">~/.codex/config.toml</div>
-<pre>[<span class="k">agents</span>]
-<span class="k">max_threads</span> = <span class="v">6</span>     <span class="c"># 동시 스레드</span>
-<span class="k">max_depth</span>   = <span class="v">1</span>     <span class="c"># 중첩 깊이 (root = 0)</span>
-<span class="c"># job_max_runtime_seconds: CSV 일괄 작업용 (선택)</span></pre>
-      <p class="lead" style="font-size:clamp(.85rem,1.15vw,1.05rem)">내장 역할: <b>default</b>(범용), <b>worker</b>(구현·수정), <b>explorer</b>(읽기 위주 탐색).</p></div>
+<span class="k">nickname_candidates</span> = [<span class="s">"Ada"</span>, <span class="s">"Linus"</span>]</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+<pre class="sm"><span class="fn">~/.codex/config.toml</span>[<span class="k">agents</span>]
+<span class="k">max_threads</span> = <span class="v">6</span>   <span class="c"># 동시 스레드</span>
+<span class="k">max_depth</span>   = <span class="v">1</span>   <span class="c"># 중첩 깊이 (root = 0)</span>
+<span class="c"># job_max_runtime_seconds: CSV 일괄 작업용</span></pre>
+      <div class="card"><div class="lbl">내장 역할</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="pill" style="font-size:17px"><b class="blue">default</b> 범용</div>
+          <div class="pill" style="font-size:17px"><b class="blue">worker</b> 구현 · 수정</div>
+          <div class="pill" style="font-size:17px"><b class="blue">explorer</b> 읽기 위주 탐색</div>
+        </div></div>
+      <div class="callout b" style="font-size:19px">선택 필드를 생략하면 <b>부모 세션의 값을 물려받는다</b>.</div>
+    </div>
   </div>
-  <div class="study"><b>필드</b><span>필수: <code>name</code>, <code>description</code>, <code>developer_instructions</code> · 선택: <code>nickname_candidates</code>, <code>model</code>, <code>model_reasoning_effort</code>, <code>sandbox_mode</code>, <code>mcp_servers</code>, <code>skills.config</code>. 생략한 값은 부모 세션에서 상속한다.</span></div>
+  <div class="note"><span class="nt">선택 필드</span><span><code>nickname_candidates</code>, <code>model</code>, <code>model_reasoning_effort</code>, <code>sandbox_mode</code>, <code>mcp_servers</code>, <code>skills.config</code></span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · Codex">
-  <div class="kicker">Codex 3 · Context &amp; TUI</div>
+<!-- CX 3 -->
+<section class="slide" data-sec="Codex">
+  <div class="kicker" style="color:var(--blue)">Codex 3 · Threads &amp; CLI</div>
   <h2>권한은 물려받고, 스레드는 <code>/agent</code>로 오간다</h2>
-  <div class="grid3">
-    <div class="card"><strong>상속</strong><p>"Subagents inherit your current sandbox policy." 자식을 띄울 때 부모 턴의 런타임 오버라이드도 다시 적용한다.</p></div>
-    <div class="card"><strong>결과 회수</strong><p>요청한 subagent들이 끝나면 메인 스레드가 결과를 모아 하나의 답으로 정리한다.</p></div>
-    <div class="card"><strong>CLI</strong><p><code>/agent</code>로 활성 agent 스레드를 전환하고 진행 중인 스레드를 들여다본다. 비활성 스레드의 승인 요청도 올라온다.</p></div>
+  <div class="split" style="grid-template-columns:1fr 1fr;align-items:stretch">
+    <div class="card" style="gap:14px">
+      <div class="lbl">스레드 구조</div>
+      <svg viewBox="0 0 600 250" width="100%">
+        <rect x="0" y="20" width="600" height="46" rx="10" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/><text x="20" y="49" font-size="16" font-weight="800" fill="#eef2f6">메인 스레드</text><text x="580" y="49" text-anchor="end" font-size="13" fill="#9cc7ff">sandbox 정책 · 실행 설정</text>
+        <g stroke="#27578a" stroke-width="2" stroke-dasharray="5 4" fill="none"><path d="M80,66 L80,110"/><path d="M80,110 L120,110"/><path d="M80,110 L80,160 L120,160"/><path d="M80,160 L80,210 L120,210"/></g>
+        <g font-size="14" font-weight="700">
+          <rect x="120" y="92" width="300" height="36" rx="8" fill="#18222f" stroke="#58a6ff" stroke-width="2"/><text x="136" y="116" fill="#eef2f6">reviewer 스레드 · 보는 중</text>
+          <rect x="120" y="142" width="300" height="36" rx="8" class="sb2"/><text x="136" y="166" fill="#c3cdd8">explorer 스레드</text>
+          <rect x="120" y="192" width="300" height="36" rx="8" class="sb2"/><text x="136" y="216" fill="#c3cdd8">worker 스레드</text><text x="436" y="216" font-size="13" fill="#e3b341">승인 요청 ↑</text>
+        </g>
+        <text x="436" y="116" font-size="14" font-weight="800" fill="#58a6ff">/agent 로 전환</text>
+      </svg>
+      <p>"Subagents inherit your current sandbox policy." 자식을 띄울 때 부모 턴의 실행 설정도 다시 적용한다. 요청한 자식들이 끝나면 메인이 결과를 모아 하나의 답으로 정리한다.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><div class="lbl">CLI</div><h3><code>/agent</code></h3><p>활성 agent 스레드를 전환하고 진행 중인 스레드를 들여다본다.</p></div>
+      <div class="card"><div class="lbl">Headless 조합</div><h3><code>codex exec</code></h3><p>스크립트에서 Codex를 비대화형 작업자로 띄운다. 외부 오케스트레이터가 부모 역할을 맡는다.</p></div>
+      <div class="card c-yellow"><div class="lbl">헷갈리기 쉬운 것</div><h3>AGENTS.md는 역할 정의가 아니다</h3><p>AGENTS.md는 프로젝트 지시문(최대 32KiB)이다. 역할은 <code>agents/*.toml</code>로 정의한다.</p></div>
+    </div>
   </div>
-  <div class="grid2" style="margin-top:1.4vh">
-    <div class="card"><strong>Headless 조합</strong><p><code>codex exec</code>로 스크립트에서 Codex를 비대화형 작업자로 띄울 수 있다. 외부 오케스트레이터가 부모 역할.</p></div>
-    <div class="card"><strong>AGENTS.md는 역할이 아니다</strong><p>AGENTS.md는 프로젝트 지시문(최대 32KiB)이다. 역할 정의는 agents/*.toml로 한다.</p></div>
-  </div>
-  <div class="study"><b>📎 공식 문서</b><span><a href="https://developers.openai.com/codex/subagents">Subagents</a><a href="https://developers.openai.com/codex/noninteractive">Non-interactive (exec)</a><a href="https://developers.openai.com/codex/guides/agents-md">AGENTS.md</a></span></div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://developers.openai.com/codex/subagents">Subagents</a><a href="https://developers.openai.com/codex/noninteractive">Non-interactive (exec)</a><a href="https://developers.openai.com/codex/guides/agents-md">AGENTS.md</a></span></div>
 </section>
 
 <!-- ============ Part 2 Claude Code ============ -->
-<section class="slide divider" data-part="Part 2 · Claude Code">
+<section class="slide divider" data-sec="Claude Code">
   <div class="num">07</div>
-  <div class="kicker">Part 2 · Tool-specific</div>
-  <h1><span class="purple">Claude Code</span></h1>
-  <p class="lead">특징: <b>description 기반 자동 위임</b>이 가장 적극적이고, frontmatter 필드가 가장 많다. 백그라운드·재개·중첩·hook까지 위임의 수명주기 전체를 제어할 수 있다.</p>
+  <div class="kicker" style="color:var(--purple)">Part 2 · Tool-specific</div>
+  <h1 class="purple">Claude Code</h1>
+  <p class="lead"><b>description 기반 자동 위임</b>이 가장 적극적이고 frontmatter 필드가 가장 많다. 백그라운드 · 재개 · 중첩 · hook까지 위임의 수명주기 전체를 제어할 수 있다.</p>
+  <div class="toc"><span><b>1</b>범위 우선순위</span><span><b>2</b>frontmatter</span><span><b>3</b>내장 agent · 호출</span><span><b>4</b>컨텍스트 · hooks</span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · Claude Code">
-  <div class="kicker">Claude 1 · Scope</div>
+<!-- CC 1 -->
+<section class="slide" data-sec="Claude Code">
+  <div class="kicker" style="color:var(--purple)">Claude 1 · Scope</div>
   <h2>같은 이름이면 <span class="purple">더 위의 범위</span>가 이긴다</h2>
-  <div class="diagram" style="justify-content:flex-start">
-    <div class="box red">① Managed<small>조직 관리 설정</small></div><div class="arrow">›</div>
-    <div class="box yellow">② <code>--agents</code> JSON<small>이번 세션만</small></div><div class="arrow">›</div>
-    <div class="box green">③ <code>.claude/agents/</code><small>프로젝트 (가까운 쪽 우선)</small></div><div class="arrow">›</div>
-    <div class="box blue">④ <code>~/.claude/agents/</code><small>개인</small></div><div class="arrow">›</div>
-    <div class="box">⑤ 플러그인 <code>agents/</code><small>가장 낮음</small></div>
-  </div>
-<pre>claude --agents '{"reviewer":{"description":"…","prompt":"…","tools":["Read","Grep"],"model":"sonnet"}}'</pre>
-  <ul class="big"><li>폴더는 재귀 탐색, 정체성은 파일명이 아니라 <code>name</code> 필드. 파일 수정은 <b>핫 리로드</b></li><li>플러그인 agent는 <code>hooks</code>·<code>mcpServers</code>·<code>permissionMode</code>가 무시된다 (보안)</li><li><code>/agents</code> 마법사는 v2.1.198에서 제거. 파일을 직접 쓰거나 Claude에게 만들어 달라고 한다</li></ul>
-</section>
-
-<section class="slide" data-part="Part 2 · Claude Code">
-  <div class="kicker">Claude 2 · Frontmatter</div>
-  <h2>필수는 둘, 나머지는 <span class="purple">조립 재료를 바꾸는 손잡이</span>다</h2>
-  <table>
-    <tr><th>재료</th><th>필드</th></tr>
-    <tr><td>라우팅 (필수)</td><td><code>name</code>, <code>description</code> — "use proactively"로 자동 위임 유도</td></tr>
-    <tr><td>도구·권한</td><td><code>tools</code>(생략 시 전부 상속), <code>disallowedTools</code>(먼저 적용), <code>permissionMode</code>, <code>mcpServers</code></td></tr>
-    <tr><td>모델</td><td><code>model</code>(haiku/sonnet/opus/fable/전체 ID/inherit), <code>effort</code>(low~max)</td></tr>
-    <tr><td>추가 컨텍스트</td><td><code>skills</code>(본문 미리 로드), <code>memory</code>(user/project/local 영구 메모리), <code>omitClaudeMd</code></td></tr>
-    <tr><td>실행 방식</td><td><code>maxTurns</code>, <code>background</code>, <code>isolation: worktree</code>, <code>hooks</code></td></tr>
-    <tr><td>표시</td><td><code>color</code>, <code>initialPrompt</code>(메인 세션으로 실행할 때만)</td></tr>
-  </table>
-  <div class="study"><b>🔍 직접 확인</b><span>필드명은 camelCase이고 <b>모르는 필드는 조용히 무시</b>된다. 오타(<code>maxturns</code>) 하나로 설정이 사라지는지 실습에서 확인해 보자.</span></div>
-</section>
-
-<section class="slide" data-part="Part 2 · Claude Code">
-  <div class="kicker">Claude 3 · Built-ins &amp; invoke</div>
-  <h2>내장 agent 세 개와 호출 방법 네 가지</h2>
-  <div class="grid2">
-    <div>
-      <div class="label">내장 subagent</div>
-      <table>
-        <tr><td>Explore</td><td>읽기 전용. thoroughness(quick/medium/very thorough) 지정. CLAUDE.md 생략, 재개 불가</td></tr>
-        <tr><td>Plan</td><td>plan 모드용 읽기 전용 조사</td></tr>
-        <tr><td>general-purpose</td><td>모든 도구. 복잡한 다단계 작업</td></tr>
-        <tr><td>fork</td><td>부모 대화 전체를 물려받는 자식</td></tr>
-      </table>
+  <div class="split" style="grid-template-columns:.95fr 1.05fr;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center"><span class="mark r" style="width:40px;height:40px;font-size:17px;margin:0">1</span><div class="card c-red" style="padding:14px 20px;flex-direction:row;justify-content:space-between;align-items:center"><b style="font-size:21px">Managed</b><span class="muted" style="font-size:16px">조직 관리 설정</span></div></div>
+      <div style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center"><span class="mark y" style="width:40px;height:40px;font-size:17px;margin:0">2</span><div class="card c-yellow" style="padding:14px 20px;flex-direction:row;justify-content:space-between;align-items:center"><b style="font-size:21px"><code>--agents</code> JSON</b><span class="muted" style="font-size:16px">이번 세션만</span></div></div>
+      <div style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center"><span class="mark" style="width:40px;height:40px;font-size:17px;margin:0">3</span><div class="card c-green" style="padding:14px 20px;flex-direction:row;justify-content:space-between;align-items:center"><b style="font-size:21px"><code>.claude/agents/</code></b><span class="muted" style="font-size:16px">프로젝트 · 가까운 쪽 우선</span></div></div>
+      <div style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center"><span class="mark b" style="width:40px;height:40px;font-size:17px;margin:0">4</span><div class="card c-blue" style="padding:14px 20px;flex-direction:row;justify-content:space-between;align-items:center"><b style="font-size:21px"><code>~/.claude/agents/</code></b><span class="muted" style="font-size:16px">개인</span></div></div>
+      <div style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center"><span class="mark" style="width:40px;height:40px;font-size:17px;margin:0;background:var(--dim)">5</span><div class="card" style="padding:14px 20px;flex-direction:row;justify-content:space-between;align-items:center"><b style="font-size:21px">플러그인 <code>agents/</code></b><span class="muted" style="font-size:16px">가장 낮음</span></div></div>
     </div>
-    <div>
-      <div class="label">호출</div>
-      <ul class="big" style="font-size:clamp(.88rem,1.2vw,1.1rem)">
-        <li><b>자동</b>: Claude가 작업과 description을 매칭</li>
-        <li><b>이름으로 요청</b>: "code-reviewer로 검토해줘"</li>
-        <li><b>@mention</b>: <code>@agent-code-reviewer</code> → 반드시 실행</li>
-        <li><b>세션 전체</b>: <code>claude --agent reviewer</code> → 그 agent가 메인이 됨</li>
+    <div style="display:flex;flex-direction:column;gap:16px">
+<pre class="xs"><span class="fn">세션 한정 정의</span>claude --agents '{"reviewer":{
+  "description":"…","prompt":"…",
+  "tools":["Read","Grep"],"model":"sonnet"}}'</pre>
+      <ul class="pts p" style="gap:12px">
+        <li style="font-size:19px">폴더는 하위까지 찾고, agent 이름은 파일명이 아니라 <code>name</code> 필드로 정해진다</li>
+        <li style="font-size:19px">파일을 고치면 <b>재시작 없이 바로 반영</b>된다</li>
+        <li style="font-size:19px">플러그인 agent는 <code>hooks</code> · <code>mcpServers</code> · <code>permissionMode</code>가 무시된다 (보안)</li>
+        <li style="font-size:19px"><code>/agents</code> 마법사는 v2.1.198에서 제거됐다. 파일을 직접 쓰거나 Claude에게 만들어 달라고 한다</li>
       </ul>
     </div>
   </div>
-  <div class="study"><b>실행 방식</b><span>대화형 세션은 fork 모드가 기본이라 subagent가 <b>백그라운드</b>로 돈다(Ctrl+B로 전환). 이어서 지시할 때는 <code>SendMessage</code>로 agent ID에 보낸다. 중첩은 3단계까지.</span></div>
 </section>
 
-<section class="slide" data-part="Part 2 · Claude Code">
-  <div class="kicker">Claude 4 · Context &amp; hooks</div>
-  <h2>자식은 CLAUDE.md는 받고, <span class="red">부모 대화는 받지 않는다</span></h2>
-  <div class="grid2">
-    <div class="card green"><strong>자식이 받는 것</strong><ul><li>자기 시스템 프롬프트 + 환경 정보</li><li>부모가 쓴 위임 메시지</li><li>CLAUDE.md·AGENTS.md 계층 (Explore·Plan 제외)</li><li>git status 스냅샷, <code>skills</code>에 지정한 skill</li></ul></div>
-    <div class="card red"><strong>받지 않는 것</strong><ul><li>부모 대화 기록, 부모가 읽은 파일</li><li>부모가 이미 호출한 skill, auto memory</li></ul><p style="margin-top:1vh">돌아가는 것: 최종 보고 + agent ID. 보고 안의 지시문처럼 생긴 텍스트는 검사된다.</p></div>
+<!-- CC 2 -->
+<section class="slide" data-sec="Claude Code">
+  <div class="kicker" style="color:var(--purple)">Claude 2 · Frontmatter</div>
+  <h2>필수는 둘, 나머지는 <span class="purple">구성 요소를 하나씩 정하는 설정</span>이다</h2>
+  <div class="body">
+    <div class="g3" style="flex:1">
+      <div class="card c-green"><div class="lbl">필수 · 언제 부를지</div><p><code>name</code>, <code>description</code></p><p class="muted" style="font-size:17px">"use proactively"를 넣으면 자동 위임을 유도한다</p></div>
+      <div class="card c-yellow"><div class="lbl">도구 · 권한</div><p><code>tools</code> 생략하면 전부 물려받음<br><code>disallowedTools</code> 먼저 적용<br><code>permissionMode</code>, <code>mcpServers</code></p></div>
+      <div class="card c-purple"><div class="lbl">모델</div><p><code>model</code>: haiku / sonnet / opus / fable / 전체 ID / inherit<br><code>effort</code>: low ~ max</p></div>
+      <div class="card c-blue"><div class="lbl">추가 컨텍스트</div><p><code>skills</code> 본문을 미리 불러옴<br><code>memory</code> user / project / local 영구 메모리<br><code>omitClaudeMd</code></p></div>
+      <div class="card"><div class="lbl">실행 방식</div><p><code>maxTurns</code>, <code>background</code><br><code>isolation: worktree</code>, <code>hooks</code></p></div>
+      <div class="card"><div class="lbl">표시</div><p><code>color</code><br><code>initialPrompt</code> 메인 세션으로 실행할 때만</p></div>
+    </div>
+    <div class="callout r">필드명은 camelCase이고 <b>모르는 필드는 조용히 무시</b>된다. 오타 하나(<code>maxturns</code>)로 설정이 사라져도 오류가 나지 않는다.</div>
   </div>
-<pre><span class="k">SubagentStart</span>  입력: agent_id, agent_type        → additionalContext로 맥락 주입 (차단 불가)
-<span class="k">SubagentStop</span>   입력: last_assistant_message, agent_transcript_path …
-               → <span class="s">decision: "block"</span> + reason 이면 자식이 계속 일함 (검증 게이트)</pre>
-  <div class="study"><b>📎 공식 문서</b><span><a href="https://code.claude.com/docs/en/sub-agents">Subagents</a><a href="https://code.claude.com/docs/en/hooks#subagentstart">Hooks: SubagentStart/Stop</a><a href="https://code.claude.com/docs/en/agent-sdk/subagents">Agent SDK subagents</a></span></div>
+  <div class="note"><span class="nt try">TRY</span><span>일부러 <code>maxturns</code>로 틀리게 적고, 턴 상한이 적용되는지 실습에서 확인해 보자.</span></div>
 </section>
 
-<!-- ============ 비교 / 다음 / 요약 ============ -->
-<section class="slide" data-part="Compare">
+<!-- CC 3 -->
+<section class="slide" data-sec="Claude Code">
+  <div class="kicker" style="color:var(--purple)">Claude 3 · Built-ins &amp; invoke</div>
+  <h2>내장 agent <span class="purple">네 개</span>와 부르는 방법 <span class="purple">네 가지</span></h2>
+  <div class="split" style="grid-template-columns:1fr 1fr;align-items:stretch">
+    <div class="g2" style="grid-template-rows:1fr 1fr">
+      <div class="card c-blue"><div class="lbl">Explore</div><p>읽기 전용. 탐색 깊이(quick / medium / very thorough)를 지정한다. CLAUDE.md 생략, 재개 불가.</p></div>
+      <div class="card c-blue"><div class="lbl">Plan</div><p>plan 모드에서 쓰는 읽기 전용 조사 agent.</p></div>
+      <div class="card c-green"><div class="lbl">general-purpose</div><p>모든 도구. 복잡한 다단계 작업.</p></div>
+      <div class="card c-purple"><div class="lbl">fork</div><p>부모 대화 전체를 물려받는 자식. 격리 대신 맥락을 택한다.</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card" style="padding:16px 22px"><div class="lbl">① 자동</div><p>Claude가 작업 내용과 description을 맞춰 본다.</p></div>
+      <div class="card" style="padding:16px 22px"><div class="lbl">② 이름으로 요청</div><p>"code-reviewer로 검토해줘"</p></div>
+      <div class="card" style="padding:16px 22px"><div class="lbl">③ @mention</div><p><code>@agent-code-reviewer</code> → 반드시 실행된다</p></div>
+      <div class="card" style="padding:16px 22px"><div class="lbl">④ 세션 전체</div><p><code>claude --agent reviewer</code> → 그 agent가 메인이 된다</p></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt">실행 방식</span><span>대화형 세션에서는 subagent가 기본으로 <b>백그라운드</b>에서 돈다(Ctrl+B로 전환). 이어서 지시할 때는 <code>SendMessage</code>로 agent ID에 보낸다. 중첩은 3단계까지.</span></div>
+</section>
+
+<!-- CC 4 -->
+<section class="slide" data-sec="Claude Code">
+  <div class="kicker" style="color:var(--purple)">Claude 4 · Context &amp; hooks</div>
+  <h2>자식은 CLAUDE.md는 받고, <span class="red">부모 대화는 받지 않는다</span></h2>
+  <div class="body">
+    <div class="g2">
+      <div class="card c-green"><div class="lbl">자식이 받는 것</div><ul><li>자기 시스템 프롬프트 + 환경 정보</li><li>부모가 쓴 위임 메시지</li><li>CLAUDE.md · AGENTS.md 계층 (Explore · Plan 제외)</li><li>git status 스냅샷, <code>skills</code>에 지정한 skill</li></ul></div>
+      <div class="card c-red"><div class="lbl">받지 않는 것</div><ul><li>부모 대화 기록, 부모가 읽은 파일</li><li>부모가 이미 호출한 skill, auto memory</li></ul><p style="margin-top:6px">돌려주는 것: <b>최종 보고 + agent ID</b>. 보고 안에 지시문처럼 생긴 텍스트는 검사된다.</p></div>
+    </div>
+    <svg viewBox="0 0 1424 170" width="100%">
+      <defs><marker id="a-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5a687a"/></marker></defs>
+      <line x1="20" y1="60" x2="1400" y2="60" stroke="#34445a" stroke-width="3" marker-end="url(#a-h)"/>
+      <rect x="380" y="35" width="660" height="50" rx="12" fill="#21183a" stroke="#553a85" stroke-width="2"/><text x="710" y="67" text-anchor="middle" font-size="17" font-weight="800" fill="#cfb7ff">자식 실행 중</text>
+      <g font-weight="800">
+        <circle cx="380" cy="60" r="12" fill="#58a6ff"/><text x="380" y="18" text-anchor="middle" font-size="17" fill="#58a6ff">SubagentStart</text>
+        <circle cx="1040" cy="60" r="12" fill="#7ee787"/><text x="1040" y="18" text-anchor="middle" font-size="17" fill="#7ee787">SubagentStop</text>
+      </g>
+      <g font-size="15">
+        <text x="200" y="118" fill="#c3cdd8">입력: agent_id, agent_type</text>
+        <text x="200" y="144" fill="#9cc7ff">→ additionalContext로 맥락 주입 (차단은 못 함)</text>
+        <text x="860" y="118" fill="#c3cdd8">입력: last_assistant_message, agent_transcript_path …</text>
+        <text x="860" y="144" fill="#a9e7b0">→ decision: "block" + reason 이면 자식이 계속 일한다</text>
+      </g>
+    </svg>
+    <div class="callout">SubagentStop을 <b>검사 관문</b>으로 쓰면, 운용 원리에서 본 "판정은 코드로"를 도구 차원에서 강제할 수 있다.</div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://code.claude.com/docs/en/sub-agents">Subagents</a><a href="https://code.claude.com/docs/en/hooks#subagentstart">Hooks: SubagentStart / Stop</a><a href="https://code.claude.com/docs/en/agent-sdk/subagents">Agent SDK subagents</a></span></div>
+</section>
+
+<!-- ============ 마무리 ============ -->
+<section class="slide" data-sec="마무리">
   <div class="kicker">Compare</div>
-  <h2>같은 원리, <span class="accent">다른 기본값</span></h2>
-  <table>
-    <tr><th></th><th><span class="tag oc">OpenCode</span></th><th><span class="tag cx">Codex</span></th><th><span class="tag cc">Claude Code</span></th></tr>
-    <tr><td>정의</td><td>.opencode/agents/*.md, opencode.json</td><td>.codex/agents/*.toml, config.toml</td><td>.claude/agents/*.md, --agents</td></tr>
-    <tr><td>위임 도구</td><td><code>task</code></td><td>명시 요청 시 스레드 생성 (도구명 비공개)</td><td><code>Agent</code></td></tr>
-    <tr><td>자동 위임</td><td>description 기반</td><td><b>명시 요청 시에만</b></td><td>description 기반 (가장 적극적)</td></tr>
-    <tr><td>수동 호출</td><td><code>@agent</code></td><td>자연어 요청, 역할 지정</td><td><code>@agent-이름</code>, <code>--agent</code></td></tr>
-    <tr><td>권한</td><td>permission + <code>permission.task</code></td><td>sandbox 상속 + 역할별 <code>sandbox_mode</code></td><td>tools / disallowedTools / permissionMode</td></tr>
-    <tr><td>내장</td><td>general, explore (+scout)</td><td>default, explorer, worker</td><td>Explore, Plan, general-purpose, fork</td></tr>
-    <tr><td>중첩 · 동시</td><td>깊이 1 (조절 가능)</td><td>깊이 1 · 6스레드</td><td>3단계 · 20개</td></tr>
-    <tr><td>기록 물려주기</td><td>—</td><td>—</td><td><code>fork</code> agent, SendMessage 재개</td></tr>
-    <tr><td>자식 들여다보기</td><td>child session 이동</td><td><code>/agent</code> 스레드 전환</td><td>transcript 파일, SubagentStop hook</td></tr>
+  <h2>같은 원리, <span class="green">다른 기본값</span></h2>
+  <table class="tight sm">
+    <tr><th style="width:15%"></th><th><span class="t oc">OpenCode</span></th><th><span class="t cx">Codex</span></th><th><span class="t cc">Claude Code</span></th></tr>
+    <tr><td class="h">정의 위치</td><td><code>.opencode/agents/*.md</code>, opencode.json</td><td><code>.codex/agents/*.toml</code>, config.toml</td><td><code>.claude/agents/*.md</code>, <code>--agents</code></td></tr>
+    <tr><td class="h">위임 도구</td><td><code>task</code></td><td>명시 요청 시 스레드 생성</td><td><code>Agent</code></td></tr>
+    <tr><td class="h">자동 위임</td><td>description 기반</td><td><b class="blue">명시 요청 시에만</b></td><td>description 기반 (가장 적극적)</td></tr>
+    <tr><td class="h">직접 호출</td><td><code>@agent</code></td><td>자연어 요청 · 역할 지정</td><td><code>@agent-이름</code>, <code>--agent</code></td></tr>
+    <tr><td class="h">권한</td><td>permission + <code>permission.task</code></td><td>sandbox 상속 + 역할별 <code>sandbox_mode</code></td><td>tools / disallowedTools / permissionMode</td></tr>
+    <tr><td class="h">내장 agent</td><td>general, explore, scout</td><td>default, explorer, worker</td><td>Explore, Plan, general-purpose, fork</td></tr>
+    <tr><td class="h">중첩 · 동시</td><td>깊이 1 (조절 가능)</td><td>깊이 1 · 6 스레드</td><td>3단계 · 20개</td></tr>
+    <tr><td class="h">기록 물려주기</td><td class="dim">없음</td><td class="dim">없음</td><td><code>fork</code> agent, SendMessage 재개</td></tr>
+    <tr><td class="h">자식 들여다보기</td><td>child session 이동</td><td><code>/agent</code> 스레드 전환</td><td>transcript 파일, SubagentStop hook</td></tr>
   </table>
 </section>
 
-<section class="slide" data-part="Next">
+<section class="slide" data-sec="마무리">
   <div class="kicker">Next step · 별도 스터디 예정</div>
-  <h2>Subagent 다음 단계는<br>"자식끼리 대화하는 팀"이다</h2>
-  <div class="grid3">
-    <div class="card"><div class="label">백그라운드 실행</div><strong>기다리지 않는 위임</strong><p>부모가 다른 일을 하는 동안 자식이 돌고, 끝나면 알림. 대화형 Claude Code에서는 기본 동작이다.</p></div>
-    <div class="card"><div class="label">Worktree 격리</div><strong>파일 시스템까지 분리</strong><p>Claude <code>isolation: worktree</code>: 임시 git worktree에서 작업해 병렬 쓰기 충돌을 구조적으로 없앤다.</p></div>
-    <div class="card purple"><div class="label">Agent Teams (실험)</div><strong>부모를 거치지 않는 협업</strong><p>Claude <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>: 리더와 팀원이 작업 목록을 공유하고 서로 직접 메시지를 보낸다.</p></div>
+  <h2>Subagent 다음 단계는 <span class="purple">자식끼리 대화하는 팀</span>이다</h2>
+  <div class="split" style="grid-template-columns:1fr 1.1fr">
+    <svg viewBox="0 0 640 430" width="100%">
+      <text x="140" y="24" text-anchor="middle" font-size="15" font-weight="800" fill="#8e9cae" letter-spacing="1">Subagent · 별 모양</text>
+      <text x="490" y="24" text-anchor="middle" font-size="15" font-weight="800" fill="#bc8cff" letter-spacing="1">Agent Teams · 그물 모양</text>
+      <g stroke="#34445a" stroke-width="2.5"><path d="M140,220 L60,110"/><path d="M140,220 L220,110"/><path d="M140,220 L60,330"/><path d="M140,220 L220,330"/></g>
+      <circle cx="140" cy="220" r="36" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/><text x="140" y="226" text-anchor="middle" font-size="14" font-weight="800" fill="#eef2f6">부모</text>
+      <g fill="#18222f" stroke="#34445a" stroke-width="2"><circle cx="60" cy="110" r="26"/><circle cx="220" cy="110" r="26"/><circle cx="60" cy="330" r="26"/><circle cx="220" cy="330" r="26"/></g>
+      <text x="140" y="400" text-anchor="middle" font-size="14" fill="#8e9cae">모든 대화가 부모를 거친다</text>
+      <g stroke="#553a85" stroke-width="2.5"><path d="M490,220 L410,110"/><path d="M490,220 L570,110"/><path d="M490,220 L410,330"/><path d="M490,220 L570,330"/><path d="M410,110 L570,110"/><path d="M410,330 L570,330"/><path d="M410,110 L410,330"/><path d="M570,110 L570,330"/><path d="M410,110 L570,330"/></g>
+      <circle cx="490" cy="220" r="36" fill="#21183a" stroke="#bc8cff" stroke-width="2"/><text x="490" y="226" text-anchor="middle" font-size="14" font-weight="800" fill="#eef2f6">리더</text>
+      <g fill="#21183a" stroke="#bc8cff" stroke-width="2"><circle cx="410" cy="110" r="26"/><circle cx="570" cy="110" r="26"/><circle cx="410" cy="330" r="26"/><circle cx="570" cy="330" r="26"/></g>
+      <text x="490" y="400" text-anchor="middle" font-size="14" fill="#cfb7ff">팀원끼리 직접 메시지</text>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><div class="lbl">백그라운드 실행</div><h3>기다리지 않는 위임</h3><p>부모가 다른 일을 하는 동안 자식이 돌고, 끝나면 알림이 온다. 대화형 Claude Code에서는 기본 동작이다.</p></div>
+      <div class="card"><div class="lbl">Worktree 격리</div><h3>파일까지 분리</h3><p>Claude <code>isolation: worktree</code>: 임시 git worktree에서 작업해 병렬 쓰기 충돌을 원천적으로 없앤다.</p></div>
+      <div class="card c-purple"><div class="lbl">Agent Teams (실험 기능)</div><h3>부모를 거치지 않는 협업</h3><p><code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>: 리더와 팀원이 작업 목록을 공유하고 서로 직접 메시지를 보낸다.</p></div>
+    </div>
   </div>
-  <p class="lead">Subagent는 <b>부모를 통해서만</b> 소통하는 별 모양 구조다. 위 세 가지는 그 제약을 하나씩 푸는 방향이다.</p>
 </section>
 
-<section class="slide" data-part="Summary">
+<section class="slide" data-sec="마무리">
   <div class="kicker">One-page summary</div>
-  <h2>위임 전에 네 가지만 답하면 된다</h2>
-  <div class="grid4">
-    <div class="card blue"><div class="label">언제</div><strong>자식 컨텍스트 ≫ 받을 요약</strong><p>찾는 과정이 결과보다 훨씬 클 때, 독립적으로 쪼갤 수 있을 때.</p></div>
-    <div class="card yellow"><div class="label">누구에게</div><strong>description · 권한 · 모델</strong><p>겹치지 않는 description, 부모보다 좁은 권한, 역할에 맞는 모델.</p></div>
-    <div class="card purple"><div class="label">무엇을 넘기고</div><strong>브리프</strong><p>목표 · 범위 · 알려진 것 · 완료 조건 · 반환 형식. 자식은 이것만 안다.</p></div>
-    <div class="card green"><div class="label">무엇을 받나</div><strong>계약된 결과</strong><p>결론 · 근거 · 미확인. 큰 산출물은 파일로, 판정은 코드로.</p></div>
+  <h2>위임하기 전에 <span class="green">네 가지만</span> 답하면 된다</h2>
+  <div class="body">
+    <div class="g4" style="flex:1">
+      <div class="card c-blue"><div class="lbl">언제</div><div class="big">자식 컨텍스트 ≫ 받을 요약</div><p>찾는 과정이 결과보다 훨씬 클 때, 독립적으로 떼어낼 수 있을 때.</p></div>
+      <div class="card c-yellow"><div class="lbl">누구에게</div><div class="big">description · 권한 · 모델</div><p>겹치지 않는 description, 부모보다 좁은 권한, 역할에 맞는 모델.</p></div>
+      <div class="card c-purple"><div class="lbl">무엇을 넘기고</div><div class="big">브리프 다섯 칸</div><p>목표 · 범위 · 알려진 것 · 완료 조건 · 반환 형식. 자식은 이것만 안다.</p></div>
+      <div class="card c-green"><div class="lbl">무엇을 받나</div><div class="big">약속한 결과</div><p>결론 · 근거 · 미확인. 큰 산출물은 파일로, 판정은 코드로.</p></div>
+    </div>
+    <p class="quote" style="font-size:40px">Subagent는 <em>컨텍스트를 나누는 기술</em>이고,<br>잘 나눴는지는 <em>브리프와 반환 약속</em>이 결정한다.</p>
   </div>
-  <p class="quote" style="font-size:clamp(1.3rem,2.5vw,2.3rem);margin-top:2.4vh">Subagent는 <em>컨텍스트를 나누는 기술</em>이고,<br>잘 나눴는지는 <em>브리프와 반환 계약</em>이 결정한다.</p>
-  <div class="study"><b>다음</b><span>실습편: 같은 reviewer/explorer를 세 도구에 각각 선언하고, 격리·병렬·권한·반환 계약을 직접 관찰한다.</span></div>
+  <div class="note"><span class="nt">다음</span><span>실습편: 같은 reviewer · explorer를 세 도구에 각각 선언하고, 격리 · 병렬 · 권한 · 반환 약속을 직접 관찰한다.</span></div>
 </section>
 
-<section class="slide" data-part="Appendix">
+<section class="slide" data-sec="마무리">
   <div class="kicker">Appendix · Glossary &amp; links</div>
   <h2>용어와 공식 문서</h2>
-  <div class="grid2">
-    <table>
-      <tr><td>Parent / Primary</td><td>사용자와 대화하며 위임하는 쪽</td></tr>
-      <tr><td>Subagent / Child</td><td>별도 컨텍스트에서 위임받아 일하는 쪽</td></tr>
-      <tr><td>Brief</td><td>부모가 쓰는 위임 지시 = 자식의 첫 메시지</td></tr>
-      <tr><td>Context isolation</td><td>부모 기록이 자식에게 넘어가지 않는 성질</td></tr>
-      <tr><td>Fork</td><td>부모 기록을 물려받는 예외 모드</td></tr>
-      <tr><td>Fan-out / Gather</td><td>병렬 위임 / 결과 취합</td></tr>
-      <tr><td>Return contract</td><td>결과 형식·위치에 대한 약속</td></tr>
-      <tr><td>Depth / Threads</td><td>중첩 깊이 / 동시 실행 상한</td></tr>
+  <div class="split" style="grid-template-columns:1.2fr 1fr;align-items:stretch">
+    <table class="tight sm">
+      <tr><td class="h">Parent / Primary</td><td>사용자와 대화하며 일을 맡기는 쪽</td></tr>
+      <tr><td class="h">Subagent / Child</td><td>별도 컨텍스트에서 맡은 일을 하는 쪽</td></tr>
+      <tr><td class="h">Brief</td><td>부모가 쓰는 위임 지시 = 자식의 첫 메시지</td></tr>
+      <tr><td class="h">Context isolation</td><td>부모 기록이 자식에게 넘어가지 않는 성질</td></tr>
+      <tr><td class="h">Fork</td><td>부모 기록을 물려받는 예외 방식</td></tr>
+      <tr><td class="h">Fan-out / Gather</td><td>병렬로 맡기기 / 결과 모으기</td></tr>
+      <tr><td class="h">Return contract</td><td>결과의 형식 · 위치에 대한 약속</td></tr>
+      <tr><td class="h">Harness</td><td>agent를 실행하는 도구 (OpenCode, Codex, Claude Code)</td></tr>
+      <tr><td class="h">Depth / Threads</td><td>중첩 깊이 / 동시 실행 상한</td></tr>
     </table>
-    <div class="card">
-      <strong>📎 공식 문서 (2026-10 확인)</strong>
-      <ul>
-        <li><a style="color:var(--blue)" href="https://opencode.ai/docs/agents/">opencode.ai/docs/agents</a> · <a style="color:var(--blue)" href="https://opencode.ai/docs/permissions/">permissions</a> · <a style="color:var(--blue)" href="https://opencode.ai/docs/cli/">cli</a></li>
-        <li><a style="color:var(--blue)" href="https://developers.openai.com/codex/subagents">developers.openai.com/codex/subagents</a></li>
-        <li><a style="color:var(--blue)" href="https://code.claude.com/docs/en/sub-agents">code.claude.com/docs/en/sub-agents</a></li>
-        <li><a style="color:var(--blue)" href="https://code.claude.com/docs/en/hooks">code.claude.com/docs/en/hooks</a> · <a style="color:var(--blue)" href="https://code.claude.com/docs/en/agent-teams">agent-teams</a></li>
+    <div class="card" style="gap:14px"><div class="lbl">공식 문서 · 2026-10 확인</div>
+      <ul class="pts b" style="gap:12px">
+        <li style="font-size:18px"><a style="color:var(--blue)" href="https://opencode.ai/docs/agents/">opencode.ai/docs/agents</a> · <a style="color:var(--blue)" href="https://opencode.ai/docs/permissions/">permissions</a> · <a style="color:var(--blue)" href="https://opencode.ai/docs/cli/">cli</a></li>
+        <li style="font-size:18px"><a style="color:var(--blue)" href="https://developers.openai.com/codex/subagents">developers.openai.com/codex/subagents</a></li>
+        <li style="font-size:18px"><a style="color:var(--blue)" href="https://code.claude.com/docs/en/sub-agents">code.claude.com/docs/en/sub-agents</a></li>
+        <li style="font-size:18px"><a style="color:var(--blue)" href="https://code.claude.com/docs/en/hooks">code.claude.com/docs/en/hooks</a> · <a style="color:var(--blue)" href="https://code.claude.com/docs/en/agent-teams">agent-teams</a></li>
       </ul>
-      <p style="margin-top:1vh">이 덱의 도구별 내용은 모두 위 공식 문서 기준이다. 실제 동작은 실습에서 확인한다.</p>
+      <p class="muted" style="margin-top:auto">이 덱의 도구별 내용은 모두 위 공식 문서를 근거로 했다. 실제 동작은 실습에서 확인한다.</p>
     </div>
   </div>
 </section>
 
-</div>
 <div class="bar" id="bar"></div>
+</div>
+<nav id="ov" aria-label="슬라이드 목차"></nav>
 <script>
-(()=>{const s=[...document.querySelectorAll('.slide')];let i=0;
-s.forEach((el,n)=>{const no=document.createElement('div');no.className='slideNo';no.textContent=(n+1)+' / '+s.length;el.appendChild(no);
-  if(el.dataset.part){const p=document.createElement('div');p.className='part';p.textContent=el.dataset.part;el.appendChild(p);}});
-function go(n){i=Math.max(0,Math.min(s.length-1,n));s.forEach((el,k)=>el.classList.toggle('active',k===i));
-  document.getElementById('bar').style.width=((i+1)/s.length*100)+'%';history.replaceState(null,'','#'+(i+1));}
-addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(i+1)}
+(()=>{
+const stage=document.getElementById('stage');
+const S=[...stage.querySelectorAll('.slide')];
+const SECS=['Opening','메커니즘','구성','선언','운용','OpenCode','Codex','Claude Code','마무리'];
+let i=0;
+S.forEach((el,n)=>{
+  const top=document.createElement('div');top.className='chrome-top';
+  top.innerHTML=SECS.map(s=>`<span class="${s===el.dataset.sec?'on':''}">${s}</span>`).join('');
+  el.prepend(top);
+  const no=document.createElement('div');no.className='pageno';no.textContent=String(n+1).padStart(2,'0')+' / '+S.length;el.appendChild(no);
+});
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+const ov=document.getElementById('ov');
+ov.innerHTML=S.map((el,n)=>{const h=el.querySelector('h1,h2');const t=h?h.textContent.replace(/\s+/g,' ').trim():'';return `<a href="#${n+1}" data-n="${n}"><b>${String(n+1).padStart(2,'0')} · ${el.dataset.sec||''}</b>${t}</a>`}).join('');
+ov.addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();go(+a.dataset.n);ov.classList.remove('on');});
+function go(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((el,k)=>el.classList.toggle('active',k===i));
+  document.getElementById('bar').style.width=((i+1)/S.length*100)+'%';
+  [...ov.children].forEach((a,k)=>a.classList.toggle('cur',k===i));
+  if(location.hash!=='#'+(i+1))history.replaceState(null,'','#'+(i+1));}
+addEventListener('keydown',e=>{
+  if(e.key==='o'||e.key==='O'){ov.classList.toggle('on');return;}
+  if(e.key==='Escape'){ov.classList.remove('on');return;}
+  if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.();return;}
+  if(ov.classList.contains('on'))return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(i+1)}
   else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}
-  else if(e.key==='Home')go(0);else if(e.key==='End')go(s.length-1);});
-addEventListener('click',e=>{if(e.target.closest('a'))return;if(e.clientX>innerWidth*0.6)go(i+1);else if(e.clientX<innerWidth*0.25)go(i-1);});
-const h=parseInt(location.hash.slice(1));go(isNaN(h)?0:h-1);})();
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(S.length-1);});
+stage.addEventListener('click',e=>{if(e.target.closest('a'))return;const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width;if(x>.6)go(i+1);else if(x<.25)go(i-1);});
+let tx=null;addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)go(i+(d<0?1:-1));tx=null;});
+addEventListener('hashchange',()=>{const h=parseInt(location.hash.slice(1));if(!isNaN(h)&&h-1!==i)go(h-1);});
+const h=parseInt(location.hash.slice(1));go(isNaN(h)?0:h-1);
+})();
 </script>
 </body>
 </html>
