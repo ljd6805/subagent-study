@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Subagent — Theory Slides</title>
+  <style>
+    :root{--bg:#090d13;--panel:#121923;--panel2:#172131;--line:#293445;--text:#f0f4f8;--muted:#98a6b7;--green:#7ee787;--blue:#58a6ff;--yellow:#e3b341;--red:#ff7b72;--purple:#bc8cff}
+    *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",ui-sans-serif,system-ui,sans-serif}
+    .deck{height:100%;position:relative}
+    .slide{display:none;height:100%;padding:5vh 6vw 15vh;position:absolute;inset:0;overflow:hidden}
+    .slide.active{display:flex;flex-direction:column;justify-content:center}
+    h1{font-size:clamp(2.8rem,6.4vw,6.2rem);line-height:1.02;margin:0 0 2vh;letter-spacing:-.04em}
+    h2{font-size:clamp(1.8rem,3.6vw,3.4rem);line-height:1.12;margin:0 0 2.6vh;letter-spacing:-.03em}
+    h3{font-size:clamp(1.05rem,1.7vw,1.5rem);margin:0 0 .8vh}
+    .kicker{color:var(--green);font-weight:800;letter-spacing:.13em;text-transform:uppercase;font-size:clamp(.72rem,1vw,.92rem);margin-bottom:1.6vh}
+    .lead{font-size:clamp(1.02rem,1.65vw,1.55rem);line-height:1.5;color:#cbd5df;max-width:1180px;margin:1.4vh 0 0}
+    .muted{color:var(--muted)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.6vw}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vw}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2vw}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.6vw 1.7vw;min-height:0}
+    .card strong{display:block;color:#fff;font-size:clamp(1rem,1.5vw,1.35rem);margin-bottom:.8vh}
+    .card p,.card li{font-size:clamp(.85rem,1.2vw,1.1rem);line-height:1.5;margin:0;color:#c2ccd7}
+    .card ul{margin:.4vh 0 0;padding-left:1.1em}
+    .card.green{border-color:#2f7d45}.card.blue{border-color:#2b5f97}.card.yellow{border-color:#765d20}.card.red{border-color:#7f3531}.card.purple{border-color:#5b3f8f}
+    .diagram{display:flex;align-items:center;justify-content:center;gap:.9vw;flex-wrap:wrap;margin:1.6vh 0}
+    .box{padding:1.1vh 1.3vw;border:1px solid var(--line);background:var(--panel);border-radius:12px;font-size:clamp(.88rem,1.3vw,1.2rem);font-weight:700;text-align:center}
+    .box small{display:block;font-weight:500;color:var(--muted);font-size:.78em;margin-top:.3vh}
+    .box.green{border-color:#2f7d45;color:var(--green)}.box.blue{border-color:#2b5f97;color:var(--blue)}.box.yellow{border-color:#765d20;color:var(--yellow)}.box.red{border-color:#7f3531;color:var(--red)}.box.purple{border-color:#5b3f8f;color:var(--purple)}
+    .arrow{color:#56677a;font-size:clamp(1.1rem,1.8vw,1.8rem)}
+    pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;background:#070a0f;border:1px solid var(--line);border-radius:12px;padding:1.2vw 1.3vw;font-size:clamp(.7rem,.98vw,.95rem);line-height:1.5;white-space:pre-wrap;margin:.6vh 0;color:#dce6f0}
+    code{font-family:"SFMono-Regular",Consolas,monospace;background:#1a2433;border-radius:5px;padding:.05em .35em;font-size:.9em;color:#e6edf3}
+    pre code{background:none;padding:0;font-size:1em}
+    .c{color:#6e7f94}.k{color:var(--blue)}.s{color:var(--green)}.v{color:var(--yellow)}.r{color:var(--red)}.p{color:var(--purple)}
+    .quote{font-size:clamp(1.6rem,3.2vw,3.1rem);line-height:1.28;font-weight:800;max-width:1250px}.quote em{font-style:normal;color:var(--green)}
+    .accent{color:var(--green)}.blue{color:var(--blue)}.yellow{color:var(--yellow)}.red{color:var(--red)}.purple{color:var(--purple)}
+    .label{font-size:.74rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8vh;font-weight:700}
+    ul.big{font-size:clamp(.98rem,1.5vw,1.38rem);line-height:1.55;margin:1vh 0;padding-left:1.3em}ul.big li{margin:.4vh 0}
+    table{width:100%;border-collapse:collapse;font-size:clamp(.74rem,1.05vw,1rem);line-height:1.4}
+    th,td{border-bottom:1px solid var(--line);padding:.85vh .8vw;text-align:left;vertical-align:top}
+    th{color:var(--muted);font-weight:700;font-size:.86em;letter-spacing:.04em;background:var(--panel)}
+    td:first-child{color:#fff;font-weight:700;white-space:nowrap}
+    .tag{display:inline-block;font-size:.72em;font-weight:800;padding:.1em .55em;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:.4em;vertical-align:middle;letter-spacing:.04em}
+    .tag.oc{color:#ffa657;border-color:#7a4a1e}.tag.cx{color:var(--blue);border-color:#2b5f97}.tag.cc{color:var(--purple);border-color:#5b3f8f}
+    .study{position:absolute;left:6vw;right:6vw;bottom:5vh;display:grid;grid-template-columns:auto 1fr;gap:.5vh 1.2vw;align-items:start;border-top:1px dashed #2a3646;padding-top:1.2vh;font-size:clamp(.7rem,.92vw,.88rem);line-height:1.45;color:#8b9aac}
+    .study b{color:#c9d4df;font-weight:700;white-space:nowrap}
+    .study a{color:var(--blue);text-decoration:none;margin-right:1em}.study a:hover{text-decoration:underline}
+    .slideNo{position:absolute;right:2vw;bottom:1.6vh;color:#627083;font-size:.78rem}
+    .part{position:absolute;left:2vw;bottom:1.6vh;color:#4f5d6e;font-size:.74rem;letter-spacing:.08em}
+    .bar{position:fixed;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--green));width:0;transition:.25s;z-index:30}
+    .hint{position:fixed;right:18px;top:14px;color:#4c5a6b;font-size:.75rem;z-index:40}
+    .divider h1{font-size:clamp(2.6rem,5.6vw,5.4rem)}.divider .num{font-size:clamp(5rem,12vw,11rem);font-weight:900;color:#1b2533;line-height:1;margin-bottom:-2vh;letter-spacing:-.05em}
+    .ctx{display:grid;grid-template-columns:1fr 1.1fr;gap:2vw;align-items:center}
+    .win{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:1.2vh 1vw}
+    .win .row{border-radius:8px;padding:.7vh .8vw;margin:.5vh 0;font-size:clamp(.78rem,1.1vw,1rem);font-weight:600}
+    .row.sys{background:#1d2a3d;color:#9cc7ff}.row.usr{background:#1f2b22;color:#a9e7b0}.row.tool{background:#2b2617;color:#ecd08a}.row.res{background:#24202f;color:#cfb7ff}.row.dim{background:#151c26;color:#5c6b7d;text-decoration:line-through}
+    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:.6vw;align-items:stretch;margin:1.4vh 0}
+    .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.2vh .9vw;font-size:clamp(.8rem,1.1vw,1.02rem);line-height:1.4}
+    .step .n{font-weight:900;color:var(--green);font-size:1.3em;display:block;margin-bottom:.4vh}
+    .step p{margin:0;color:#c2ccd7}
+    @media(max-width:860px){.grid2,.grid3,.grid4,.ctx,.flow{grid-template-columns:1fr}.slide{padding:4vh 5vw 20vh;overflow:auto}.study{left:5vw;right:5vw;grid-template-columns:1fr}td:first-child{white-space:normal}}
+  </style>
+</head>
+<body>
+<div class="hint">← → / Space · Home / End</div>
+<div class="deck" id="deck">
+
+<!-- ============ 오프닝 ============ -->
+<section class="slide active" data-part="Opening">
+  <div class="kicker">Subagent · Personal Study · Theory</div>
+  <h1>한 에이전트에서,<br><span class="accent">위임하는</span> 에이전트로</h1>
+  <p class="lead">Subagent를 OpenCode · Codex · Claude Code 공통의 <b>동작 원리</b>로 먼저 이해하고, 마지막에 세 도구가 그 원리를 어떻게 다르게 구현했는지 비교한다.</p>
+  <div class="study"><b>읽는 법</b><span>각 장 하단의 <b>📎 공식 문서</b>는 근거, <b>🔍 직접 확인</b>은 실습 전에 손으로 확인해 볼 한 가지. 도구별 내용은 2026-10 기준 <b>공식 문서</b>만 근거로 했다.</span></div>
+</section>
+
+<section class="slide" data-part="Opening">
+  <div class="kicker">Why now</div>
+  <h2>컨텍스트는 예산이다.<br>아끼는 것만으로 끝나지 않는 일이 있다</h2>
+  <div class="grid3">
+    <div class="card"><div class="label">SKILL 심화에서 배운 것</div><strong>넣지 않기</strong><p>레퍼런스 계층화, 스크립트 위임, 외부 기억, 지도 우선 탐색으로 한 창 안의 낭비를 줄였다.</p></div>
+    <div class="card yellow"><div class="label">그래도 남는 문제</div><strong>한 창에 다 안 들어간다</strong><p>리포 전체 점검, 30건 이슈 분석처럼 일 자체가 크면 줄여도 넘친다. 앞 작업의 잔해가 다음 판단을 오염시킨다.</p></div>
+    <div class="card green"><div class="label">이번 주제</div><strong>창을 나눈다</strong><p>일을 쪼개 <b>별도 컨텍스트</b>에 맡기고, 결과만 돌려받는다. 이것이 subagent다.</p></div>
+  </div>
+  <p class="lead">SKILL 심화 ⑤ "쪼개서 위임"을 기법이 아니라 <span class="accent">실행 구조</span>로 깊게 본다.</p>
+  <div class="study"><b>🔍 직접 확인</b><span>최근 긴 세션 하나를 떠올려 보자. 컨텍스트를 가장 많이 먹은 것은 "결과"였나, "결과를 찾는 과정(검색·파일 읽기)"이었나?</span></div>
+</section>
+
+<section class="slide" data-part="Opening">
+  <div class="kicker">Definition · 짧게</div>
+  <h2>Subagent = 별도 컨텍스트에서 위임받은 일을 끝내고<br><span class="accent">결과만 돌려주는</span> 에이전트 인스턴스</h2>
+  <div class="grid4">
+    <div class="card"><div class="label">Tool</div><strong>무엇으로?</strong><p>읽기, 쓰기, 실행 같은 단일 동작</p></div>
+    <div class="card"><div class="label">Skill</div><strong>어떻게?</strong><p>절차와 기준을 담은 작업 매뉴얼</p></div>
+    <div class="card"><div class="label">MCP</div><strong>어디에 연결?</strong><p>외부 데이터·도구와의 공용 규격</p></div>
+    <div class="card green"><div class="label">Subagent</div><strong>누가?</strong><p>자기 프롬프트·도구·모델을 가진 <b>또 하나의 작업자</b></p></div>
+  </div>
+  <p class="lead">핵심 단어는 셋: <b>별도 컨텍스트</b> · <b>위임</b> · <b>결과만 반환</b>. 나머지는 모두 이 셋에서 파생된다.</p>
+  <div class="study"><b>📎 공식 문서</b><span><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a><a href="https://code.claude.com/docs/en/sub-agents">Claude Code Subagents</a></span></div>
+</section>
+
+<section class="slide" data-part="Opening">
+  <div class="kicker">Map</div>
+  <h2>이번 덱은 네 개의 질문을 순서대로 푼다</h2>
+  <div class="diagram">
+    <div class="box blue">① 동작 메커니즘<small>호출되면 무슨 일이?</small></div><div class="arrow">→</div>
+    <div class="box yellow">② 조립 원리<small>무엇으로 만들어지나?</small></div><div class="arrow">→</div>
+    <div class="box purple">③ 선언 방법<small>어떻게 정의하나?</small></div><div class="arrow">→</div>
+    <div class="box green">④ 운용 원리<small>어떻게 잘 쓰나?</small></div><div class="arrow">→</div>
+    <div class="box">Part 2<small>도구별 특화</small></div>
+  </div>
+  <p class="lead">①~④는 세 도구 공통이다. 도구별 차이는 대부분 <b>"같은 원리, 다른 기본값과 이름"</b>이므로 Part 2에서 한꺼번에 비교한다.</p>
+</section>
+
+<!-- ============ Part 1-① 동작 메커니즘 ============ -->
+<section class="slide divider" data-part="Part 1 · 메커니즘">
+  <div class="num">01</div>
+  <div class="kicker">Part 1 · Common</div>
+  <h1>동작 메커니즘</h1>
+  <p class="lead">Subagent 호출은 마법이 아니다. 부모 Agent Loop 안의 <b>도구 호출 하나</b>로 시작해서, <b>도구 결과 하나</b>로 끝난다.</p>
+</section>
+
+<section class="slide" data-part="Part 1 · 메커니즘">
+  <div class="kicker">Mechanism 1</div>
+  <h2>Subagent는 부모 입장에서<br>그냥 <span class="blue">도구 호출 하나</span>다</h2>
+  <pre>User → <span class="k">Parent Agent Loop</span>
+          │
+          ├─ tool_use: read / grep / bash ...        (평범한 도구)
+          │
+          ├─ tool_use: <span class="s">task / Agent</span>                  ← 위임 도구
+          │      │
+          │      └──▶ <span class="p">Child Agent Loop</span> (새 컨텍스트에서 자체 loop)
+          │                 ... tool_use ↔ result 반복 ...
+          │           ◀── final message
+          │
+          └─ tool_result: "<span class="v">자식의 마지막 메시지</span>"  → 부모 loop 계속</pre>
+  <p class="lead">부모는 자식 내부의 수십 번 도구 호출을 보지 않는다. 받는 것은 <b>tool_result 한 덩어리</b>뿐이다.</p>
+  <div class="study"><b>📎 위임 도구 이름</b><span><span class="tag oc">OpenCode</span> <code>task</code> &nbsp; <span class="tag cx">Codex</span> 사용자가 명시 요청하면 spawn (문서에 도구명 없음) &nbsp; <span class="tag cc">Claude</span> <code>Agent</code> (구 <code>Task</code>)</span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 메커니즘">
+  <div class="kicker">Mechanism 2 · Lifecycle</div>
+  <h2>수명주기는 다섯 단계로 같다</h2>
+  <div class="flow">
+    <div class="step"><span class="n">1 Spawn</span><p>부모가 위임 도구를 호출. <b>어떤 agent</b>에게 <b>무슨 지시</b>를 줄지 인자로 넘긴다.</p></div>
+    <div class="step"><span class="n">2 Assemble</span><p>Harness가 자식용 시스템 프롬프트·도구·모델을 조립하고 <b>빈 대화</b>를 만든다.</p></div>
+    <div class="step"><span class="n">3 Loop</span><p>자식이 독립적으로 Agent Loop를 돈다. 자기 권한 안에서 읽고, 실행하고, 판단한다.</p></div>
+    <div class="step"><span class="n">4 Return</span><p>도구 호출 없는 마지막 메시지가 나오면 종료. 그 텍스트가 부모의 tool_result가 된다.</p></div>
+    <div class="step"><span class="n">5 Resume / Close</span><p>ID로 이어서 지시하거나, 닫아서 자원을 반납한다.</p></div>
+  </div>
+  <p class="lead">5단계의 이름은 도구마다 다르다. OpenCode는 child session으로 들어가서, Codex는 <code>/agent</code>로 스레드를 전환해서, Claude는 <code>SendMessage</code>로 이어서 지시한다.</p>
+  <div class="study"><b>🔍 직접 확인</b><span>자식 세션 기록이 어디 남는지 찾아보자. Claude: <code>~/.claude/projects/…/subagents/agent-{id}.jsonl</code> · OpenCode: child session (<code>&lt;Leader&gt;+↓</code>)</span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 메커니즘">
+  <div class="kicker">Mechanism 3 · Context boundary</div>
+  <h2>격리의 핵심은 "무엇이 <span class="red">넘어가지 않는가</span>"다</h2>
+  <div class="ctx">
+    <div>
+      <div class="label">Parent 컨텍스트</div>
+      <div class="win"><div class="row sys">시스템 프롬프트 (부모용)</div><div class="row usr">사용자와의 대화 전체</div><div class="row tool">이미 읽은 파일 30개</div><div class="row tool">검색 결과, 시행착오</div><div class="row res">위임 지시 (브리프)</div></div>
+    </div>
+    <div>
+      <div class="label">Child 컨텍스트 (새로 시작)</div>
+      <div class="win"><div class="row sys">자식 전용 시스템 프롬프트</div><div class="row usr">부모가 쓴 위임 지시 = 첫 user 메시지</div><div class="row dim">부모의 대화 기록</div><div class="row dim">부모가 읽은 파일 내용</div><div class="row dim">부모의 중간 추론</div></div>
+      <p class="lead" style="font-size:clamp(.9rem,1.25vw,1.1rem)">→ 자식은 <b>브리프에 쓰인 것만</b> 안다. 브리프가 빈약하면 자식은 처음부터 다시 찾는다.</p>
+    </div>
+  </div>
+  <div class="study"><b>예외: fork</b><span>부모 기록을 통째로 물려주는 모드도 있다. <span class="tag cc">Claude</span> 내장 <code>fork</code> agent가 대표적이다. 격리를 포기하는 대신 브리프가 필요 없다.</span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 메커니즘">
+  <div class="kicker">Mechanism 4 · Return</div>
+  <h2>돌아오는 것은 <span class="yellow">마지막 메시지 한 덩어리</span>뿐이다</h2>
+  <div class="grid2">
+    <div>
+      <div class="label">부모가 받는 tool_result (개념 예시)</div>
+<pre><span class="c">tool_result (subagent: explore)</span>
+결론: 결제 한도 검사는 src/pay/limits.py:42 에서만 수행.
+근거: validate.py는 limits.check()를 호출만 함.
+미확인: queue.py 재시도 경로는 보지 못함.</pre>
+    </div>
+    <div class="card">
+      <strong>세 가지 결과</strong>
+      <ul>
+        <li><b>사용자에게 바로 안 보인다.</b> 부모가 다시 요약해서 전달한다.</li>
+        <li><b>중간 과정은 사라진다.</b> 자식이 근거를 결과에 안 적으면 부모는 검증할 수 없다.</li>
+        <li><b>길면 다시 부모 예산을 먹는다.</b> 요약이 짧아야 격리의 이득이 남는다.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="lead">그래서 결과는 <b>"결론 · 근거 위치 · 미확인 사항"</b> 형식을 브리프에서 미리 정해 두는 편이 좋다.</p>
+  <div class="study"><b>📎 공식 문서</b><span><a href="https://code.claude.com/docs/en/sub-agents">Claude: final report만 부모에 반환</a></span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 메커니즘">
+  <div class="kicker">Mechanism 5 · Parallel</div>
+  <h2>한 턴에 여러 번 호출하면<br><span class="accent">병렬 fan-out</span>이 된다</h2>
+  <pre>Parent (한 번의 응답에 위임 도구 3회)
+  ├─ task(explore, "auth 모듈에서 토큰 검증 위치 찾기")   ─┐
+  ├─ task(explore, "pay 모듈에서 한도 검사 위치 찾기")     ├─ 동시에 실행
+  └─ task(explore, "order 모듈에서 재시도 정책 찾기")     ─┘
+                          ↓ 세 개의 tool_result
+Parent: 세 결과를 합쳐 하나의 답 작성 (gather)</pre>
+  <div class="grid2">
+    <div class="card green"><strong>잘 맞는 일</strong><p>서로 독립적인 조사·탐색·리뷰. 결과끼리 의존이 없을수록 이득이 크다.</p></div>
+    <div class="card red"><strong>안 맞는 일</strong><p>같은 파일을 동시에 고치는 일. 마지막에 쓴 쪽이 이기고, 서로의 변경을 모른다.</p></div>
+  </div>
+  <div class="study"><b>🔍 직접 확인</b><span>Codex 내장 역할은 <code>explorer</code>(읽기 위주 탐색)와 <code>worker</code>(구현·수정)로 나뉜다. 병렬 쓰기는 작업자마다 담당 파일을 나눠 주는 것이 기본 해법이다.</span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 메커니즘">
+  <div class="kicker">Mechanism 6 · Limits</div>
+  <h2>중첩과 동시 실행에는 <span class="yellow">상한</span>이 있다</h2>
+  <table>
+    <tr><th></th><th>자식이 또 위임? (기본 깊이)</th><th>동시 실행 상한</th><th>조절 방법</th></tr>
+    <tr><td><span class="tag oc">OpenCode</span></td><td><b>불가</b> · <code>subagent_depth</code> 기본 1</td><td>명시 상한 없음 (한 메시지 다중 호출)</td><td><code>subagent_depth: 2</code> + 자식 permission에 <code>task</code> 허용</td></tr>
+    <tr><td><span class="tag cx">Codex</span></td><td><b>불가</b> · <code>max_depth</code> 기본 1 (root=0)</td><td><code>max_threads</code> 기본 6 (동시에 열린 스레드)</td><td><code>[agents]</code> 테이블</td></tr>
+    <tr><td><span class="tag cc">Claude</span></td><td><b>가능</b> · 메인 아래 3단계까지</td><td>20개</td><td><code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code>, <code>…_MAX_CONCURRENT_SUBAGENTS</code></td></tr>
+  </table>
+  <p class="lead">상한이 있는 이유는 비용과 통제다. 재귀 위임은 토큰을 기하급수로 쓰고, 누가 무엇을 했는지 추적하기 어려워진다.</p>
+  <div class="study"><b>📎 근거</b><span>OpenCode config 문서 · Codex subagents 문서 · Claude Code sub-agents 문서 (2026-10 확인)</span></div>
+</section>
+
+<!-- ============ Part 1-② 조립 원리 ============ -->
+<section class="slide divider" data-part="Part 1 · 조립 원리">
+  <div class="num">02</div>
+  <div class="kicker">Part 1 · Common</div>
+  <h1>조립 원리</h1>
+  <p class="lead">Harness는 정의 파일을 읽어 <b>네 가지 재료</b>로 자식을 조립한다. 정의 파일의 필드는 전부 이 재료 중 하나를 바꾸는 손잡이다.</p>
+</section>
+
+<section class="slide" data-part="Part 1 · 조립 원리">
+  <div class="kicker">Assembly 1</div>
+  <h2>Subagent = 프롬프트 + 도구 + 모델 + 첫 메시지</h2>
+  <div class="grid4">
+    <div class="card blue"><div class="label">① System prompt</div><strong>정체성</strong><p>정의 파일 본문. "너는 읽기 전용 리뷰어다…" 역할·절차·반환 형식.</p></div>
+    <div class="card yellow"><div class="label">② Tools / Permission</div><strong>손발</strong><p>쓸 수 있는 도구와 허용·확인·거부 규칙. 부모보다 좁게.</p></div>
+    <div class="card purple"><div class="label">③ Model / Effort</div><strong>두뇌 크기</strong><p>역할에 맞는 모델과 추론 강도. 미지정이면 부모 것을 상속.</p></div>
+    <div class="card green"><div class="label">④ First message</div><strong>이번 일</strong><p>부모가 호출 시점에 쓰는 위임 지시. 정의 파일이 아니라 <b>런타임</b>에 정해진다.</p></div>
+  </div>
+  <p class="lead">①~③은 <b>정의 시점</b>(파일)에, ④는 <b>호출 시점</b>(부모의 판단)에 정해진다. 좋은 subagent는 둘 다 좋아야 한다.</p>
+  <div class="study"><b>추가 재료</b><span>도구마다 더 얹을 수 있다: 프로젝트 지시문(CLAUDE.md/AGENTS.md), 미리 실을 skill, 전용 MCP 서버, 턴 상한, 영구 메모리 등. Part 2에서 다룬다.</span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 조립 원리">
+  <div class="kicker">Assembly 2 · Routing</div>
+  <h2>부모가 보는 것은 이름과 <span class="accent">description</span> 목록뿐이다</h2>
+  <div class="grid2">
+    <div>
+      <div class="label">부모의 위임 도구 설명에 실리는 내용 (개념도)</div>
+<pre>Available agents:
+- <span class="s">explore</span>: 코드베이스를 빠르게 검색하는 읽기 전용 agent
+- <span class="s">reviewer</span>: 변경 후 코드 품질을 검토. 코드 수정 직후 사용
+- <span class="s">doc-writer</span>: API 문서를 작성
+<span class="c">(본문 프롬프트는 호출될 때만 로드)</span></pre>
+    </div>
+    <div class="card">
+      <strong>Skill과 같은 원리</strong>
+      <p>Skill이 name·description만 먼저 보이고 본문은 필요할 때 읽히듯, subagent도 <b>description이 라우터</b> 역할을 한다.</p>
+      <ul style="margin-top:1vh"><li><b>언제</b> 써야 하는지 적는다 ("코드 수정 직후")</li><li>다른 agent와 <b>겹치지 않게</b> 쓴다</li><li>너무 길면 모든 턴의 예산을 먹는다</li></ul>
+    </div>
+  </div>
+  <p class="lead">자동 위임이 안 되거나 엉뚱한 agent가 불리면 프롬프트보다 <b>description부터</b> 고친다.</p>
+  <div class="study"><b>🔍 직접 확인</b><span>Claude Code는 description 합계가 15,000 토큰을 넘으면 시작 시 경고한다. Claude는 "use proactively" 문구, OpenCode는 <code>description</code> 필수 필드로 같은 역할을 한다.</span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 조립 원리">
+  <div class="kicker">Assembly 3 · Permission</div>
+  <h2>권한은 <span class="yellow">부모를 넘을 수 없고</span>,<br>역할에 맞게 더 좁힌다</h2>
+  <div class="grid3">
+    <div class="card"><div class="label">탐색가</div><strong>읽기만</strong><p>read · grep · glob. 수정·실행 거부. 실수해도 피해가 없다.</p></div>
+    <div class="card"><div class="label">리뷰어</div><strong>읽기 + 제한 실행</strong><p>테스트·린트만 허용. 코드 수정은 거부해 판정이 독립적이게 한다.</p></div>
+    <div class="card"><div class="label">작업자</div><strong>쓰기 허용</strong><p>담당 범위의 파일만. push·배포 같은 되돌릴 수 없는 동작은 거부.</p></div>
+  </div>
+  <table style="margin-top:1.6vh">
+    <tr><th></th><th>부모 권한과의 관계</th></tr>
+    <tr><td><span class="tag oc">OpenCode</span></td><td>자식 정의의 <code>permission</code>으로 지정. 부모는 <code>permission.task</code>로 위임 가능한 대상을 제한</td></tr>
+    <tr><td><span class="tag cx">Codex</span></td><td>현재 sandbox 정책과 부모 턴의 런타임 오버라이드를 상속. 역할 파일의 <code>sandbox_mode</code>로 따로 지정 가능</td></tr>
+    <tr><td><span class="tag cc">Claude</span></td><td>부모가 bypass·acceptEdits·auto 모드면 자식의 <code>permissionMode</code>는 무시됨</td></tr>
+  </table>
+</section>
+
+<section class="slide" data-part="Part 1 · 조립 원리">
+  <div class="kicker">Assembly 4 · Model</div>
+  <h2>모델은 "가장 구체적인 지정"이 이긴다</h2>
+  <div class="diagram">
+    <div class="box green">호출 시 인자<small>이번 한 번</small></div><div class="arrow">›</div>
+    <div class="box blue">정의 파일<small>model / effort</small></div><div class="arrow">›</div>
+    <div class="box yellow">전역 기본값<small>환경변수 · config</small></div><div class="arrow">›</div>
+    <div class="box">부모 모델<small>최종 fallback</small></div>
+  </div>
+  <div class="grid3">
+    <div class="card"><div class="label">OpenCode</div><p><code>model: provider/model-id</code><br>미지정 시 호출한 primary의 모델</p></div>
+    <div class="card"><div class="label">Codex</div><p><code>model</code>, <code>model_reasoning_effort</code><br>미지정 시 부모에게서 상속</p></div>
+    <div class="card"><div class="label">Claude</div><p><code>model: haiku|sonnet|opus|inherit</code>, <code>effort</code><br><code>CLAUDE_CODE_SUBAGENT_MODEL</code></p></div>
+  </div>
+  <p class="lead">원칙: <b>탐색·수집은 작고 빠른 모델</b>, <b>판단·설계는 큰 모델</b>. 기존 Codex 모델 라우팅 실험과 같은 발상이다.</p>
+</section>
+
+<!-- ============ Part 1-③ 선언 방법 ============ -->
+<section class="slide divider" data-part="Part 1 · 선언">
+  <div class="num">03</div>
+  <div class="kicker">Part 1 · Common</div>
+  <h1>선언 방법</h1>
+  <p class="lead">세 도구 모두 <b>"파일 하나 = agent 하나"</b>다. 위치와 포맷만 다르고, 들어가는 필드는 거의 일대일로 대응한다.</p>
+</section>
+
+<section class="slide" data-part="Part 1 · 선언">
+  <div class="kicker">Declare 1 · Where</div>
+  <h2>프로젝트에 두면 팀 것, 홈에 두면 내 것</h2>
+  <table>
+    <tr><th></th><th>프로젝트 범위</th><th>개인(전역) 범위</th><th>포맷</th><th>이름 결정</th></tr>
+    <tr><td><span class="tag oc">OpenCode</span></td><td><code>.opencode/agents/*.md</code><br>또는 <code>opencode.json</code>의 <code>"agent"</code></td><td><code>~/.config/opencode/agents/</code></td><td>Markdown + YAML<br>또는 JSON</td><td><b>파일명</b></td></tr>
+    <tr><td><span class="tag cx">Codex</span></td><td><code>.codex/agents/*.toml</code></td><td><code>~/.codex/agents/</code><br>또는 <code>config.toml</code>의 <code>[agents.이름]</code></td><td>TOML</td><td><code>name</code> 필드</td></tr>
+    <tr><td><span class="tag cc">Claude</span></td><td><code>.claude/agents/*.md</code></td><td><code>~/.claude/agents/</code></td><td>Markdown + YAML</td><td><code>name</code> 필드</td></tr>
+  </table>
+  <p class="lead">같은 이름이 여러 곳에 있으면 <b>더 가까운(구체적인) 쪽</b>이 이긴다. Skill의 경로별 적용 범위와 같은 규칙이다.</p>
+  <div class="study"><b>🔍 직접 확인</b><span>OpenCode는 단수 <code>agent/</code> 폴더도 하위 호환으로 읽는다. 내 기존 OpenCode 실습 리포가 어느 쪽을 쓰는지 확인해 보자.</span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 선언">
+  <div class="kicker">Declare 2 · Field mapping</div>
+  <h2>필드 이름은 달라도 <span class="accent">하는 일은 같다</span></h2>
+  <table>
+    <tr><th>역할</th><th>OpenCode</th><th>Codex</th><th>Claude Code</th></tr>
+    <tr><td>이름</td><td>파일명 / JSON 키</td><td><code>name</code></td><td><code>name</code></td></tr>
+    <tr><td>라우팅</td><td><code>description</code> (필수)</td><td><code>description</code> (필수)</td><td><code>description</code> (필수)</td></tr>
+    <tr><td>시스템 프롬프트</td><td>본문 / <code>prompt</code></td><td><code>developer_instructions</code></td><td>본문</td></tr>
+    <tr><td>도구·권한</td><td><code>permission</code> (allow/ask/deny)</td><td><code>sandbox_mode</code>, <code>mcp_servers</code>, <code>skills.config</code></td><td><code>tools</code>, <code>disallowedTools</code>, <code>permissionMode</code></td></tr>
+    <tr><td>모델</td><td><code>model</code>, <code>temperature</code></td><td><code>model</code>, <code>model_reasoning_effort</code></td><td><code>model</code>, <code>effort</code></td></tr>
+    <tr><td>반복 상한</td><td><code>steps</code></td><td>—</td><td><code>maxTurns</code></td></tr>
+    <tr><td>호출 모드</td><td><code>mode: subagent|primary|all</code></td><td>— (모두 위임 대상)</td><td>— (<code>--agent</code>로 메인 실행 가능)</td></tr>
+  </table>
+  <div class="study"><b>📎 근거</b><span><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a><a href="https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields">Claude frontmatter</a></span></div>
+</section>
+
+<section class="slide" data-part="Part 1 · 선언">
+  <div class="kicker">Declare 3 · Anatomy</div>
+  <h2>좋은 정의 파일은 <span class="accent">언제 · 무엇을 · 어떤 손으로 · 무엇을 돌려줄지</span>가 선명하다</h2>
+<pre><span class="c">---</span>
+<span class="k">name</span>: <span class="s">code-reviewer</span>
+<span class="k">description</span>: <span class="s">코드 변경 직후 품질과 버그를 검토한다. 수정은 하지 않는다.</span>   <span class="c"># ← 언제 (라우터)</span>
+<span class="k">tools</span>: <span class="s">Read, Grep, Glob, Bash</span>   <span class="c"># ← 어떤 손으로</span>
+<span class="k">model</span>: <span class="s">sonnet</span>   <span class="c"># ← 두뇌 크기</span>
+<span class="c">---</span>
+너는 읽기 전용 코드 리뷰어다.   <span class="c"># ← 정체성</span>
+1. git diff로 변경 범위만 확인한다. 범위 밖 파일은 읽지 않는다.   <span class="c"># ← 무엇을 (절차)</span>
+2. 테스트는 실행할 수 있지만 코드는 절대 고치지 않는다.
+3. 결과는 아래 형식으로만 반환한다.   <span class="c"># ← 무엇을 돌려줄지</span>
+   - 판정: PASS | FAIL
+   - 문제: 파일:줄 — 한 줄 설명 (최대 10개)
+   - 미확인: 보지 못한 것</pre>
+  <div class="study"><b>🔍 직접 확인</b><span>이 파일을 세 도구 포맷으로 옮겨 보자. OpenCode는 <code>tools</code> 대신 <code>permission</code>, Codex는 본문을 <code>developer_instructions</code>로 옮겨야 한다.</span></div>
+</section>
+
+<!-- ============ Part 1-④ 운용 원리 ============ -->
+<section class="slide divider" data-part="Part 1 · 운용">
+  <div class="num">04</div>
+  <div class="kicker">Part 1 · Common</div>
+  <h1>운용 원리</h1>
+  <p class="lead">정의 파일이 좋아도 <b>브리프(첫 메시지)</b>와 <b>반환 계약</b>이 나쁘면 위임은 실패한다.</p>
+</section>
+
+<section class="slide" data-part="Part 1 · 운용">
+  <div class="kicker">Operate 1 · Brief</div>
+  <h2>브리프는 "맥락이 전혀 없는 동료"에게 쓰는 메모다</h2>
+  <div class="grid2">
+    <div class="card red"><div class="label">Before</div><pre style="margin:0">"결제 쪽 버그 좀 찾아줘"</pre><p style="margin-top:1vh">어떤 버그? 어디까지? 언제 멈추지? 자식은 리포 전체를 뒤진다.</p></div>
+    <div class="card green"><div class="label">After</div><pre style="margin:0"><span class="k">목표</span>: 한도 초과 결제가 통과되는 원인 찾기
+<span class="k">범위</span>: src/pay/ 만. 수정 금지
+<span class="k">알려진 것</span>: limits.py:42 에서 검사함
+<span class="k">완료 조건</span>: 원인 후보 1~3개 + 근거 줄번호
+<span class="k">반환 형식</span>: 결론 / 근거 / 미확인</pre></div>
+  </div>
+  <p class="lead">부모가 이미 아는 것을 브리프에 적어 주지 않으면, 자식은 그것을 <b>다시 비용을 들여</b> 알아낸다. 격리의 대가다.</p>
+</section>
+
+<section class="slide" data-part="Part 1 · 운용">
+  <div class="kicker">Operate 2 · Return contract</div>
+  <h2>결과는 파일로, 요약은 짧게, <span class="accent">판정은 코드로</span></h2>
+  <div class="diagram">
+    <div class="box purple">Subagent<small>작업 수행</small></div><div class="arrow">→</div>
+    <div class="box">output/result.json<small>약속된 파일</small></div><div class="arrow">→</div>
+    <div class="box yellow">validator.py<small>구조·근거 검사</small></div><div class="arrow">→</div>
+    <div class="box green">"PASS output/…"<small>한 줄만 부모에게</small></div>
+  </div>
+  <div class="grid3">
+    <div class="card"><strong>왜 파일인가</strong><p>tool_result는 부모 예산을 먹는다. 큰 산출물은 파일에 두고 경로만 넘긴다. (SKILL 심화 ⑥ 산출물 약속)</p></div>
+    <div class="card"><strong>왜 코드 판정인가</strong><p>"완료했습니다"는 증거가 아니다. 자식의 자기 보고를 validator로 확인한다. (Harness: completion ≠ success)</p></div>
+    <div class="card"><strong>Hook으로 강제</strong><p>Claude의 <code>SubagentStop</code> hook은 검사 실패 시 <code>decision:"block"</code>으로 자식을 계속 일하게 할 수 있다.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-part="Part 1 · 운용">
+  <div class="kicker">Operate 3 · Patterns</div>
+  <h2>자주 쓰이는 형태는 네 가지로 정리된다</h2>
+  <div class="grid4">
+    <div class="card blue"><div class="label">① Explore</div><strong>찾기만 맡긴다</strong><p>읽기 전용 + 작은 모델. 검색 잔해는 자식 창에 남기고 위치만 받는다.</p></div>
+    <div class="card green"><div class="label">② Fan-out</div><strong>나눠서 동시에</strong><p>독립적인 조각을 병렬 위임하고 결과를 합친다.</p></div>
+    <div class="card yellow"><div class="label">③ Reviewer</div><strong>오염 안 된 눈</strong><p>작성 과정을 모르는 자식이 결과만 보고 판정한다. 독립 검증.</p></div>
+    <div class="card purple"><div class="label">④ Orchestrator–Worker</div><strong>순서는 부모, 일은 자식</strong><p>부모는 목록·순서·PASS/FAIL만, 한 건씩 새 worker에게. (기존 OpenCode 가이드)</p></div>
+  </div>
+  <p class="lead">세 도구의 내장 agent가 이미 이 패턴이다. <b>explore</b>(①)와 <b>general/worker</b>(②④)는 세 도구 모두에 비슷한 이름으로 있다.</p>
+</section>
+
+<section class="slide" data-part="Part 1 · 운용">
+  <div class="kicker">Operate 4 · Cost &amp; anti-patterns</div>
+  <h2>위임은 공짜가 아니다.<br><span class="red">안 나누는 편이 나은</span> 경우가 있다</h2>
+  <div class="grid2">
+    <div class="card"><strong>비용 세 가지</strong><ul><li><b>토큰</b>: 자식마다 시스템 프롬프트·지시문을 새로 싣는다</li><li><b>지연</b>: 자식이 처음부터 맥락을 다시 모은다</li><li><b>전달 손실</b>: 요약이 정보를 깎는다. 근거 없는 결론은 검증 불가</li></ul></div>
+    <div class="card red"><strong>안티패턴</strong><ul><li>파일 하나 읽는 일을 위임 (호출 비용 &gt; 이득)</li><li>여러 자식이 같은 파일을 동시에 수정</li><li>부모가 자식 결과를 전부 다시 읽음 (격리 무효)</li><li>자식이 또 자식을 부르는 무한 분할</li></ul></div>
+  </div>
+  <p class="quote" style="font-size:clamp(1.3rem,2.4vw,2.2rem);margin-top:2vh">판단 기준: 자식이 쓸 컨텍스트가 <em>부모가 받을 요약보다 훨씬 클 때</em> 위임한다.</p>
+</section>
+
+<!-- ============ Part 2 OpenCode ============ -->
+<section class="slide divider" data-part="Part 2 · OpenCode">
+  <div class="num">05</div>
+  <div class="kicker">Part 2 · Tool-specific</div>
+  <h1><span style="color:#ffa657">OpenCode</span></h1>
+  <p class="lead">특징: <b>mode</b>로 primary와 subagent를 같은 체계에서 정의하고, <b>permission</b>으로 위임 대상까지 통제한다. 자식은 <b>child session</b>으로 남아 직접 들어가 볼 수 있다.</p>
+</section>
+
+<section class="slide" data-part="Part 2 · OpenCode">
+  <div class="kicker">OpenCode 1 · Modes</div>
+  <h2>agent 하나가 <code>mode</code>에 따라<br>주인공도, 위임 대상도 된다</h2>
+  <div class="grid3">
+    <div class="card blue"><div class="label">mode: primary</div><strong>사용자가 직접 대화</strong><p>Tab으로 전환. 내장: <b>build</b>(모든 도구), <b>plan</b>(수정·bash는 ask)</p></div>
+    <div class="card green"><div class="label">mode: subagent</div><strong>위임받아 일함</strong><p>내장: <b>general</b>(다단계 작업, 수정 가능, 병렬용), <b>explore</b>(읽기 전용 빠른 탐색)</p></div>
+    <div class="card"><div class="label">mode: all (기본값)</div><strong>둘 다</strong><p>mode를 생략하면 all. 직접 쓸 수도, 위임할 수도 있다.</p></div>
+  </div>
+  <p class="lead">숨은 시스템 agent(compaction, title, summary)도 같은 체계로 돈다. 외부 문서·의존성을 조사하는 읽기 전용 subagent <b>scout</b>도 내장되어 있다.</p>
+  <div class="study"><b>🔍 직접 확인</b><span><code>opencode agent list</code>로 내 환경의 agent와 mode를 확인해 보자.</span></div>
+</section>
+
+<section class="slide" data-part="Part 2 · OpenCode">
+  <div class="kicker">OpenCode 2 · Declare</div>
+  <h2>JSON에 모아 쓰거나, Markdown 파일로 나눠 쓴다</h2>
+  <div class="grid2">
+    <div><div class="label">opencode.json</div>
+<pre>{
+  <span class="k">"agent"</span>: {
+    <span class="k">"review"</span>: {
+      <span class="k">"description"</span>: <span class="s">"Reviews code"</span>,
+      <span class="k">"mode"</span>: <span class="s">"subagent"</span>,
+      <span class="k">"model"</span>: <span class="s">"anthropic/claude-sonnet-…"</span>,
+      <span class="k">"prompt"</span>: <span class="s">"{file:./prompts/review.txt}"</span>,
+      <span class="k">"permission"</span>: {
+        <span class="k">"edit"</span>: <span class="r">"deny"</span>,
+        <span class="k">"bash"</span>: { <span class="s">"*"</span>: <span class="v">"ask"</span>, <span class="s">"git status *"</span>: <span class="s">"allow"</span> }
+      }
+    }
+  }
+}</pre></div>
+    <div><div class="label">.opencode/agents/review.md</div>
+<pre><span class="c">---</span>
+<span class="k">description</span>: <span class="s">Reviews code for quality</span>
+<span class="k">mode</span>: <span class="s">subagent</span>
+<span class="k">temperature</span>: <span class="v">0.1</span>
+<span class="k">steps</span>: <span class="v">20</span>
+<span class="k">permission</span>:
+  <span class="k">edit</span>: <span class="r">deny</span>
+  <span class="k">bash</span>: <span class="r">deny</span>
+<span class="c">---</span>
+You are in code review mode...</pre>
+      <p class="lead" style="font-size:clamp(.85rem,1.15vw,1.05rem)"><code>tools</code>(true/false)는 <b>deprecated</b>, <code>permission</code>을 쓴다. <code>hidden: true</code>는 @ 자동완성에서만 숨긴다.</p></div>
+  </div>
+  <div class="study"><b>📎 / 🔍</b><span><a href="https://opencode.ai/docs/agents/">opencode.ai/docs/agents</a> · <code>opencode agent create</code>는 범위·설명·권한을 물어 .md를 생성한다. <code>--path --description --mode --permissions</code>를 다 주면 비대화형.</span></div>
+</section>
+
+<section class="slide" data-part="Part 2 · OpenCode">
+  <div class="kicker">OpenCode 3 · Invoke &amp; control</div>
+  <h2><code>permission.task</code>로 "누구에게 위임할 수 있는가"까지 정한다</h2>
+  <div class="grid2">
+    <div>
+      <div class="label">자동 호출</div>
+<pre>primary agent가 subagent의 <span class="k">description</span>을 보고
+<span class="s">task</span> 도구로 위임한다</pre>
+      <div class="label" style="margin-top:1.4vh">사용자가 직접 부르기</div>
+<pre>@general 이 함수가 어디서 호출되는지 찾아줘</pre>
+    </div>
+    <div>
+      <div class="label">위임 대상 제한 (primary agent 설정)</div>
+<pre><span class="k">"permission"</span>: { <span class="k">"task"</span>: {
+  <span class="s">"*"</span>: <span class="r">"deny"</span>,
+  <span class="s">"orchestrator-*"</span>: <span class="s">"allow"</span>,
+  <span class="s">"code-reviewer"</span>: <span class="v">"ask"</span>
+}}</pre>
+      <ul class="big" style="font-size:clamp(.85rem,1.15vw,1.05rem)"><li>마지막으로 매칭된 규칙이 이긴다</li><li>deny된 agent는 task 도구 설명에서 <b>아예 사라진다</b></li><li>사용자의 @mention은 규칙과 무관하게 동작</li></ul>
+    </div>
+  </div>
+  <div class="study"><b>중첩</b><span><code>subagent_depth</code> 기본 1: primary는 subagent를 부를 수 있지만 subagent는 또 부를 수 없다. 2면 한 단계 더, 0이면 위임 전체 금지.</span></div>
+</section>
+
+<section class="slide" data-part="Part 2 · OpenCode">
+  <div class="kicker">OpenCode 4 · Sessions &amp; headless</div>
+  <h2>자식은 <span class="accent">child session</span>으로 남아<br>직접 들어가 볼 수 있다</h2>
+  <div class="grid2">
+    <div class="card"><strong>TUI에서 부모·자식 오가기</strong>
+<pre style="margin-top:1vh">&lt;Leader&gt;+↓   첫 번째 child로 들어가기
+→ / ←        child 사이 순환
+↑            부모로 돌아가기</pre>
+      <p>child 제목: <code>"&lt;description&gt; (@agent subagent)"</code>. 자식이 무엇을 읽고 왜 그렇게 결론냈는지 <b>사후에 추적</b>할 수 있다.</p></div>
+    <div class="card"><strong>Headless에서</strong>
+<pre style="margin-top:1vh">opencode run --agent review \
+  -m anthropic/claude-sonnet-… \
+  --format json "변경 사항 리뷰"</pre>
+      <p>기존 Headless Lab의 <code>run</code>/<code>serve</code>와 결합하면, 프로그램이 agent를 골라 부리는 구조가 된다.</p></div>
+  </div>
+  <div class="study"><b>📎 공식 문서</b><span><a href="https://opencode.ai/docs/agents/">Agents</a><a href="https://opencode.ai/docs/permissions/">Permissions</a><a href="https://opencode.ai/docs/cli/">CLI</a></span></div>
+</section>
+
+<!-- ============ Part 2 Codex ============ -->
+<section class="slide divider" data-part="Part 2 · Codex">
+  <div class="num">06</div>
+  <div class="kicker">Part 2 · Tool-specific</div>
+  <h1><span class="blue">Codex</span></h1>
+  <p class="lead">특징: <b>명시적으로 요청할 때만</b> 위임한다. 자식은 <b>agent 스레드</b>로 열리고 <code>/agent</code>로 오가며, 역할은 TOML로 선언한다.</p>
+</section>
+
+<section class="slide" data-part="Part 2 · Codex">
+  <div class="kicker">Codex 1 · Explicit spawn</div>
+  <h2>Codex는 <span class="blue">명시적으로 요청할 때만</span><br>자식 스레드를 띄운다</h2>
+  <div class="diagram">
+    <div class="box blue">명시 요청<small>"subagent로 나눠서 해줘"</small></div><div class="arrow">→</div>
+    <div class="box">스레드 생성<small>역할: default · worker · explorer</small></div><div class="arrow">→</div>
+    <div class="box yellow">병렬 실행<small>max_threads 6</small></div><div class="arrow">→</div>
+    <div class="box green">결과 취합<small>하나의 답</small></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><strong>자동 위임은 하지 않는다</strong><p>"Codex only spawns subagents when you explicitly ask it to." description만 보고 알아서 위임하는 OpenCode·Claude와 가장 큰 차이다.</p></div>
+    <div class="card yellow"><strong>상한은 "열린 스레드" 수</strong><p><code>agents.max_threads</code>(기본 6)는 동시에 열려 있는 agent 스레드 수를 제한한다. 비활성 스레드의 승인 요청도 메인 화면에 올라온다.</p></div>
+  </div>
+  <div class="study"><b>🔍 직접 확인</b><span>같은 일을 "나눠서 해줘" 없이 시켰을 때와 붙여서 시켰을 때, 스레드가 생기는지 <code>/agent</code>로 비교해 보자.</span></div>
+</section>
+
+<section class="slide" data-part="Part 2 · Codex">
+  <div class="kicker">Codex 2 · Roles</div>
+  <h2>역할은 TOML 파일 하나, 전역 한도는 <code>config.toml</code>의 <code>[agents]</code></h2>
+  <div class="grid2">
+    <div><div class="label">.codex/agents/reviewer.toml</div>
+<pre><span class="k">name</span> = <span class="s">"reviewer"</span>
+<span class="k">description</span> = <span class="s">"Read-only code reviewer; use for PR review."</span>
+<span class="k">developer_instructions</span> = <span class="s">"""
+Review for correctness and tests.
+Never edit files. Return PASS/FAIL + file:line list.
+"""</span>
+<span class="k">model_reasoning_effort</span> = <span class="s">"high"</span>
+<span class="k">sandbox_mode</span> = <span class="s">"read-only"</span>
+<span class="k">nickname_candidates</span> = [<span class="s">"Ada"</span>, <span class="s">"Linus"</span>]</pre></div>
+    <div><div class="label">~/.codex/config.toml</div>
+<pre>[<span class="k">agents</span>]
+<span class="k">max_threads</span> = <span class="v">6</span>     <span class="c"># 동시 스레드</span>
+<span class="k">max_depth</span>   = <span class="v">1</span>     <span class="c"># 중첩 깊이 (root = 0)</span>
+<span class="c"># job_max_runtime_seconds: CSV 일괄 작업용 (선택)</span></pre>
+      <p class="lead" style="font-size:clamp(.85rem,1.15vw,1.05rem)">내장 역할: <b>default</b>(범용), <b>worker</b>(구현·수정), <b>explorer</b>(읽기 위주 탐색).</p></div>
+  </div>
+  <div class="study"><b>필드</b><span>필수: <code>name</code>, <code>description</code>, <code>developer_instructions</code> · 선택: <code>nickname_candidates</code>, <code>model</code>, <code>model_reasoning_effort</code>, <code>sandbox_mode</code>, <code>mcp_servers</code>, <code>skills.config</code>. 생략한 값은 부모 세션에서 상속한다.</span></div>
+</section>
+
+<section class="slide" data-part="Part 2 · Codex">
+  <div class="kicker">Codex 3 · Context &amp; TUI</div>
+  <h2>권한은 물려받고, 스레드는 <code>/agent</code>로 오간다</h2>
+  <div class="grid3">
+    <div class="card"><strong>상속</strong><p>"Subagents inherit your current sandbox policy." 자식을 띄울 때 부모 턴의 런타임 오버라이드도 다시 적용한다.</p></div>
+    <div class="card"><strong>결과 회수</strong><p>요청한 subagent들이 끝나면 메인 스레드가 결과를 모아 하나의 답으로 정리한다.</p></div>
+    <div class="card"><strong>CLI</strong><p><code>/agent</code>로 활성 agent 스레드를 전환하고 진행 중인 스레드를 들여다본다. 비활성 스레드의 승인 요청도 올라온다.</p></div>
+  </div>
+  <div class="grid2" style="margin-top:1.4vh">
+    <div class="card"><strong>Headless 조합</strong><p><code>codex exec</code>로 스크립트에서 Codex를 비대화형 작업자로 띄울 수 있다. 외부 오케스트레이터가 부모 역할.</p></div>
+    <div class="card"><strong>AGENTS.md는 역할이 아니다</strong><p>AGENTS.md는 프로젝트 지시문(최대 32KiB)이다. 역할 정의는 agents/*.toml로 한다.</p></div>
+  </div>
+  <div class="study"><b>📎 공식 문서</b><span><a href="https://developers.openai.com/codex/subagents">Subagents</a><a href="https://developers.openai.com/codex/noninteractive">Non-interactive (exec)</a><a href="https://developers.openai.com/codex/guides/agents-md">AGENTS.md</a></span></div>
+</section>
+
+<!-- ============ Part 2 Claude Code ============ -->
+<section class="slide divider" data-part="Part 2 · Claude Code">
+  <div class="num">07</div>
+  <div class="kicker">Part 2 · Tool-specific</div>
+  <h1><span class="purple">Claude Code</span></h1>
+  <p class="lead">특징: <b>description 기반 자동 위임</b>이 가장 적극적이고, frontmatter 필드가 가장 많다. 백그라운드·재개·중첩·hook까지 위임의 수명주기 전체를 제어할 수 있다.</p>
+</section>
+
+<section class="slide" data-part="Part 2 · Claude Code">
+  <div class="kicker">Claude 1 · Scope</div>
+  <h2>같은 이름이면 <span class="purple">더 위의 범위</span>가 이긴다</h2>
+  <div class="diagram" style="justify-content:flex-start">
+    <div class="box red">① Managed<small>조직 관리 설정</small></div><div class="arrow">›</div>
+    <div class="box yellow">② <code>--agents</code> JSON<small>이번 세션만</small></div><div class="arrow">›</div>
+    <div class="box green">③ <code>.claude/agents/</code><small>프로젝트 (가까운 쪽 우선)</small></div><div class="arrow">›</div>
+    <div class="box blue">④ <code>~/.claude/agents/</code><small>개인</small></div><div class="arrow">›</div>
+    <div class="box">⑤ 플러그인 <code>agents/</code><small>가장 낮음</small></div>
+  </div>
+<pre>claude --agents '{"reviewer":{"description":"…","prompt":"…","tools":["Read","Grep"],"model":"sonnet"}}'</pre>
+  <ul class="big"><li>폴더는 재귀 탐색, 정체성은 파일명이 아니라 <code>name</code> 필드. 파일 수정은 <b>핫 리로드</b></li><li>플러그인 agent는 <code>hooks</code>·<code>mcpServers</code>·<code>permissionMode</code>가 무시된다 (보안)</li><li><code>/agents</code> 마법사는 v2.1.198에서 제거. 파일을 직접 쓰거나 Claude에게 만들어 달라고 한다</li></ul>
+</section>
+
+<section class="slide" data-part="Part 2 · Claude Code">
+  <div class="kicker">Claude 2 · Frontmatter</div>
+  <h2>필수는 둘, 나머지는 <span class="purple">조립 재료를 바꾸는 손잡이</span>다</h2>
+  <table>
+    <tr><th>재료</th><th>필드</th></tr>
+    <tr><td>라우팅 (필수)</td><td><code>name</code>, <code>description</code> — "use proactively"로 자동 위임 유도</td></tr>
+    <tr><td>도구·권한</td><td><code>tools</code>(생략 시 전부 상속), <code>disallowedTools</code>(먼저 적용), <code>permissionMode</code>, <code>mcpServers</code></td></tr>
+    <tr><td>모델</td><td><code>model</code>(haiku/sonnet/opus/fable/전체 ID/inherit), <code>effort</code>(low~max)</td></tr>
+    <tr><td>추가 컨텍스트</td><td><code>skills</code>(본문 미리 로드), <code>memory</code>(user/project/local 영구 메모리), <code>omitClaudeMd</code></td></tr>
+    <tr><td>실행 방식</td><td><code>maxTurns</code>, <code>background</code>, <code>isolation: worktree</code>, <code>hooks</code></td></tr>
+    <tr><td>표시</td><td><code>color</code>, <code>initialPrompt</code>(메인 세션으로 실행할 때만)</td></tr>
+  </table>
+  <div class="study"><b>🔍 직접 확인</b><span>필드명은 camelCase이고 <b>모르는 필드는 조용히 무시</b>된다. 오타(<code>maxturns</code>) 하나로 설정이 사라지는지 실습에서 확인해 보자.</span></div>
+</section>
+
+<section class="slide" data-part="Part 2 · Claude Code">
+  <div class="kicker">Claude 3 · Built-ins &amp; invoke</div>
+  <h2>내장 agent 세 개와 호출 방법 네 가지</h2>
+  <div class="grid2">
+    <div>
+      <div class="label">내장 subagent</div>
+      <table>
+        <tr><td>Explore</td><td>읽기 전용. thoroughness(quick/medium/very thorough) 지정. CLAUDE.md 생략, 재개 불가</td></tr>
+        <tr><td>Plan</td><td>plan 모드용 읽기 전용 조사</td></tr>
+        <tr><td>general-purpose</td><td>모든 도구. 복잡한 다단계 작업</td></tr>
+        <tr><td>fork</td><td>부모 대화 전체를 물려받는 자식</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="label">호출</div>
+      <ul class="big" style="font-size:clamp(.88rem,1.2vw,1.1rem)">
+        <li><b>자동</b>: Claude가 작업과 description을 매칭</li>
+        <li><b>이름으로 요청</b>: "code-reviewer로 검토해줘"</li>
+        <li><b>@mention</b>: <code>@agent-code-reviewer</code> → 반드시 실행</li>
+        <li><b>세션 전체</b>: <code>claude --agent reviewer</code> → 그 agent가 메인이 됨</li>
+      </ul>
+    </div>
+  </div>
+  <div class="study"><b>실행 방식</b><span>대화형 세션은 fork 모드가 기본이라 subagent가 <b>백그라운드</b>로 돈다(Ctrl+B로 전환). 이어서 지시할 때는 <code>SendMessage</code>로 agent ID에 보낸다. 중첩은 3단계까지.</span></div>
+</section>
+
+<section class="slide" data-part="Part 2 · Claude Code">
+  <div class="kicker">Claude 4 · Context &amp; hooks</div>
+  <h2>자식은 CLAUDE.md는 받고, <span class="red">부모 대화는 받지 않는다</span></h2>
+  <div class="grid2">
+    <div class="card green"><strong>자식이 받는 것</strong><ul><li>자기 시스템 프롬프트 + 환경 정보</li><li>부모가 쓴 위임 메시지</li><li>CLAUDE.md·AGENTS.md 계층 (Explore·Plan 제외)</li><li>git status 스냅샷, <code>skills</code>에 지정한 skill</li></ul></div>
+    <div class="card red"><strong>받지 않는 것</strong><ul><li>부모 대화 기록, 부모가 읽은 파일</li><li>부모가 이미 호출한 skill, auto memory</li></ul><p style="margin-top:1vh">돌아가는 것: 최종 보고 + agent ID. 보고 안의 지시문처럼 생긴 텍스트는 검사된다.</p></div>
+  </div>
+<pre><span class="k">SubagentStart</span>  입력: agent_id, agent_type        → additionalContext로 맥락 주입 (차단 불가)
+<span class="k">SubagentStop</span>   입력: last_assistant_message, agent_transcript_path …
+               → <span class="s">decision: "block"</span> + reason 이면 자식이 계속 일함 (검증 게이트)</pre>
+  <div class="study"><b>📎 공식 문서</b><span><a href="https://code.claude.com/docs/en/sub-agents">Subagents</a><a href="https://code.claude.com/docs/en/hooks#subagentstart">Hooks: SubagentStart/Stop</a><a href="https://code.claude.com/docs/en/agent-sdk/subagents">Agent SDK subagents</a></span></div>
+</section>
+
+<!-- ============ 비교 / 다음 / 요약 ============ -->
+<section class="slide" data-part="Compare">
+  <div class="kicker">Compare</div>
+  <h2>같은 원리, <span class="accent">다른 기본값</span></h2>
+  <table>
+    <tr><th></th><th><span class="tag oc">OpenCode</span></th><th><span class="tag cx">Codex</span></th><th><span class="tag cc">Claude Code</span></th></tr>
+    <tr><td>정의</td><td>.opencode/agents/*.md, opencode.json</td><td>.codex/agents/*.toml, config.toml</td><td>.claude/agents/*.md, --agents</td></tr>
+    <tr><td>위임 도구</td><td><code>task</code></td><td>명시 요청 시 스레드 생성 (도구명 비공개)</td><td><code>Agent</code></td></tr>
+    <tr><td>자동 위임</td><td>description 기반</td><td><b>명시 요청 시에만</b></td><td>description 기반 (가장 적극적)</td></tr>
+    <tr><td>수동 호출</td><td><code>@agent</code></td><td>자연어 요청, 역할 지정</td><td><code>@agent-이름</code>, <code>--agent</code></td></tr>
+    <tr><td>권한</td><td>permission + <code>permission.task</code></td><td>sandbox 상속 + 역할별 <code>sandbox_mode</code></td><td>tools / disallowedTools / permissionMode</td></tr>
+    <tr><td>내장</td><td>general, explore (+scout)</td><td>default, explorer, worker</td><td>Explore, Plan, general-purpose, fork</td></tr>
+    <tr><td>중첩 · 동시</td><td>깊이 1 (조절 가능)</td><td>깊이 1 · 6스레드</td><td>3단계 · 20개</td></tr>
+    <tr><td>기록 물려주기</td><td>—</td><td>—</td><td><code>fork</code> agent, SendMessage 재개</td></tr>
+    <tr><td>자식 들여다보기</td><td>child session 이동</td><td><code>/agent</code> 스레드 전환</td><td>transcript 파일, SubagentStop hook</td></tr>
+  </table>
+</section>
+
+<section class="slide" data-part="Next">
+  <div class="kicker">Next step · 별도 스터디 예정</div>
+  <h2>Subagent 다음 단계는<br>"자식끼리 대화하는 팀"이다</h2>
+  <div class="grid3">
+    <div class="card"><div class="label">백그라운드 실행</div><strong>기다리지 않는 위임</strong><p>부모가 다른 일을 하는 동안 자식이 돌고, 끝나면 알림. 대화형 Claude Code에서는 기본 동작이다.</p></div>
+    <div class="card"><div class="label">Worktree 격리</div><strong>파일 시스템까지 분리</strong><p>Claude <code>isolation: worktree</code>: 임시 git worktree에서 작업해 병렬 쓰기 충돌을 구조적으로 없앤다.</p></div>
+    <div class="card purple"><div class="label">Agent Teams (실험)</div><strong>부모를 거치지 않는 협업</strong><p>Claude <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>: 리더와 팀원이 작업 목록을 공유하고 서로 직접 메시지를 보낸다.</p></div>
+  </div>
+  <p class="lead">Subagent는 <b>부모를 통해서만</b> 소통하는 별 모양 구조다. 위 세 가지는 그 제약을 하나씩 푸는 방향이다.</p>
+</section>
+
+<section class="slide" data-part="Summary">
+  <div class="kicker">One-page summary</div>
+  <h2>위임 전에 네 가지만 답하면 된다</h2>
+  <div class="grid4">
+    <div class="card blue"><div class="label">언제</div><strong>자식 컨텍스트 ≫ 받을 요약</strong><p>찾는 과정이 결과보다 훨씬 클 때, 독립적으로 쪼갤 수 있을 때.</p></div>
+    <div class="card yellow"><div class="label">누구에게</div><strong>description · 권한 · 모델</strong><p>겹치지 않는 description, 부모보다 좁은 권한, 역할에 맞는 모델.</p></div>
+    <div class="card purple"><div class="label">무엇을 넘기고</div><strong>브리프</strong><p>목표 · 범위 · 알려진 것 · 완료 조건 · 반환 형식. 자식은 이것만 안다.</p></div>
+    <div class="card green"><div class="label">무엇을 받나</div><strong>계약된 결과</strong><p>결론 · 근거 · 미확인. 큰 산출물은 파일로, 판정은 코드로.</p></div>
+  </div>
+  <p class="quote" style="font-size:clamp(1.3rem,2.5vw,2.3rem);margin-top:2.4vh">Subagent는 <em>컨텍스트를 나누는 기술</em>이고,<br>잘 나눴는지는 <em>브리프와 반환 계약</em>이 결정한다.</p>
+  <div class="study"><b>다음</b><span>실습편: 같은 reviewer/explorer를 세 도구에 각각 선언하고, 격리·병렬·권한·반환 계약을 직접 관찰한다.</span></div>
+</section>
+
+<section class="slide" data-part="Appendix">
+  <div class="kicker">Appendix · Glossary &amp; links</div>
+  <h2>용어와 공식 문서</h2>
+  <div class="grid2">
+    <table>
+      <tr><td>Parent / Primary</td><td>사용자와 대화하며 위임하는 쪽</td></tr>
+      <tr><td>Subagent / Child</td><td>별도 컨텍스트에서 위임받아 일하는 쪽</td></tr>
+      <tr><td>Brief</td><td>부모가 쓰는 위임 지시 = 자식의 첫 메시지</td></tr>
+      <tr><td>Context isolation</td><td>부모 기록이 자식에게 넘어가지 않는 성질</td></tr>
+      <tr><td>Fork</td><td>부모 기록을 물려받는 예외 모드</td></tr>
+      <tr><td>Fan-out / Gather</td><td>병렬 위임 / 결과 취합</td></tr>
+      <tr><td>Return contract</td><td>결과 형식·위치에 대한 약속</td></tr>
+      <tr><td>Depth / Threads</td><td>중첩 깊이 / 동시 실행 상한</td></tr>
+    </table>
+    <div class="card">
+      <strong>📎 공식 문서 (2026-10 확인)</strong>
+      <ul>
+        <li><a style="color:var(--blue)" href="https://opencode.ai/docs/agents/">opencode.ai/docs/agents</a> · <a style="color:var(--blue)" href="https://opencode.ai/docs/permissions/">permissions</a> · <a style="color:var(--blue)" href="https://opencode.ai/docs/cli/">cli</a></li>
+        <li><a style="color:var(--blue)" href="https://developers.openai.com/codex/subagents">developers.openai.com/codex/subagents</a></li>
+        <li><a style="color:var(--blue)" href="https://code.claude.com/docs/en/sub-agents">code.claude.com/docs/en/sub-agents</a></li>
+        <li><a style="color:var(--blue)" href="https://code.claude.com/docs/en/hooks">code.claude.com/docs/en/hooks</a> · <a style="color:var(--blue)" href="https://code.claude.com/docs/en/agent-teams">agent-teams</a></li>
+      </ul>
+      <p style="margin-top:1vh">이 덱의 도구별 내용은 모두 위 공식 문서 기준이다. 실제 동작은 실습에서 확인한다.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+<div class="bar" id="bar"></div>
+<script>
+(()=>{const s=[...document.querySelectorAll('.slide')];let i=0;
+s.forEach((el,n)=>{const no=document.createElement('div');no.className='slideNo';no.textContent=(n+1)+' / '+s.length;el.appendChild(no);
+  if(el.dataset.part){const p=document.createElement('div');p.className='part';p.textContent=el.dataset.part;el.appendChild(p);}});
+function go(n){i=Math.max(0,Math.min(s.length-1,n));s.forEach((el,k)=>el.classList.toggle('active',k===i));
+  document.getElementById('bar').style.width=((i+1)/s.length*100)+'%';history.replaceState(null,'','#'+(i+1));}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(i+1)}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(s.length-1);});
+addEventListener('click',e=>{if(e.target.closest('a'))return;if(e.clientX>innerWidth*0.6)go(i+1);else if(e.clientX<innerWidth*0.25)go(i-1);});
+const h=parseInt(location.hash.slice(1));go(isNaN(h)?0:h-1);})();
+</script>
+</body>
+</html>

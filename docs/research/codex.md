@@ -1,0 +1,12 @@
+# Codex CLI subagents — research notes (developers.openai.com/codex/subagents + openai/codex HEAD e3c2a83, 2026-10-02)
+- multi_agent feature (alias collab): Stable, default on. Spawns only when user explicitly asks. Disable: [agents] enabled=false or [features] multi_agent=false.
+- multi_agent_v2: stable but default off; [features.multi_agent_v2] enabled, max_concurrent_threads_per_session (4), default_wait_timeout_ms. Known bug w/ ChatGPT login (issue #27331).
+- v1 tools: spawn_agent(message|items, agent_type, fork_context, model, reasoning_effort), send_input(interrupt), resume_agent, wait_agent, close_agent (closed agents free thread slot).
+- v2 tools: spawn_agent(fork_turns none|all|N), send_message, followup_task, wait_agent (mailbox), list_agents, interrupt_agent.
+- Built-in roles: default, explorer (parallel codebase Qs), worker (implementation, assign file ownership).
+- Role files: ~/.codex/agents/*.toml, .codex/agents/*.toml; required name, description, developer_instructions; optional nickname_candidates, model, model_reasoning_effort (docs also: sandbox_mode, mcp_servers, skills.config).
+- config.toml: [agents] max_threads=6, max_depth=1, default_subagent_model, default_subagent_reasoning_effort; [agents.<role>] description, config_file.
+- HEAD source applies narrower override set (instructions, model, effort, verbosity, personality, service_tier; can only disable features/skills). Roles never exceed parent authority. Sandbox/approvals inherited from parent.
+- Context: child gets only spawn prompt unless fork_context / fork_turns. Result via wait_agent or completion notification. Codex waits for all then one combined answer.
+- TUI: docs say /agent; HEAD has /subagents and /agents (command center). Alt+Left/Right cycle threads. Pending approvals widget.
+- codex exec = headless. codex mcp-server not in HEAD (UNVERIFIED status). AGENTS.md = project instructions, not roles.
