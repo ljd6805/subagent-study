@@ -325,7 +325,7 @@ svg .mono{font-family:var(--mono)}
     <g font-size="15" font-weight="700" text-anchor="middle">
       <rect x="40" y="85" width="120" height="50" rx="10" fill="#18222f" stroke="#34445a"/><text x="100" y="116" fill="#eef2f6">사용자 요청</text>
       <rect x="180" y="85" width="80" height="50" rx="10" fill="#18222f" stroke="#34445a"/><text x="220" y="116" fill="#c3cdd8">read</text>
-      <rect x="300" y="78" width="170" height="64" rx="12" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="385" y="106" fill="#7ee787">tool_use</text><text x="385" y="128" class="mono" font-size="14" fill="#eef2f6">task / Agent</text>
+      <rect x="300" y="78" width="170" height="64" rx="12" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="385" y="106" fill="#7ee787">tool_use</text><text x="385" y="128" font-size="14" fill="#eef2f6">위임 도구 1회</text>
       <rect x="490" y="85" width="620" height="50" rx="10" fill="none" stroke="#34445a" stroke-dasharray="6 6"/><text x="800" y="116" fill="#5a687a" font-weight="600">부모는 기다린다 · 자식 내부 호출은 부모 창에 쌓이지 않는다</text>
       <rect x="1130" y="78" width="150" height="64" rx="12" fill="#2a2210" stroke="#e3b341" stroke-width="2"/><text x="1205" y="106" fill="#e3b341">tool_result</text><text x="1205" y="128" font-size="13" fill="#eef2f6">결과 한 덩어리</text>
       <rect x="1300" y="85" width="90" height="50" rx="10" fill="#18222f" stroke="#34445a"/><text x="1345" y="116" fill="#c3cdd8">계속</text>
@@ -348,7 +348,7 @@ svg .mono{font-family:var(--mono)}
     <text x="1060" y="205" font-size="14" font-weight="700" fill="#7ee787">② 마지막 메시지 = tool_result</text>
   </svg>
   <div class="callout b" style="margin-top:24px">부모 창에 남는 것은 <b>호출 1번 + 결과 1개</b>뿐이다. 자식이 수십 번 검색하고 읽어도 그 잔해는 자식 창에서 끝난다.</div>
-  <div class="note"><span class="nt doc">위임 도구</span><span><span class="t oc">OpenCode</span> <code>task</code> &nbsp; <span class="t cx">Codex</span> 사용자가 명시 요청하면 스레드 생성 (문서에 도구명 없음) &nbsp; <span class="t cc">Claude</span> <code>Agent</code> (구 <code>Task</code>)</span></div>
+  <div class="note"><span class="nt doc">위임 도구 이름</span><span>도구마다 이름만 다른 같은 도구다. <span class="t oc">OpenCode</span> <code>task</code> &nbsp; <span class="t cc">Claude</span> <code>Agent</code> (예전 이름 <code>Task</code>) &nbsp; <span class="t cx">Codex</span> 문서에 이름 없음. 어떤 agent를 부를지는 이 도구의 인자로 넘긴다.</span></div>
 </section>
 
 <!-- Mechanism 2 -->
