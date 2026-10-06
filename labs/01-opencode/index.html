@@ -198,7 +198,7 @@ ul.chk.sm li{font-size:19px}
       <rect x="10" y="40" width="540" height="440" rx="20" fill="#070b11" stroke="#263243" stroke-width="1.5"/>
       <rect x="10" y="40" width="540" height="40" rx="20" fill="#18222f"/><rect x="10" y="60" width="540" height="20" fill="#18222f"/>
       <circle cx="36" cy="60" r="6" fill="#ff7b72"/><circle cx="56" cy="60" r="6" fill="#e3b341"/><circle cx="76" cy="60" r="6" fill="#7ee787"/>
-      <text x="280" y="66" text-anchor="middle" font-size="15" font-weight="700" fill="#8e9cae" class="mono">~/minishop — opencode</text>
+      <text x="280" y="66" text-anchor="middle" font-size="15" font-weight="700" fill="#8e9cae" class="mono">labs/01-opencode/minishop — opencode</text>
       <text x="40" y="122" font-size="18" class="mono" fill="#58a6ff">build</text>
       <text x="110" y="122" font-size="18" class="mono" fill="#c3cdd8">@explore 파일마다 하는 일 정리해 줘</text>
       <rect x="40" y="150" width="480" height="128" rx="12" fill="#2c1d0e" stroke="#78481b"/>
@@ -254,7 +254,7 @@ opencode agent list</pre></div>
 <span class="v">description</span>: ...
 <span class="k">---</span></pre></div>
     </div>
-    <div class="callout b" style="margin-top:8px">모든 실습은 샘플 프로젝트 폴더 <code>~/minishop</code> 안에서 한다. 실습마다 <code>git</code>으로 처음 상태로 되돌릴 수 있게 LAB 0에서 커밋을 하나 만들어 둔다.</div>
+    <div class="callout b" style="margin-top:8px">모든 실습은 저장소를 받은 뒤 <code>subagent-study/labs/01-opencode/minishop</code> 폴더 안에서 한다. 이 덱에서 "minishop 폴더"라고 하면 이 경로다. 코드는 저장소의 <code>git</code>으로 언제든 처음 상태로 되돌릴 수 있다.</div>
     <div class="callout y">명령과 설정은 OpenCode <b>1.18.34</b>에서 <code>opencode agent list</code>, <code>opencode debug agent</code>로 직접 읽어 확인했다. 버전이 다르면 출력 모양이 조금 다를 수 있다.</div>
   </div>
 </section>
@@ -300,18 +300,19 @@ opencode models</pre>
   <div class="kicker o">0-2 · 샘플 프로젝트</div>
   <h2>minishop에는 버그 2개와 미완성 기능 1개가 숨어 있다</h2>
   <div class="split" style="align-items:start;grid-template-columns:1.1fr 1fr">
-<pre class="sm"><span class="fn">terminal</span><span class="c"># 저장소에서 샘플만 복사해 새 git 저장소로 만든다</span>
+<pre class="sm"><span class="fn">terminal</span><span class="c"># 저장소를 받고 샘플 폴더로 이동한다</span>
 git clone https://github.com/ljd6805/subagent-study
-cp -r subagent-study/labs/01-opencode/minishop ~/minishop
-cd ~/minishop
-git init &amp;&amp; git add -A &amp;&amp; git commit -m "start"
+cd subagent-study/labs/01-opencode/minishop
 
 <span class="c"># 테스트 실행 (Python 3.10+, 설치할 패키지 없음)</span>
 python3 -m unittest
 <span class="r">FAILED (failures=2)</span>
 
-<span class="c"># 실습 중간에 처음 상태로 되돌리기</span>
-git checkout -- . &amp;&amp; git clean -fd</pre>
+<span class="c"># 코드만 처음 상태로 (만든 agent 설정은 남김)</span>
+git checkout -- minishop tests
+
+<span class="c"># 이 폴더 전체를 처음 상태로 (agent 설정도 지움)</span>
+git checkout -- . &amp;&amp; git clean -fd .</pre>
 <pre class="sm"><span class="fn">tree</span>minishop/
   <span class="k">minishop/</span>
     cart.py        <span class="c"># 장바구니 합계와 할인</span>
@@ -330,7 +331,7 @@ git checkout -- . &amp;&amp; git clean -fd</pre>
   <div class="kicker o">0-3 · 출발점 확인</div>
   <h2>아무것도 만들지 않아도 agent는 이미 일곱 개 있다</h2>
   <div class="split" style="align-items:start">
-<pre class="sm"><span class="fn">terminal · ~/minishop</span>opencode agent list | grep -E '^\S'
+<pre class="sm"><span class="fn">terminal · minishop 폴더</span>opencode agent list | grep -E '^\S'
 
 <span class="k">build</span> (primary)
 compaction (primary)
@@ -368,7 +369,7 @@ title (primary)</pre>
   <h2><code>@이름</code>을 붙이면 그 subagent가 확실히 불린다</h2>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:18px">
-<pre class="sm"><span class="fn">terminal · ~/minishop</span>opencode</pre>
+<pre class="sm"><span class="fn">terminal · minishop 폴더</span>opencode</pre>
       <div class="ask">@explore minishop 폴더의 각 파일이 무슨 일을 하는지 한 줄씩 정리해 줘</div>
       <p class="muted" style="font-size:19px"><code>@</code>를 치면 부를 수 있는 agent 목록이 뜬다. <code>explore</code>를 고르면 된다.</p>
     </div>
@@ -672,10 +673,10 @@ opencode debug agent tester | jq .tools.edit
         <li>tester: <code>pip install</code>은 규칙에 맞지 않아 거부되고, unittest만 실행한다</li></ul>
       </div>
       <ul class="chk sm">
-        <li>작업 후 <code>git status</code>에 바뀐 파일이 없다</li>
+        <li>작업 후 <code>git status</code>에 코드 파일 변경이 없다</li>
         <li>자식 세션에 들어가서 거부된 도구 호출이 어떻게 보이는지 확인했다</li>
       </ul>
-<pre class="xs"><span class="fn">terminal</span>git status --short   <span class="c"># 아무것도 안 나와야 정상</span></pre>
+<pre class="xs"><span class="fn">terminal</span>git status --short minishop tests   <span class="c"># 아무것도 안 나와야 정상</span></pre>
     </div>
   </div>
 </section>
@@ -865,7 +866,7 @@ opencode debug agent explore | jq -c .model
   <div class="kicker o">5-1 · 브리프 쓰기</div>
   <h2>자식은 앞선 대화를 모르므로, 브리프 하나로 일이 끝나야 한다</h2>
   <div class="split" style="align-items:start;grid-template-columns:1.2fr 1fr">
-<pre class="xs"><span class="fn">~/minishop/brief.md 로 저장 · <span class="fn">brief.md · 모듈마다 &lt;대상&gt;만 바꿔 쓴다</span>lt;대상<span class="fn">brief.md · 모듈마다 &lt;대상&gt;만 바꿔 쓴다</span>gt;만 바꿔 쓴다</span><span class="gk">## 목표</span>
+<pre class="xs"><span class="fn">brief.md · minishop 폴더에 저장, &lt;대상&gt;만 바꿔 쓴다</span><span class="gk">## 목표</span>
 minishop/&lt;대상&gt;.py 의 버그나 미완성 부분을 찾아 고친다.
 
 <span class="gk">## 범위</span>
@@ -985,8 +986,8 @@ python3 -m unittest -v</pre>
   <div class="kicker o">6-1 · run으로 위임</div>
   <h2><code>opencode run</code>도 TUI와 같은 agent와 설정을 쓴다</h2>
   <div class="split" style="align-items:start">
-<pre class="sm"><span class="fn">terminal · ~/minishop</span><span class="c"># 처음 상태로 되돌리고 시작</span>
-git checkout -- . &amp;&amp; git clean -fd
+<pre class="sm"><span class="fn">terminal · minishop 폴더</span><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
+git checkout -- minishop tests &amp;&amp; rm -rf reports
 
 <span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
 opencode run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
