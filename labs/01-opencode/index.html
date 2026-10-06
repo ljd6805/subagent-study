@@ -1036,6 +1036,7 @@ task       explore  <span class="gk">allow</span></pre></div>
       <ul class="chk sm">
         <li>기본값에서 위 오류가 나는 것을 확인했다 (자식 세션 안에서 보임)</li>
         <li>2로 올린 뒤 자식 세션 안에 또 자식 세션이 생기는 것을 확인했다</li>
+        <li>손자 세션의 결과와 부모의 최종 답을 비교해 무엇이 빠졌는지 적어 본다</li>
       </ul>
       <div class="callout y" style="font-size:18px">되돌리는 까닭: 깊이가 늘면 결과가 두 번 요약되어 정보가 더 많이 깎인다.</div>
     </div>
@@ -1155,15 +1156,15 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
   <div class="todo"><b>할 일</b><span><i>1</i>5-2 대화 화면에서 그대로 아래 문장을 보낸다</span><span><i>2</i><kbd>ctrl+x</kbd> <kbd>↓</kbd>로 report 담당 세션에 메시지가 이어 붙었는지 본다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="xs"><span class="fn">부모가 받는 task 결과의 모양</span>
+      <div class="ask sm">report.py 를 맡았던 subagent에게, 같은 task_id로 이어서 top_products 테스트를 tests/test_report.py 에 추가하라고 해 줘.</div>
+<pre class="xs"><span class="fn">부모가 보는 task 결과 · 여기의 id를 task_id로 넘긴다</span>
 <span class="k">&lt;task id="ses_..." state="completed"&gt;</span>
 <span class="gk">&lt;task_result&gt;</span>
 상태: 고침
-원인: 할인율을 퍼센트가 아니라 금액으로 뺐다
+원인: top_products 가 구현되지 않았다
 ...
 <span class="gk">&lt;/task_result&gt;</span>
 <span class="k">&lt;/task&gt;</span></pre>
-      <div class="ask sm">report.py 를 맡았던 subagent에게, 같은 task_id로 이어서 top_products 테스트를 tests/test_report.py 에 추가하라고 해 줘.</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card c-blue"><div class="lbl">task_id가 하는 일</div><p><code>id</code>는 자식 세션의 id다. 부모가 task를 부를 때 이 값을 <code>task_id</code>로 넘기면 <b>새 세션이 아니라 그 세션</b>에서 이어진다. 자식은 앞에서 읽은 파일과 대화를 기억한다.</p></div>
