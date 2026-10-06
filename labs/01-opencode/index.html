@@ -177,6 +177,12 @@ ul.chk.sm li{font-size:19px}
 .lab-roadmap .card .no{font:800 13px var(--mono);color:var(--orange);letter-spacing:.08em}
 .lab-roadmap .card h3{font-size:19px;line-height:1.35}
 .lab-roadmap .card p{font-size:15.5px;line-height:1.5}
+.todo{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 22px;background:rgba(255,166,87,.07);border:1px solid rgba(255,166,87,.32);border-left:4px solid var(--orange);border-radius:12px;padding:10px 18px;margin:-12px 0 20px;font-size:17px;line-height:1.5;color:var(--text)}
+.todo>b{font:800 12px var(--sans);letter-spacing:.12em;color:var(--orange);margin-right:-6px}
+.todo>span{display:inline-flex;align-items:baseline;gap:8px}
+.todo i{font-style:normal;display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--orange);color:#0a0e14;font:800 12px var(--mono);transform:translateY(-1px)}
+.todo code{font-size:.88em}
+.todo kbd{font:700 14px var(--mono);color:var(--text);background:var(--panel3);border:1px solid var(--line2);border-bottom-width:2px;border-radius:6px;padding:0 7px}
 .ok{color:var(--green);font-weight:700}.ng{color:var(--red);font-weight:700}
 
 /* os tabs */
@@ -265,9 +271,9 @@ opencode --pure agent list</pre></div></div>
 <span class="v">description</span>: ...
 <span class="k">---</span></pre></div>
     </div>
-    <div class="callout b" style="margin-top:8px">모든 실습은 저장소를 받은 뒤 <code>subagent-study/labs/01-opencode/minishop</code> 폴더 안에서 한다. 이 덱에서 "minishop 폴더"라고 하면 이 경로다. 코드는 저장소의 <code>git</code>으로 언제든 처음 상태로 되돌릴 수 있다.</div>
-    <div class="callout p">터미널 명령은 <b>Linux · macOS</b>(bash)와 <b>Windows</b>(PowerShell 7) 탭으로 나눠 두었다. 한 상자에서 탭을 바꾸면 덱 전체가 같이 바뀌고, 다음에 열어도 기억한다.</div>
-    <div class="callout y">명령과 설정은 OpenCode <b>1.18.34</b>에서 <code>opencode --pure agent list</code>, <code>opencode --pure debug agent</code>로 직접 읽어 확인했다. 버전이 다르면 출력 모양이 조금 다를 수 있다.</div>
+    <div class="todo" style="margin:4px 0 0"><b>할 일</b><span><i>1</i>실습 장에는 제목 아래 이 줄이 있다. 번호 순서대로 따라 한다</span><span><i>2</i>끝나면 초록 체크 상자로 결과를 확인한다</span><span><i>3</i>이 줄이 없는 장은 읽기만 한다</span></div>
+    <div class="callout b" style="margin-top:8px">모든 실습은 저장소를 받은 뒤 <code>subagent-study/labs/01-opencode/minishop</code> 폴더 안에서 한다. 이 덱에서 "minishop 폴더"라고 하면 이 경로다. 코드는 저장소의 <code>git</code>으로 언제든 처음 상태로 되돌릴 수 있다. 설정 파일을 고친 뒤 "OpenCode를 다시 연다"는 <code>/exit</code>로 닫고 터미널에서 <code>opencode --pure</code>를 다시 실행한다는 뜻이다. 설정은 시작할 때 읽는다.</div>
+    <div class="callout p">터미널 명령은 <b>Linux · macOS</b>(bash)와 <b>Windows</b>(PowerShell 7) 탭으로 나눠 두었다. 탭을 바꾸면 덱 전체가 같이 바뀐다. 출력은 OpenCode <b>1.18.34</b>에서 직접 확인했다.</div>
   </div>
 </section>
 
@@ -283,6 +289,7 @@ opencode --pure agent list</pre></div></div>
 <section class="slide" data-sec="LAB 0">
   <div class="kicker o">0-1 · 설치와 모델 연결</div>
   <h2>설치하고, 모델 하나만 연결되면 준비 끝이다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>내 OS 탭을 고른다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다 (설치는 둘 중 하나만)</span><span><i>3</i><code>models</code> 목록에서 큰 모델 하나, 작은 모델 하나를 메모한다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre data-os="unix"><span class="c"># 설치 (jq는 설정 확인용)</span>
 curl -fsSL https://opencode.ai/install | bash
@@ -325,6 +332,7 @@ opencode --pure models</pre></div>
 <section class="slide" data-sec="LAB 0">
   <div class="kicker o">0-2 · 샘플 프로젝트</div>
   <h2>minishop에는 버그 2개와 미완성 기능 1개가 숨어 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 위 세 줄(clone, cd, 테스트)을 실행한다</span><span><i>2</i><code>FAILED (failures=2)</code>가 나오면 정상이다</span><span><i>3</i>아래 되돌리기 두 줄은 <b>지금 실행하지 않는다</b>. 실습 중 처음으로 돌아갈 때 쓴다</span></div>
   <div class="split" style="align-items:start;grid-template-columns:1.1fr 1fr">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 저장소를 받고 샘플 폴더로 이동한다</span>
 git clone https://github.com/ljd6805/subagent-study
@@ -334,6 +342,7 @@ cd subagent-study/labs/01-opencode/minishop
 python3 -m unittest
 <span class="r">FAILED (failures=2)</span>
 
+<span class="c"># ── 여기부터는 나중에 쓴다 ──</span>
 <span class="c"># 코드만 처음 상태로 (만든 agent 설정은 남김)</span>
 git checkout -- minishop tests
 
@@ -346,6 +355,7 @@ cd subagent-study\labs\01-opencode\minishop
 python -m unittest
 <span class="r">FAILED (failures=2)</span>
 
+<span class="c"># ── 여기부터는 나중에 쓴다 ──</span>
 <span class="c"># 코드만 처음 상태로 (만든 agent 설정은 남김)</span>
 git checkout -- minishop tests
 
@@ -369,6 +379,7 @@ git checkout -- . ; git clean -fd .</pre></div>
 <section class="slide" data-sec="LAB 0">
   <div class="kicker o">0-3 · 출발점 확인</div>
   <h2>아무것도 만들지 않아도 agent는 이미 일곱 개 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 왼쪽 명령을 실행한다</span><span><i>2</i>출력이 왼쪽과 같은 일곱 개인지 비교한다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="sm" data-os="unix">opencode --pure agent list | grep -E '^[a-z]'
 
@@ -406,6 +417,7 @@ title (primary)</pre></div>
 <section class="slide" data-sec="LAB 0">
   <div class="kicker o">0-4 · 시작 전 점검</div>
   <h2>build agent에 <code>task</code> 도구가 켜져 있어야 위임이 된다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 첫 명령을 실행해 <code>true</code>인지 본다</span><span><i>2</i>false면 둘째 명령으로 task 규칙을 보고 오른쪽 설명을 따른다</span><span><i>3</i><code>opencode.json</code>은 이미 들어 있으니 만들지 않는다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix">opencode --pure debug agent build | jq .tools.task
@@ -453,6 +465,7 @@ task       <span class="r">deny</span>   *</pre></div>
 <section class="slide" data-sec="LAB 1">
   <div class="kicker o">1-1 · @explore에게 맡기기</div>
   <h2><code>@이름</code>을 붙이면 그 subagent가 확실히 불린다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>터미널에서 <code>opencode --pure</code>로 OpenCode를 연다</span><span><i>2</i>아래 문장을 입력창에 보낸다</span><span><i>3</i>답이 끝날 때까지 화면을 오른쪽 목록과 비교한다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:18px">
 <pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>opencode --pure</pre>
@@ -478,6 +491,7 @@ task       <span class="r">deny</span>   *</pre></div>
 <section class="slide" data-sec="LAB 1">
   <div class="kicker o">1-2 · 자식 세션 들어가기</div>
   <h2>자식 세션은 따로 저장되고, 들어가서 볼 수는 있지만 말을 걸 수는 없다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>1-1 대화 화면에서 <kbd>ctrl+x</kbd>를 눌렀다 떼고 <kbd>↓</kbd>를 눌러 자식 세션에 들어간다</span><span><i>2</i>자식 입력창에 글을 써 보고 막히는지 본다</span><span><i>3</i><kbd>ctrl+x</kbd> <kbd>↑</kbd>로 부모에 돌아온다</span></div>
   <div class="split">
     <div class="keys" style="font-size:20px">
       <kbd>ctrl+x ↓</kbd><span>첫 번째 자식 세션으로 들어가기 (<code>ctrl+x</code>가 기본 leader 키)</span>
@@ -509,6 +523,7 @@ task       <span class="r">deny</span>   *</pre></div>
 <section class="slide" data-sec="LAB 1">
   <div class="kicker o">1-3 · 부모와 자식 비교</div>
   <h2>파일을 읽은 흔적은 자식에만 남고, 부모는 결과 한 덩어리만 받는다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>1-1 대화에서 부모와 자식 세션을 오가며(1-2 키) 왼쪽·오른쪽 항목을 하나씩 세어 본다</span><span><i>2</i>아래 체크 두 가지를 적어 본다</span></div>
   <div class="g2">
     <div class="card c-blue"><div class="lbl">부모 세션에서 세어 보기</div>
       <ul><li>도구 호출: <b>task 1개</b> (부모가 직접 read를 했다면 그것도 센다)</li>
@@ -533,6 +548,7 @@ task       <span class="r">deny</span>   *</pre></div>
 <section class="slide" data-sec="LAB 1">
   <div class="kicker o">1-4 · 이름 없이 맡기기</div>
   <h2>이름을 안 붙이면, 부모가 description을 읽고 맡길 agent를 고른다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code>로 새 세션을 연다</span><span><i>2</i>첫 문장을 보내고 어느 agent가 골라졌는지 task 블록 제목으로 본다</span><span><i>3</i>둘째 문장을 보낸다</span><span><i>4</i>다른 터미널 창에서 오른쪽 명령으로 description을 읽는다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="ask">테스트가 왜 실패하는지 원인만 조사해 줘. 코드 조사는 subagent에게 맡기고, 아직 고치지는 마.</div>
@@ -571,6 +587,7 @@ agent to execute multiple units of work in parallel.</span></pre></div>
 <section class="slide" data-sec="LAB 1">
   <div class="kicker o">1-5 · 정리</div>
   <h2>explore는 고칠 수 없게, general은 고칠 수 있게 만들어져 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>다른 터미널 창에서 왼쪽 명령을 실행해 explore와 general의 도구를 비교한다</span><span><i>2</i>오른쪽 정리를 읽고 LAB 1을 마친다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix">opencode --pure debug agent explore | jq .tools
 { <span class="v">"read"</span>: <span class="ok">true</span>, <span class="v">"glob"</span>: <span class="ok">true</span>, <span class="v">"grep"</span>: <span class="ok">true</span>, <span class="v">"bash"</span>: <span class="ok">true</span>,
@@ -609,6 +626,7 @@ opencode --pure debug agent general | jq .tools
 <section class="slide" data-sec="LAB 2">
   <div class="kicker o">2-1 · Markdown 방식 · 직접 만들기</div>
   <h2>파일 이름이 agent 이름이 되고, 본문이 지시문이 된다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 오른쪽 아래 명령으로 폴더를 만든다</span><span><i>2</i>에디터로 <code>.opencode/agents/reviewer.md</code>를 새로 만들고 왼쪽 내용을 그대로 붙여 넣어 저장한다</span><span><i>3</i>확인은 2-3에서 한다</span></div>
   <div class="split" style="align-items:start;grid-template-columns:1.15fr 1fr">
 <pre class="sm"><span class="fn">새 파일 · minishop/.opencode/agents/reviewer.md</span><span class="k">---</span>
 <span class="v">description</span>: 코드를 읽고 버그와 위험을 찾아 보고한다.
@@ -633,10 +651,6 @@ opencode --pure debug agent general | jq .tools
         <tr><td class="h">permission</td><td>도구별 <code>allow</code> / <code>ask</code> / <code>deny</code></td></tr>
         <tr><td class="h">본문</td><td>자식이 받는 시스템 지시문</td></tr>
       </table>
-<div class="card c-orange" style="padding:16px 20px"><div class="lbl">할 일 · 이 파일을 직접 만든다</div>
-        <p style="font-size:17px"><span class="stepno">1</span>minishop 폴더에서 아래 명령으로 폴더를 만든다<br>
-        <span class="stepno">2</span>에디터로 <code>reviewer.md</code>를 새로 만들고 왼쪽 내용을 그대로 붙여 넣어 저장한다<br>
-        <span class="stepno">3</span>OpenCode가 켜져 있으면 껐다 켠다. 확인은 2-3에서 한다</p></div>
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix">mkdir -p .opencode/agents</pre><pre class="xs" data-os="win">New-Item -ItemType Directory -Force .opencode\agents</pre></div>
     </div>
   </div>
@@ -646,6 +660,7 @@ opencode --pure debug agent general | jq .tools
 <section class="slide" data-sec="LAB 2">
   <div class="kicker o">2-2 · JSON 방식 · 직접 만들기</div>
   <h2>JSON에서는 키가 이름이 되고, 지시문은 파일로 빼 둘 수 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 <code>mkdir prompts</code>(모든 OS 공통) 후 오른쪽 위 내용으로 <code>prompts/tester.md</code>를 저장한다</span><span><i>2</i><code>opencode.json</code>에 초록색 <code>"tester"</code> 블록만 추가한다. 나머지는 그대로 둔다</span><span><i>3</i>확인은 2-3에서 한다</span></div>
   <div class="split" style="align-items:start;grid-template-columns:1.15fr 1fr">
 <pre class="xs"><span class="fn">고칠 파일 · minishop/opencode.json (저장 후 전체 모습)</span>{
   <span class="v">"$schema"</span>: <span class="s">"https://opencode.ai/config.json"</span>,
@@ -673,10 +688,6 @@ python -m unittest -v 만 실행할 수 있다
 "테스트 이름 / 기대값 / 실제값 / 의심되는 파일"을
 한 줄로 보고하고, 코드는 고치지 않는다.</pre>
       <div class="card c-blue"><div class="lbl">bash 규칙 읽는 법</div><p>위에서 아래로 읽고 <b>마지막으로 맞는 규칙</b>이 적용된다. 먼저 전부 막고(<code>*</code>: deny), 필요한 명령 하나만 연다. <code>python*</code>는 <code>python</code>과 <code>python3</code>를 둘 다 받는다.</p></div>
-      <div class="card c-orange" style="padding:16px 20px"><div class="lbl">할 일 · 두 파일을 직접 고친다</div>
-        <p style="font-size:17px"><span class="stepno">1</span>minishop 폴더에서 <code>mkdir prompts</code> (모든 OS 공통)로 폴더를 만들고, 위 내용으로 <code>tester.md</code>를 저장한다<br>
-        <span class="stepno">2</span><code>opencode.json</code>을 열어 <code>"tester"</code> 블록(초록색 이름)만 <code>agent</code> 안에 추가한다. 나머지는 그대로 둔다<br>
-        <span class="stepno">3</span>OpenCode를 껐다 켠다. 확인은 2-3에서 한다</p></div>
     </div>
   </div>
   <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/">agents · json</a><a href="https://opencode.ai/docs/permissions/">permissions</a></div>
@@ -685,6 +696,7 @@ python -m unittest -v 만 실행할 수 있다
 <section class="slide" data-sec="LAB 2">
   <div class="kicker o">2-3 · 모델 없이 검사</div>
   <h2>모델을 부르기 전에 <code>debug agent</code>로 설정이 읽혔는지 본다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>다른 터미널 창에서 왼쪽 명령을 하나씩 실행한다</span><span><i>2</i>결과가 다르면 2-1, 2-2의 파일 위치와 이름을 다시 본다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · 실제 출력 (1.18.34)</span></div><pre class="xs" data-os="unix">opencode --pure agent list | grep -E '^[a-z]'
 ...
@@ -740,6 +752,7 @@ bash       python* -m unittest* <span class="gk">allow</span>
 <section class="slide" data-sec="LAB 2">
   <div class="kicker o">2-4 · 불러 보기</div>
   <h2>직접 부르기와 알아서 고르게 하기를 둘 다 해 본다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>OpenCode를 다시 연다</span><span><i>2</i>① 두 문장을 하나씩 보낸다</span><span><i>3</i><code>/new</code> 후 ② 두 문장을 하나씩 보낸다</span></div>
   <div class="g2">
     <div style="display:flex;flex-direction:column;gap:14px">
       <div class="card c-orange" style="padding:16px 20px"><div class="lbl">① 이름으로 직접</div></div>
@@ -760,6 +773,7 @@ bash       python* -m unittest* <span class="gk">allow</span>
 <section class="slide" data-sec="LAB 2">
   <div class="kicker o">2-5 · description 실험</div>
   <h2>description을 흐리게 쓰면 알아서 맡기는 일이 줄어든다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.md</code>의 description을 실험 A로 바꿔 저장하고 OpenCode를 다시 연다</span><span><i>2</i><code>/new</code> 후 아래 문장 보내기를 3번 하고 표에 적는다</span><span><i>3</i>실험 B로 바꿔 같은 일을 한다. 끝나면 B로 둔다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <pre class="xs"><span class="fn">실험 A · 흐린 description</span><span class="v">description</span>: 도와주는 agent</pre>
@@ -791,6 +805,7 @@ bash       python* -m unittest* <span class="gk">allow</span>
 <section class="slide" data-sec="LAB 3">
   <div class="kicker o">3-1 · 막힌 일 시키기</div>
   <h2>deny된 도구는 자식에게 아예 주어지지 않는다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code> 후 두 문장을 하나씩 보낸다</span><span><i>2</i>자식 세션에 들어가 거부된 도구 호출을 본다</span><span><i>3</i>다른 터미널 창에서 아래 <code>git status</code>를 실행한다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="ask">@reviewer cart.py 의 할인 계산 버그를 직접 고쳐 줘</div>
@@ -813,6 +828,7 @@ bash       python* -m unittest* <span class="gk">allow</span>
 <section class="slide" data-sec="LAB 3">
   <div class="kicker o">3-2 · ask로 바꾸기</div>
   <h2><code>ask</code>로 바꾸면 자식이 쓰기 전에 나에게 묻는다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.md</code>의 <code>edit: deny</code>를 <code>edit: ask</code>로 바꾸고 OpenCode를 다시 연다</span><span><i>2</i>아래 문장을 보내고 승인 요청에서 <b>거절</b>한다</span><span><i>3</i><code>/new</code> 후 다시 보내 이번에는 <b>승인</b>한다</span><span><i>4</i>끝나면 <code>edit: deny</code>로 되돌리고 <code>git checkout -- minishop</code>으로 고쳐진 코드를 되돌린다</span></div>
   <div class="split" style="align-items:start">
 <pre class="sm"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">permission</span>:
   <span class="v">edit</span>: <span class="y">ask</span>     <span class="c"># deny → ask</span>
@@ -829,12 +845,12 @@ bash       python* -m unittest* <span class="gk">allow</span>
       </ul>
     </div>
   </div>
-  <div class="callout y" style="margin-top:20px">실습이 끝나면 <code>edit: deny</code>로 되돌린다. 리뷰어는 고치지 않는 역할로 두는 편이 이후 랩에서 결과를 읽기 쉽다.</div>
 </section>
 
 <section class="slide" data-sec="LAB 3">
   <div class="kicker o">3-3 · 모델 지정</div>
   <h2>모델을 안 정하면 부른 쪽의 모델을 그대로 쓴다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.md</code>의 <code>mode</code> 아래에 <code>model</code> 줄을 추가한다. 모델 이름은 0-1에서 메모한 작은 모델로 바꾼다</span><span><i>2</i>다른 터미널 창에서 왼쪽 명령으로 확인하고 OpenCode를 다시 연다</span><span><i>3</i>아래 문장을 보낸다. <code>model</code> 줄은 남겨 둬도 된다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <pre class="sm"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">mode</span>: subagent
@@ -869,12 +885,16 @@ $null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).
 <section class="slide" data-sec="LAB 3">
   <div class="kicker o">3-4 · 부모 권한 물려받기</div>
   <h2>부모에서 막은 것은 자식에서도 막힌다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>opencode.json</code>의 build <code>permission</code>에 <code>"bash": "deny"</code> 한 줄을 추가한다 (task는 그대로)</span><span><i>2</i>OpenCode를 다시 열고 아래 문장을 보낸다</span><span><i>3</i>끝나면 추가한 bash 줄을 지운다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="sm"><span class="fn">opencode.json (일부) · 부모 build에 bash 금지 추가</span>{
+<pre class="sm"><span class="fn">opencode.json (일부) · build에 bash 한 줄 추가</span>{
   <span class="v">"agent"</span>: {
     <span class="v">"build"</span>: {
-      <span class="v">"permission"</span>: { <span class="v">"bash"</span>: <span class="s">"deny"</span> }
+      <span class="v">"permission"</span>: {
+        <span class="v">"task"</span>: <span class="s">"allow"</span>,
+        <span class="gk">"bash"</span>: <span class="s">"deny"</span>
+      }
     },
     <span class="v">"tester"</span>: { ... }
   }
@@ -887,7 +907,7 @@ $null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).
         <li>tester 설정은 unittest를 허락하지만, 부모가 bash를 막았을 때 실제로 실행되는지 확인했다</li>
         <li>결과를 보고 "권한은 부모를 넘을 수 없다"를 내 말로 적어 본다</li>
       </ul>
-      <div class="callout y" style="font-size:18px">확인 후 build의 bash 금지는 지운다. 남겨 두면 이후 랩에서 테스트가 실행되지 않는다.</div>
+      <div class="callout y" style="font-size:18px">bash 줄을 지우지 않으면 이후 랩에서 테스트가 실행되지 않는다.</div>
     </div>
   </div>
   <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/permissions/">permissions</a><a href="https://opencode.ai/docs/agents/">agents · permissions</a></div>
@@ -905,6 +925,7 @@ $null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).
 <section class="slide" data-sec="LAB 4">
   <div class="kicker o">4-1 · permission.task</div>
   <h2><code>permission.task</code>로 부모가 맡길 수 있는 대상을 좁힌다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>opencode.json</code>에서 build의 <code>"task": "allow"</code>를 왼쪽 블록으로 바꾼다</span><span><i>2</i>다른 터미널 창에서 왼쪽 명령으로 확인하고 OpenCode를 다시 연다</span><span><i>3</i><code>/new</code> 후 두 문장을 하나씩 보낸다</span><span><i>4</i>끝나면 <code>"task": "allow"</code>로 되돌린다 (LAB 5에서 general을 쓴다)</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <pre class="sm"><span class="fn">opencode.json (일부) · build의 task 값을 이렇게 바꾼다</span><span class="v">"build"</span>: {
@@ -943,6 +964,7 @@ task       explore  <span class="gk">allow</span></pre></div>
 <section class="slide" data-sec="LAB 4">
   <div class="kicker o">4-2 · mode 세 가지</div>
   <h2><code>mode</code>는 이 agent를 누가 쓸 수 있는지를 정한다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>터미널에서 왼쪽 명령을 실행해 경고를 본다</span><span><i>2</i><code>reviewer.md</code>의 <code>mode</code>를 <code>all</code>로 바꾸고 OpenCode를 다시 열어 <kbd>Tab</kbd>을 눌러 본다</span><span><i>3</i>같은 명령을 다시 실행한다</span><span><i>4</i>끝나면 <code>mode: subagent</code>로 되돌린다</span></div>
   <div class="split" style="align-items:start">
     <table class="sm">
       <tr><th>mode</th><th>Tab 전환</th><th>@ 호출 · task</th><th><code>run --agent</code></th></tr>
@@ -955,9 +977,9 @@ task       explore  <span class="gk">allow</span></pre></div>
 <span class="y">! agent "reviewer" is a subagent, not a primary
   agent. Falling back to default agent</span></pre>
       <ol class="num">
-        <li>reviewer의 <code>mode</code>를 <code>all</code>로 바꾼다</li>
-        <li>OpenCode를 다시 열고 <b>Tab</b>을 눌러 reviewer가 나오는지 본다</li>
-        <li>같은 <code>run --agent</code> 명령에서 경고가 사라지는지 본다</li>
+        <li>바꾸기 전에는 경고가 나오고 기본 agent로 실행된다</li>
+        <li><code>all</code>로 바꾸면 <b>Tab</b>에 reviewer가 나온다</li>
+        <li>같은 <code>run --agent</code> 명령에서 경고가 사라진다</li>
       </ol>
       <p class="muted" style="font-size:17px"><code>hidden: true</code>는 @ 자동완성 목록에서만 숨긴다. 모델은 여전히 task로 부를 수 있다.</p>
     </div>
@@ -967,10 +989,12 @@ task       explore  <span class="gk">allow</span></pre></div>
 <section class="slide" data-sec="LAB 4">
   <div class="kicker o">4-3 · 중첩 깊이</div>
   <h2>기본값에서는 subagent가 다시 subagent를 부를 수 없다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code> 후 아래 문장을 보내고, 자식 세션 안에서 오류를 본다</span><span><i>2</i><code>opencode.json</code> 맨 바깥에 <code>"subagent_depth": 2,</code>를 추가하고 OpenCode를 다시 연다</span><span><i>3</i><code>/new</code> 후 같은 문장을 보낸다</span><span><i>4</i>끝나면 추가한 줄을 지운다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
       <div class="ask sm">@general report.py 의 TODO를 조사해 줘. 그 안에서 explore subagent에게 data 폴더 조사를 따로 맡겨.</div>
-<pre class="xs"><span class="fn">자식(general) 안에서 task를 부르면 · 실제 오류 문구</span><span class="r">Subagent depth limit reached (1). Increase
+<pre class="xs"><span class="fn">자식(general) 안에서 task를 부르면 · 실제 오류 문구</span>
+<span class="r">Subagent depth limit reached (1). Increase
 "subagent_depth" to allow nested subagents.</span></pre>
 <pre class="sm"><span class="fn">opencode.json (일부)</span>{
   <span class="v">"subagent_depth"</span>: 2,
@@ -987,7 +1011,7 @@ task       explore  <span class="gk">allow</span></pre></div>
         <li>기본값에서 위 오류가 나는 것을 확인했다 (자식 세션 안에서 보임)</li>
         <li>2로 올린 뒤 자식 세션 안에 또 자식 세션이 생기는 것을 확인했다</li>
       </ul>
-      <div class="callout y" style="font-size:18px">확인 후 1로 되돌린다. 깊이가 늘면 결과가 두 번 요약되어 정보가 더 많이 깎인다.</div>
+      <div class="callout y" style="font-size:18px">되돌리는 까닭: 깊이가 늘면 결과가 두 번 요약되어 정보가 더 많이 깎인다.</div>
     </div>
   </div>
 </section>
@@ -1004,6 +1028,7 @@ task       explore  <span class="gk">allow</span></pre></div>
 <section class="slide" data-sec="LAB 5">
   <div class="kicker o">5-1 · 브리프 쓰기</div>
   <h2>자식은 앞선 대화를 모르므로, 브리프 하나로 일이 끝나야 한다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>다른 터미널 창에서 <code>git checkout -- minishop tests</code>로 코드를 처음 상태로 돌린다</span><span><i>2</i>minishop 폴더에 <code>brief.md</code>를 새로 만들고 왼쪽 내용을 그대로 저장한다 (<code>&lt;대상&gt;</code>은 그대로 둔다)</span></div>
   <div class="split" style="align-items:start;grid-template-columns:1.2fr 1fr">
 <pre class="xs"><span class="fn">brief.md · minishop 폴더에 저장, &lt;대상&gt;만 바꿔 쓴다</span><span class="gk">## 목표</span>
 minishop/&lt;대상&gt;.py 의 버그나 미완성 부분을 찾아 고친다.
@@ -1038,6 +1063,7 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
 <section class="slide" data-sec="LAB 5">
   <div class="kicker o">5-2 · 동시에 맡기기</div>
   <h2>한 번의 답에서 task를 여러 개 부르면 동시에 돈다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code> 후 아래 문장을 보낸다</span><span><i>2</i>task 블록 세 개가 뜨면 <kbd>ctrl+x</kbd> <kbd>↓</kbd>, <kbd>←</kbd> <kbd>→</kbd>로 세 자식 세션을 둘러본다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
       <div class="ask sm">brief.md 를 읽고, 대상을 cart, inventory, report 로 바꾼 브리프 세 개를 만들어 general subagent 세 개에게 동시에 맡겨 줘. 셋이 끝나면 reports/ 의 파일을 모아 표 하나로 정리해 줘.</div>
@@ -1065,6 +1091,7 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
 <section class="slide" data-sec="LAB 5">
   <div class="kicker o">5-3 · 결과 확인과 판정</div>
   <h2>자식의 보고를 믿지 말고, 테스트로 판정한다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>세 자식이 끝나면 다른 터미널 창에서 왼쪽 명령 세 개를 차례로 실행한다</span><span><i>2</i>결과를 오른쪽 체크와 비교한다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 1. 결과 파일이 형식대로 왔는지</span>
@@ -1099,6 +1126,7 @@ python -m unittest -v</pre></div>
 <section class="slide" data-sec="LAB 5">
   <div class="kicker o">5-4 · 이어서 시키기</div>
   <h2>task 결과에 붙은 id로 같은 자식에게 이어서 일을 시킬 수 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>5-2 대화 화면에서 그대로 아래 문장을 보낸다</span><span><i>2</i><kbd>ctrl+x</kbd> <kbd>↓</kbd>로 report 담당 세션에 메시지가 이어 붙었는지 본다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <pre class="xs"><span class="fn">부모가 받는 task 결과의 모양</span><span class="k">&lt;task id="ses_..." state="completed"&gt;</span>
@@ -1133,6 +1161,7 @@ python -m unittest -v</pre></div>
 <section class="slide" data-sec="LAB 6">
   <div class="kicker o">6-1 · run으로 위임</div>
   <h2><code>opencode run</code>도 TUI와 같은 agent와 설정을 쓴다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>OpenCode 화면을 <code>/exit</code>로 닫는다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다</span><span><i>3</i><code>opencode --pure session list</code>로 방금 세션을 확인한다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
 git checkout -- minishop tests &amp;&amp; rm -rf reports
@@ -1171,6 +1200,7 @@ opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</
 <section class="slide" data-sec="LAB 6">
   <div class="kicker o">6-2 · JSON으로 task 보기</div>
   <h2><code>--format json</code>으로 받으면 어떤 자식이 불렸는지 스크립트로 셀 수 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 첫 명령을 실행해 <code>run.jsonl</code>이 생기는지 본다</span><span><i>2</i>둘째 명령으로 task만 골라 본다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix">opencode --pure run --format json \
   "tests 와 minishop 폴더를 explore subagent 두 개에게 동시에 조사시켜 줘" \
