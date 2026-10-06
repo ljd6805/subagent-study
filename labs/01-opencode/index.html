@@ -432,11 +432,11 @@ task       <span class="r">deny</span>   *</pre></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card c-red"><div class="lbl">task가 꺼져 있으면</div><p>task 규칙의 마지막이 <code>* deny</code>이면 OpenCode가 task 도구를 <b>목록에서 빼 버린다</b>. 모델은 "task 도구가 없다"고 말하며 subagent를 부르지 못한다.</p></div>
-      <div class="card c-blue"><div class="lbl">어디서 들어오나</div><p>기본값에는 없다. 보통 전역 설정 <code>~/.config/opencode/opencode.json</code>의 <code>permission.task</code>, <code>tools.task: false</code>, <code>agent.build.permission.task</code> 중 하나다. 전역 설정은 그대로 두고, 샘플 폴더에 넣어 둔 왼쪽 파일이 이 폴더에서만 다시 연다.</p></div>
+      <div class="card c-blue"><div class="lbl">어디서 들어오나</div><p>기본값에는 없다. 흔한 원인은 <b>플러그인</b>이다. 예를 들어 oh-my-openagent(옛 이름 oh-my-opencode)는 build를 subagent로 바꾸고 task를 막으며, explore도 자기 것으로 바꾼다. 이때는 실습 내내 <code>opencode --pure</code>로 플러그인 없이 실행한다. 전역 설정의 <code>permission</code>이 원인이면 왼쪽 파일이 이 폴더에서만 다시 연다.</p></div>
       <ul class="chk sm">
-        <li><code>tools.task</code>가 true다 (false면 <code>git pull</code>로 이 파일이 있는지 확인한다)</li>
-        <li>LAB 2부터는 이 <code>opencode.json</code>에 이어서 쓴다</li>
-      </ul>
+        <li><code>tools.task</code>가 true다. false면 <code>--pure</code>를 붙여 다시 확인한다</li>
+        <li><code>opencode --pure agent list</code>가 0-3과 같은 일곱 개다. 그렇다면 이후 모든 <code>opencode</code> 명령에 <code>--pure</code>를 붙인다</li>
+              </ul>
     </div>
   </div>
 </section>
@@ -455,7 +455,9 @@ task       <span class="r">deny</span>   *</pre></div>
   <h2><code>@이름</code>을 붙이면 그 subagent가 확실히 불린다</h2>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:18px">
-<pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>opencode</pre>
+<pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>opencode
+<span class="c"># 플러그인을 쓰고 있다면 (0-4)</span>
+opencode --pure</pre>
       <div class="ask">@explore minishop 폴더의 각 파일이 무슨 일을 하는지 한 줄씩 정리해 줘</div>
       <p class="muted" style="font-size:19px"><code>@</code>를 치면 부를 수 있는 agent 목록이 뜬다. <code>explore</code>를 고르면 된다.</p>
     </div>
