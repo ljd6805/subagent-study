@@ -1,0 +1,1468 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Codex Subagent Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e14;--panel:#121a24;--panel2:#18222f;--panel3:#1f2b3a;--line:#263243;--line2:#34445a;
+  --text:#eef2f6;--sub:#c3cdd8;--muted:#8e9cae;--dim:#5a687a;
+  --green:#7ee787;--blue:#58a6ff;--yellow:#e3b341;--red:#ff7b72;--purple:#bc8cff;--orange:#ffa657;--cyan:#56d4dd;
+  --g-bg:#11261a;--b-bg:#0f2036;--y-bg:#2a2210;--r-bg:#2d1513;--p-bg:#21183a;--o-bg:#2c1d0e;
+  --sans:Inter,"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#05080c;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center center;background:var(--bg);overflow:hidden;box-shadow:0 0 0 1px #111a25}
+.slide{position:absolute;inset:0;display:none;padding:84px 88px 92px;flex-direction:column;word-break:keep-all;
+  background:radial-gradient(1200px 600px at 100% 0%,rgba(88,166,255,.06),transparent 60%),radial-gradient(900px 500px at 0% 100%,rgba(126,231,135,.045),transparent 60%),var(--bg)}
+.slide.active{display:flex}
+.slide::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;
+  mask-image:linear-gradient(180deg,#000,transparent 70%)}
+.slide>*{position:relative}
+
+/* chrome */
+.chrome-top{position:absolute;left:88px;right:88px;top:30px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--dim);z-index:2}
+.chrome-top span{padding:4px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.chrome-top span.on{color:var(--text);border-color:var(--line2);background:var(--panel)}
+.chrome-top .sep{flex:1}
+.pageno{position:absolute;right:88px;bottom:30px;font:600 13px var(--mono);color:var(--dim);z-index:2}
+.bar{position:absolute;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--green));z-index:3;transition:width .25s}
+
+/* type */
+.kicker{font-size:15px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:22px;height:3px;border-radius:2px;background:currentColor}
+h1{font-size:96px;line-height:1.04;letter-spacing:-.045em;margin:0 0 26px;font-weight:800}
+h2{font-size:48px;line-height:1.16;letter-spacing:-.03em;margin:0 0 30px;font-weight:800}
+h3{font-size:24px;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+.lead{font-size:25px;line-height:1.55;color:var(--sub);margin:0;max-width:1300px}
+.lead b,.card b,li b{color:var(--text)}
+p{margin:0}
+.muted{color:var(--muted)}.dim{color:var(--dim)}
+.green{color:var(--green)}.blue{color:var(--blue)}.yellow{color:var(--yellow)}.red{color:var(--red)}.purple{color:var(--purple)}.orange{color:var(--orange)}.cyan{color:var(--cyan)}
+.hl{background:linear-gradient(transparent 62%,rgba(126,231,135,.25) 62%)}
+code{font-family:var(--mono);font-size:.86em;background:#1b2635;border:1px solid #26354a;border-radius:6px;padding:.04em .36em;color:#e6edf3}
+h2 code{font-size:.8em}
+
+/* layout */
+.body{flex:1;min-height:0;display:flex;flex-direction:column;gap:26px}
+.row{display:flex;gap:28px;min-height:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center;flex:1;min-height:0}
+.split.r{grid-template-columns:1fr 1.15fr}
+.center{display:flex;align-items:center;justify-content:center}
+.fill{flex:1;min-height:0}
+.mt-auto{margin-top:auto}
+
+/* card */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;display:flex;flex-direction:column;gap:10px}
+.card .lbl{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card h3{margin:0}
+.card p,.card li{font-size:19px;line-height:1.55;color:var(--sub)}
+.card ul{margin:0;padding-left:1.1em}.card li{margin:4px 0}
+.card.c-green{border-color:#2c6b3c;background:linear-gradient(180deg,var(--g-bg),var(--panel) 70%)}.card.c-green .lbl{color:var(--green)}
+.card.c-blue{border-color:#27578a;background:linear-gradient(180deg,var(--b-bg),var(--panel) 70%)}.card.c-blue .lbl{color:var(--blue)}
+.card.c-yellow{border-color:#6e5719;background:linear-gradient(180deg,var(--y-bg),var(--panel) 70%)}.card.c-yellow .lbl{color:var(--yellow)}
+.card.c-red{border-color:#743230;background:linear-gradient(180deg,var(--r-bg),var(--panel) 70%)}.card.c-red .lbl{color:var(--red)}
+.card.c-purple{border-color:#553a85;background:linear-gradient(180deg,var(--p-bg),var(--panel) 70%)}.card.c-purple .lbl{color:var(--purple)}
+.card.c-orange{border-color:#78481b;background:linear-gradient(180deg,var(--o-bg),var(--panel) 70%)}.card.c-orange .lbl{color:var(--orange)}
+.card .big{font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--panel3);border:1px solid var(--line2)}
+
+/* list */
+ul.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+ul.pts li{font-size:22px;line-height:1.5;color:var(--sub);padding-left:34px;position:relative}
+ul.pts li::before{content:"";position:absolute;left:6px;top:.55em;width:12px;height:12px;border-radius:3px;background:var(--green);transform:rotate(45deg)}
+ul.pts.b li::before{background:var(--blue)}ul.pts.y li::before{background:var(--yellow)}ul.pts.r li::before{background:var(--red)}ul.pts.p li::before{background:var(--purple)}
+ol.num{list-style:none;margin:0;padding:0;counter-reset:n;display:flex;flex-direction:column;gap:14px}
+ol.num li{counter-increment:n;font-size:21px;line-height:1.5;color:var(--sub);padding-left:46px;position:relative}
+ol.num li::before{content:counter(n);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--panel3);border:1px solid var(--line2);font:700 15px var(--mono);color:var(--green);display:grid;place-items:center}
+
+/* code */
+pre{font-family:var(--mono);font-size:18px;line-height:1.6;background:#070b11;border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin:0;color:#dce6f0;white-space:pre;overflow:hidden;position:relative}
+pre .fn{position:absolute;top:0;right:0;font:600 12px var(--mono);color:var(--muted);background:var(--panel2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0 16px 0 10px;padding:6px 12px}
+pre.sm{font-size:16px;padding:18px 22px}
+pre.xs{font-size:14.5px;padding:16px 18px;line-height:1.55}
+.c{color:#6b7d93}
+pre[data-os="win"].xs{font-size:13.5px}
+.pr{color:var(--orange);user-select:none;-webkit-user-select:none;font-weight:700}.k{color:#79c0ff}.s{color:#a5d6ff}.v{color:var(--yellow)}.r{color:var(--red)}.p{color:var(--purple)}.gk{color:var(--green)}
+.mark{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font:800 13px var(--sans);color:#0a0e14;background:var(--green);margin-left:8px;vertical-align:1px}
+.mark.b{background:var(--blue)}.mark.y{background:var(--yellow)}.mark.p{background:var(--purple)}.mark.r{background:var(--red)}.mark.o{background:var(--orange)}
+
+/* table */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:19px;line-height:1.45;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+th,td{padding:13px 18px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--panel2)}
+td{color:var(--sub)}
+td.h{color:var(--text);font-weight:700;white-space:nowrap;background:rgba(255,255,255,.015)}
+table.tight th,table.tight td{padding:10px 16px}
+table.sm{font-size:17px}
+
+/* tool tags */
+.t{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:800;letter-spacing:.04em;padding:4px 11px;border-radius:999px;border:1px solid;white-space:nowrap;vertical-align:middle}
+.t::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.t.oc{color:var(--orange);border-color:#78481b;background:var(--o-bg)}
+.t.cx{color:var(--blue);border-color:#27578a;background:var(--b-bg)}
+.t.cc{color:var(--purple);border-color:#553a85;background:var(--p-bg)}
+.pill{display:inline-block;font-size:14px;font-weight:700;padding:4px 12px;border-radius:999px;background:var(--panel3);border:1px solid var(--line2);color:var(--sub)}
+
+/* footer note */
+.note{position:absolute;left:88px;right:200px;bottom:26px;display:flex;align-items:center;gap:14px;font-size:15px;color:var(--muted);line-height:1.4;z-index:2}
+.note .nt{flex:none;font-size:12px;font-weight:800;letter-spacing:.1em;padding:5px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line2);color:var(--sub)}
+.note .nt.doc{color:var(--blue);border-color:#27578a}
+.note .nt.try{color:var(--yellow);border-color:#6e5719}
+.note a{color:var(--blue);text-decoration:none;margin-right:14px}.note a:hover{text-decoration:underline}
+.note code{font-size:.92em}
+
+/* callout / quote */
+.callout{border-left:4px solid var(--green);background:linear-gradient(90deg,rgba(126,231,135,.08),transparent);padding:16px 22px;border-radius:0 14px 14px 0;font-size:23px;line-height:1.5;color:var(--sub)}
+.callout b{color:var(--text)}
+.callout.y{border-color:var(--yellow);background:linear-gradient(90deg,rgba(227,179,65,.09),transparent)}
+.callout.r{border-color:var(--red);background:linear-gradient(90deg,rgba(255,123,114,.09),transparent)}
+.callout.b{border-color:var(--blue);background:linear-gradient(90deg,rgba(88,166,255,.09),transparent)}
+.callout.p{border-color:var(--purple);background:linear-gradient(90deg,rgba(188,140,255,.09),transparent)}
+.quote{font-size:44px;line-height:1.3;font-weight:800;letter-spacing:-.025em}
+.quote em{font-style:normal;color:var(--green)}
+
+/* divider */
+.divider{justify-content:center}
+.divider .num{position:absolute;right:70px;top:40px;font:900 340px/1 var(--sans);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px #1d2836}
+.divider h1{font-size:110px}
+.divider .toc{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px;max-width:1300px}
+.divider .toc span{font-size:19px;font-weight:600;padding:10px 18px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--sub)}
+.divider .toc span b{font-family:var(--mono);color:var(--muted);margin-right:10px;font-weight:600}
+
+/* svg helpers */
+svg{display:block;overflow:visible}
+svg text{font-family:var(--sans);fill:var(--sub)}
+svg .mono{font-family:var(--mono)}
+.sb{fill:var(--panel);stroke:var(--line2);stroke-width:1.5}
+.sb2{fill:var(--panel2);stroke:var(--line2);stroke-width:1.5}
+.ln{stroke:var(--line2);stroke-width:2;fill:none}
+.ar{stroke:var(--muted);stroke-width:2.5;fill:none}
+
+/* overview */
+#ov{position:fixed;inset:0;background:rgba(3,6,10,.94);z-index:50;display:none;overflow:auto;padding:30px}
+#ov.on{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;align-content:start}
+#ov a{display:block;background:#101721;border:1px solid #233042;border-radius:10px;padding:12px 14px;color:#c9d3de;text-decoration:none;font:500 13px/1.45 var(--sans)}
+#ov a:hover,#ov a.cur{border-color:var(--green)}
+#ov a b{display:block;font:700 11px var(--mono);color:#6d7c8f;margin-bottom:4px}
+.help{position:fixed;right:14px;top:10px;color:#3e4b5b;font:500 12px var(--sans);z-index:40}
+
+/* lab extras */
+.slide{background:radial-gradient(1200px 600px at 100% 0%,rgba(255,166,87,.06),transparent 60%),radial-gradient(900px 500px at 0% 100%,rgba(126,231,135,.045),transparent 60%),var(--bg)}
+.bar{background:linear-gradient(90deg,var(--orange),var(--green))}
+.kicker.o{color:var(--orange)}
+ul.chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+ul.chk li{font-size:21px;line-height:1.5;color:var(--sub);padding-left:40px;position:relative}
+ul.chk li::before{content:"";position:absolute;left:2px;top:.22em;width:22px;height:22px;border-radius:6px;border:2px solid var(--green);background:rgba(126,231,135,.06)}
+ul.chk.sm li{font-size:19px}
+.ask{font-family:var(--mono);font-size:18px;line-height:1.6;background:#0d1520;border:1px solid #27578a;border-radius:14px;padding:16px 20px;color:#dce6f0;white-space:pre-wrap}
+.ask::before{content:"Codex 입력창";display:block;font:800 12px var(--sans);letter-spacing:.12em;color:var(--blue);margin-bottom:6px}
+.ask.sm{font-size:16px;padding:14px 18px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:12px 18px;align-items:center}
+.keys kbd{font:700 17px var(--mono);color:var(--text);background:var(--panel3);border:1px solid var(--line2);border-bottom-width:3px;border-radius:8px;padding:5px 12px;white-space:nowrap;justify-self:start}
+.keys span{font-size:20px;color:var(--sub)}
+.stepno{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--orange);color:#0a0e14;font:800 15px var(--mono);margin-right:10px;vertical-align:2px}
+.lab-roadmap{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}
+.lab-roadmap .card{padding:18px 16px;gap:8px}
+.lab-roadmap .card .no{font:800 13px var(--mono);color:var(--orange);letter-spacing:.08em}
+.lab-roadmap .card h3{font-size:19px;line-height:1.35}
+.lab-roadmap .card p{font-size:15.5px;line-height:1.5}
+.todo{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 22px;background:rgba(255,166,87,.07);border:1px solid rgba(255,166,87,.32);border-left:4px solid var(--orange);border-radius:12px;padding:10px 18px;margin:-12px 0 20px;font-size:17px;line-height:1.5;color:var(--text)}
+.todo>b{font:800 12px var(--sans);letter-spacing:.12em;color:var(--orange);margin-right:-6px}
+.todo>span{display:inline-flex;align-items:baseline;gap:8px}
+.todo i{font-style:normal;display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--orange);color:#0a0e14;font:800 12px var(--mono);transform:translateY(-1px)}
+.todo code{font-size:.88em}
+.todo kbd{font:700 14px var(--mono);color:var(--text);background:var(--panel3);border:1px solid var(--line2);border-bottom-width:2px;border-radius:6px;padding:0 7px}
+.ok{color:var(--green);font-weight:700}.ng{color:var(--red);font-weight:700}
+
+/* os tabs */
+.os{display:flex;flex-direction:column;min-width:0;min-height:0}
+.os-tabs{display:flex;gap:4px;align-items:flex-end;position:relative;z-index:1;margin-bottom:-1px}
+.os-tabs button{font:700 13px var(--sans);letter-spacing:.02em;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-bottom-color:var(--line);border-radius:10px 10px 0 0;padding:7px 14px;cursor:pointer}
+.os-tabs button:hover{color:var(--text)}
+html[data-os="unix"] .os-tabs button[data-os="unix"],html[data-os="win"] .os-tabs button[data-os="win"]{color:var(--orange);background:#070b11;border-bottom-color:#070b11}
+.os-tabs .os-lbl{margin-left:auto;font:600 12px var(--mono);color:var(--muted);padding:0 6px 7px}
+.os>pre{border-top-left-radius:0}
+html[data-os="unix"] .os>pre[data-os="win"],html[data-os="win"] .os>pre[data-os="unix"]{display:none}
+</style>
+</head>
+<body>
+<div class="help">← → Space · O 목차 · F 전체화면</div>
+<div id="stage">
+
+<!-- ============ 01 표지 ============ -->
+<section class="slide active" data-sec="시작">
+  <div class="split" style="grid-template-columns:1.3fr 1fr;gap:40px">
+    <div>
+      <div class="kicker o">Subagent · Personal Study · Lab · Codex CLI</div>
+      <h1 style="font-size:84px">Codex CLI에서<br>subagent를 <span class="orange">직접</span><br>만들고 돌려 본다</h1>
+      <p class="lead">작은 샘플 프로젝트 하나로 subagent의 격리, 역할 파일, 권한, 병렬 실행, 결과 받기를 순서대로 확인한다. 랩은 0번부터 6번까지 7개다.</p>
+      <div style="display:flex;gap:10px;margin-top:30px"><span class="t cx">Codex CLI 0.160.1 기준</span><span class="pill">샘플: minishop (Python)</span></div>
+    </div>
+    <svg viewBox="0 0 560 520" width="100%">
+      <defs><marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#ffa657"/></marker></defs>
+      <rect x="10" y="40" width="540" height="440" rx="20" fill="#070b11" stroke="#263243" stroke-width="1.5"/>
+      <rect x="10" y="40" width="540" height="40" rx="20" fill="#18222f"/><rect x="10" y="60" width="540" height="20" fill="#18222f"/>
+      <circle cx="36" cy="60" r="6" fill="#ff7b72"/><circle cx="56" cy="60" r="6" fill="#e3b341"/><circle cx="76" cy="60" r="6" fill="#7ee787"/>
+      <text x="280" y="66" text-anchor="middle" font-size="15" font-weight="700" fill="#8e9cae" class="mono">labs/03-codex/minishop — codex</text>
+      <text x="40" y="122" font-size="18" class="mono" fill="#58a6ff">›</text>
+      <text x="62" y="122" font-size="17" class="mono" fill="#c3cdd8">explorer subagent를 띄워서 정리해 줘</text>
+      <rect x="40" y="150" width="480" height="128" rx="12" fill="#2c1d0e" stroke="#78481b"/>
+      <text x="60" y="182" font-size="16" class="mono" fill="#ffa657">• Spawned Robie [explorer]</text>
+      <text x="60" y="212" font-size="15" class="mono" fill="#c3cdd8">  └ minishop 폴더의 파일마다 …</text>
+      <text x="60" y="242" font-size="15" class="mono" fill="#8e9cae">• Waiting for Robie [explorer]</text>
+      <text x="60" y="266" font-size="15" class="mono" fill="#5a687a">/subagents 로 자식 스레드 보기</text>
+      <path d="M280,288 L280,322" class="ar" stroke="#ffa657" marker-end="url(#ma)"/>
+      <rect x="40" y="332" width="480" height="120" rx="12" fill="#11261a" stroke="#2c6b3c"/>
+      <text x="60" y="362" font-size="16" class="mono" fill="#7ee787">• Finished waiting</text>
+      <text x="60" y="392" font-size="15" class="mono" fill="#c3cdd8">  └ Robie [explorer]: Completed -</text>
+      <text x="80" y="418" font-size="15" class="mono" fill="#c3cdd8">cart.py — 장바구니 합계와 할인 …</text>
+      <text x="60" y="442" font-size="15" class="mono" fill="#5a687a">부모가 이 결과로 답을 쓴다</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 02 로드맵 ============ -->
+<section class="slide" data-sec="시작">
+  <div class="kicker o">Roadmap</div>
+  <h2>준비 하나, 원리 확인 다섯, 터미널 실행 하나로 끝난다</h2>
+  <div class="body">
+    <div class="lab-roadmap">
+      <div class="card"><span class="no">LAB 0</span><h3>준비</h3><p>설치, 로그인, 모델과 기능 확인, 샘플 프로젝트</p></div>
+      <div class="card c-orange"><span class="no">LAB 1</span><h3>내장 subagent</h3><p>부탁해야 띄운다는 점 확인, 자식 스레드 보기</p></div>
+      <div class="card c-orange"><span class="no">LAB 2</span><h3>내 agent 만들기</h3><p>역할 파일과 config.toml 두 방식</p></div>
+      <div class="card c-orange"><span class="no">LAB 3</span><h3>권한과 모델</h3><p>sandbox와 승인 상속, 모델 고정</p></div>
+      <div class="card c-orange"><span class="no">LAB 4</span><h3>위임 범위</h3><p>max_threads, max_depth, 기능 끄기</p></div>
+      <div class="card c-orange"><span class="no">LAB 5</span><h3>병렬과 결과</h3><p>동시에 맡기고 파일로 받고 이어서 시키기</p></div>
+      <div class="card"><span class="no">LAB 6</span><h3>터미널 실행</h3><p>codex exec로 화면 없이 돌리기</p></div>
+    </div>
+    <div class="g3" style="margin-top:6px">
+      <div class="card c-blue"><div class="lbl">랩마다 같은 순서</div><p><b>목표</b> → <b>따라 하기</b> → <b>확인할 점</b> → <b>정리</b>. 확인할 점은 체크 상자로 적어 두었다.</p></div>
+      <div class="card c-green"><div class="lbl">모델 없이도 되는 확인</div><p><code>codex features list</code>, <code>codex debug models</code>, <code>codex debug prompt-input</code>은 모델에게 일을 시키지 않는다. 설정이 의도대로 읽혔는지 먼저 여기서 본다.</p></div>
+      <div class="card c-yellow"><div class="lbl">모델이 필요한 확인</div><p>실제 위임은 모델이 결정한다. 같은 요청이라도 결과가 조금씩 다를 수 있으니, 답의 문장보다 <b>어떤 역할이 불렸는지</b>(<code>[explorer]</code> 같은 꼬리표)를 본다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 진행 방식 ============ -->
+<section class="slide" data-sec="시작">
+  <div class="kicker o">How to read</div>
+  <h2>이 덱의 상자는 세 종류다: 터미널, Codex 입력창, 파일</h2>
+  <div class="body">
+    <div class="g3">
+      <div style="display:flex;flex-direction:column;gap:12px"><div class="card" style="padding:16px 20px"><div class="lbl">터미널 명령</div></div>
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 셸에서 그대로 실행</span>
+<span class="pr">$ </span>codex features list</pre><pre class="sm" data-os="win"><span class="c"># 셸에서 그대로 실행</span>
+<span class="pr">PS&gt; </span>codex features list</pre></div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div class="card c-blue" style="padding:16px 20px"><div class="lbl">Codex에 입력할 문장</div></div>
+<div class="ask sm">explorer subagent를 띄워서 minishop 폴더 파일마다 하는 일을 정리하게 해 줘</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div class="card c-green" style="padding:16px 20px"><div class="lbl">만들 파일</div></div>
+<pre class="sm"><span class="fn">.codex/agents/reviewer.toml</span>
+<span class="v">name</span> = <span class="s">"reviewer"</span>
+<span class="v">description</span> = <span class="s">"..."</span></pre></div>
+    </div>
+    <div class="todo" style="margin:4px 0 0"><b>할 일</b><span><i>1</i>실습 장에는 제목 아래 이 줄이 있다. 번호 순서대로 따라 한다</span><span><i>2</i>끝나면 초록 체크 상자로 결과를 확인한다</span><span><i>3</i>이 줄이 없는 장은 읽기만 한다</span></div>
+    <div class="callout b" style="margin-top:8px">모든 실습은 저장소를 받은 뒤 <code>subagent-study/labs/03-codex/minishop</code> 폴더 안에서 한다. 이 덱에서 "minishop 폴더"라고 하면 이 경로다. 코드는 <code>git</code>으로 언제든 처음 상태로 되돌릴 수 있다. "Codex를 다시 연다"는 <code>/exit</code>로 닫고 터미널에서 <code>codex</code>를 다시 실행한다는 뜻이다. 설정과 역할 파일은 시작할 때 읽는다.</div>
+    <div class="callout p">터미널 명령은 <b>Linux · macOS</b>(bash)와 <b>Windows</b>(PowerShell 7) 탭으로 나눠 두었다. 탭을 바꾸면 덱 전체가 같이 바뀐다. 주황색 <code style="color:var(--orange)">$</code>·<code style="color:var(--orange)">PS&gt;</code> 뒤가 입력할 명령이고(기호는 치지 않는다), 기호가 없는 줄은 출력이다. 모델 없이 되는 명령의 출력은 Codex CLI <b>0.160.1</b>에서 직접 확인했고, 모델이 필요한 화면 문구는 같은 버전의 소스에서 옮겼다.</div>
+  </div>
+</section>
+
+<!-- ============ LAB 0 ============ -->
+<section class="slide divider" data-sec="LAB 0">
+  <div class="num">0</div>
+  <div class="kicker o">LAB 0</div>
+  <h1>준비</h1>
+  <p class="lead">Codex가 돌아가고, 모델이 연결되고, 실습용 프로젝트를 Codex가 신뢰하는 상태를 만든다.</p>
+  <div class="toc"><span><b>0-1</b>설치와 로그인</span><span><b>0-2</b>샘플 프로젝트 받기</span><span><b>0-3</b>출발점 확인</span><span><b>0-4</b>폴더 신뢰와 시작 전 점검</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 0">
+  <div class="kicker o">0-1 · 설치와 로그인</div>
+  <h2>설치하고, 로그인하고, 쓸 모델 이름만 알면 준비 끝이다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>내 OS 탭을 고른다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다</span><span><i>3</i>모델 목록에서 큰 모델 하나, 작은 모델 하나를 메모한다</span></div>
+  <div class="split" style="align-items:start">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 설치 (Node.js 필요, jq는 출력 확인용)</span>
+<span class="pr">$ </span>npm i -g @openai/codex
+<span class="pr">$ </span>sudo apt install jq        <span class="c"># macOS: brew install jq</span>
+
+<span class="c"># 버전 확인</span>
+<span class="pr">$ </span>codex --version
+codex-cli 0.160.1
+
+<span class="c"># 로그인 (사내 안내 방식대로) 후 상태 확인</span>
+<span class="pr">$ </span>codex login status
+
+<span class="c"># 쓸 수 있는 모델 이름 보기</span>
+<span class="pr">$ </span>codex debug models | jq -r '.models[].slug'</pre><pre class="sm" data-os="win"><span class="c"># PowerShell 7 (pwsh) 기준</span>
+<span class="pr">PS&gt; </span>winget install Microsoft.PowerShell   <span class="c"># 없으면</span>
+<span class="pr">PS&gt; </span>npm i -g @openai/codex
+
+<span class="c"># 버전 확인</span>
+<span class="pr">PS&gt; </span>codex --version
+codex-cli 0.160.1
+
+<span class="c"># 로그인 (사내 안내 방식대로) 후 상태 확인</span>
+<span class="pr">PS&gt; </span>codex login status
+
+<span class="c"># 쓸 수 있는 모델 이름 보기</span>
+<span class="pr">PS&gt; </span>(codex debug models | ConvertFrom-Json).models.slug</pre></div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><div class="lbl">마지막 명령이 보여 주는 것</div><p><code>codex debug models</code>는 설정된 제공자의 <b>모델 목록</b>을 JSON으로 받아 보여 준다. 모델에게 일을 시키지는 않는다. 한 줄이 모델 이름 하나다.</p></div>
+      <div class="card c-yellow"><div class="lbl">모델 이름 형식과 사내 모델</div><p>Codex는 모델을 <b>이름 하나</b>로 부른다(<code>-m &lt;모델ID&gt;</code>). 제공자는 <code>~/.codex/config.toml</code>의 <code>model_provider</code>로 따로 정한다. 사내 서빙 모델을 쓴다면 사내 안내대로 제공자 설정을 넣은 뒤 목록을 본다. 목록에 없으면 Codex 화면의 <code>/model</code> 목록에서 찾는다.</p></div>
+      <ul class="chk sm">
+        <li><code>codex --version</code>이 0.160 이상을 출력한다</li>
+        <li><code>codex login status</code>가 로그인된 상태라고 말한다</li>
+        <li>크고 똑똑한 모델 하나, 작고 빠른 모델 하나의 이름을 메모했다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/cli/">codex/cli</a><a href="https://developers.openai.com/codex/config-reference">config reference</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 0">
+  <div class="kicker o">0-2 · 샘플 프로젝트</div>
+  <h2>minishop에는 버그 2개와 미완성 기능 1개가 숨어 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 위 세 줄(clone, cd, 테스트)을 실행한다</span><span><i>2</i><code>FAILED (failures=2)</code>가 나오면 정상이다</span><span><i>3</i>아래 되돌리기 두 줄은 <b>지금 실행하지 않는다</b>. 실습 중 처음으로 돌아갈 때 쓴다</span></div>
+  <div class="split" style="align-items:start;grid-template-columns:1.1fr 1fr">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 저장소를 받고 샘플 폴더로 이동한다</span>
+<span class="pr">$ </span>git clone https://github.com/ljd6805/subagent-study
+<span class="pr">$ </span>cd subagent-study/labs/03-codex/minishop
+
+<span class="c"># 테스트 실행 (Python 3.10+, 설치할 패키지 없음)</span>
+<span class="pr">$ </span>python3 -m unittest
+<span class="r">FAILED (failures=2)</span>
+
+<span class="c"># ── 여기부터는 나중에 쓴다 ──</span>
+<span class="c"># 코드만 처음 상태로 (.codex 설정은 남김)</span>
+<span class="pr">$ </span>git checkout -- minishop tests
+
+<span class="c"># 이 폴더 전체를 처음 상태로 (.codex 설정도 지움)</span>
+<span class="pr">$ </span>git checkout -- . &amp;&amp; git clean -fd .</pre><pre class="sm" data-os="win"><span class="c"># 저장소를 받고 샘플 폴더로 이동한다</span>
+<span class="pr">PS&gt; </span>git clone https://github.com/ljd6805/subagent-study
+<span class="pr">PS&gt; </span>cd subagent-study\labs\03-codex\minishop
+
+<span class="c"># 테스트 실행 (Python 3.10+, 설치할 패키지 없음)</span>
+<span class="pr">PS&gt; </span>python -m unittest
+<span class="r">FAILED (failures=2)</span>
+
+<span class="c"># ── 여기부터는 나중에 쓴다 ──</span>
+<span class="c"># 코드만 처음 상태로 (.codex 설정은 남김)</span>
+<span class="pr">PS&gt; </span>git checkout -- minishop tests
+
+<span class="c"># 이 폴더 전체를 처음 상태로 (.codex 설정도 지움)</span>
+<span class="pr">PS&gt; </span>git checkout -- . ; git clean -fd .</pre></div>
+<pre class="sm"><span class="fn">tree</span>
+minishop/
+  <span class="k">minishop/</span>
+    cart.py        <span class="c"># 장바구니 합계와 할인</span>
+    inventory.py   <span class="c"># 재고 확인과 예약</span>
+    report.py      <span class="c"># 주문 기록 요약 (TODO)</span>
+  <span class="k">data/</span>orders.csv  <span class="c"># 주문 7건</span>
+  <span class="k">tests/</span>
+    test_cart.py
+    test_inventory.py
+    test_report.py
+  <span class="dim">.codex/          # LAB 2에서 만든다</span></pre>
+  </div>
+  <div class="callout y" style="margin-top:22px">정답은 일부러 부록에만 적었다. 직접 코드를 읽기보다 <b>subagent에게 찾게 하는 것</b>이 이 실습의 목적이다.</div>
+</section>
+
+<section class="slide" data-sec="LAB 0">
+  <div class="kicker o">0-3 · 출발점 확인</div>
+  <h2>아무것도 만들지 않아도 subagent 기능은 켜져 있고, 역할은 세 개 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 왼쪽 두 명령을 실행한다</span><span><i>2</i>내가 쓸 모델의 <code>multi_agent_version</code> 값을 메모한다 (v1, v2, null)</span></div>
+  <div class="split" style="align-items:start;grid-template-columns:1fr 1fr">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="c"># ① subagent 기능 스위치 (이름, 단계, 켜짐 여부)</span>
+<span class="pr">$ </span>codex features list | grep '^multi_agent'
+<span class="gk">multi_agent</span>        stable    <span class="ok">true</span>
+multi_agent_mode   removed   false
+multi_agent_v2     stable    false
+
+<span class="c"># ② 모델마다 쓰는 subagent 도구 세트</span>
+<span class="pr">$ </span>codex debug models \
+  | jq -r '.models[] | "\(.slug)  \(.multi_agent_version)"'
+<span class="gk">&lt;모델ID&gt;</span>  v2
+<span class="gk">&lt;모델ID&gt;</span>  v1
+<span class="gk">&lt;모델ID&gt;</span>  null</pre><pre class="xs" data-os="win"><span class="c"># ① subagent 기능 스위치 (이름, 단계, 켜짐 여부)</span>
+<span class="pr">PS&gt; </span>codex features list | Select-String '^multi_agent'
+<span class="gk">multi_agent</span>        stable    <span class="ok">true</span>
+multi_agent_mode   removed   false
+multi_agent_v2     stable    false
+
+<span class="c"># ② 모델마다 쓰는 subagent 도구 세트</span>
+<span class="pr">PS&gt; </span>(codex debug models | ConvertFrom-Json).models |
+  Format-Table slug, multi_agent_version
+<span class="v">slug       multi_agent_version</span>
+<span class="gk">&lt;모델ID&gt;</span>   v2
+<span class="gk">&lt;모델ID&gt;</span>   v1
+<span class="gk">&lt;모델ID&gt;</span></pre></div>
+      <p class="muted" style="font-size:16px">①은 기능 이름과 기본 상태를, ②는 모델마다 어느 도구 세트를 쓰는지를 보여 준다. 둘 다 모델에게 일을 시키지 않는다. ②에서 값이 비어 있거나(null) 내 모델이 목록에 없으면 ①의 <code>multi_agent</code> 스위치를 따라 v1을 쓴다.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <table class="tight sm">
+        <tr><th>내장 역할</th><th>부모가 읽는 설명 (요약)</th></tr>
+        <tr><td class="h green">default</td><td>"Default agent." 역할을 안 정하면 이것</td></tr>
+        <tr><td class="h green">explorer</td><td>코드베이스에 대한 구체적인 질문 담당. 질문이 여럿이면 여러 개를 동시에 띄우라고 적혀 있다</td></tr>
+        <tr><td class="h green">worker</td><td>구현과 버그 수정 담당. 맡길 파일을 분명히 나눠 주라고 적혀 있다</td></tr>
+      </table>
+      <table class="tight sm">
+        <tr><th>세트</th><th>부모가 쓰는 도구</th></tr>
+        <tr><td class="h">v1</td><td><code>spawn_agent</code> <code>send_input</code> <code>resume_agent</code> <code>wait_agent</code> <code>close_agent</code></td></tr>
+        <tr><td class="h">v2</td><td><code>spawn_agent</code> <code>send_message</code> <code>followup_task</code> <code>wait_agent</code> <code>list_agents</code> <code>interrupt_agent</code></td></tr>
+      </table>
+      <ul class="chk sm"><li><code>multi_agent</code>가 <code>true</code>다</li><li>내 모델이 v1인지 v2인지 메모했다. 이 덱은 둘이 다른 곳마다 따로 적는다</li></ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">SOURCE</span><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/agent/role.rs">agent/role.rs</a><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/config/mod.rs">config/mod.rs</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 0">
+  <div class="kicker o">0-4 · 폴더 신뢰와 시작 전 점검</div>
+  <h2>저장소를 신뢰해야 <code>.codex/</code> 설정과 역할 파일이 읽힌다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 <code>codex</code>를 실행한다</span><span><i>2</i><b>Trust this folder?</b>가 뜨면 <kbd>1. Trust and continue</kbd>를 고른다</span><span><i>3</i><code>/exit</code>로 닫고 왼쪽 확인 명령을 실행한다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">Codex 첫 화면 · 처음 열 때 한 번만 나온다</span>
+  Folder access
+  <span class="dim">/…/subagent-study</span>
+
+  Trust this folder? Codex can read, edit, and run files here,
+  subject to your permission settings. …
+
+<span class="gk">› 1. Trust and continue</span>
+  2. Quit</pre>
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>codex debug prompt-input | grep -o 'sandbox_mode. is .[a-z-]*'
+sandbox_mode` is `<span class="ok">workspace-write</span>     <span class="c">← 신뢰함</span>
+sandbox_mode` is `<span class="r">read-only</span>           <span class="c">← 신뢰 안 함</span></pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>codex debug prompt-input | Select-String -AllMatches 'sandbox_mode. is .[a-z-]+' |
+  ForEach-Object { $_.Matches.Value }
+sandbox_mode` is `<span class="ok">workspace-write</span>     <span class="c">← 신뢰함</span>
+sandbox_mode` is `<span class="r">read-only</span>           <span class="c">← 신뢰 안 함</span></pre></div>
+      <p class="muted" style="font-size:16px">이 명령은 Codex가 모델에게 보낼 첫 입력을 <b>모델 없이 만들어</b> 보여 준다. 거기 적힌 <code>sandbox_mode</code>가 이번 세션에서 파일을 어디까지 쓸 수 있는지다.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">~/.codex/config.toml · 신뢰를 고르면 자동으로 추가됨</span>
+[<span class="k">projects."/…/subagent-study"</span>]
+<span class="v">trust_level</span> = <span class="s">"trusted"</span></pre>
+      <div class="card c-blue"><div class="lbl">신뢰가 정하는 것</div><p>신뢰 단위는 <b>git 저장소 맨 위 폴더</b>(<code>subagent-study</code>)다. 신뢰하지 않으면 그 안의 <code>.codex/config.toml</code>, <code>.codex/agents/</code>, hooks, 실행 규칙이 <b>읽히지 않고</b> 기본 권한도 <code>read-only</code>가 된다. 오류 없이 조용히 빠지므로 LAB 2 전에 꼭 확인한다.</p></div>
+      <ul class="chk sm">
+        <li>확인 명령이 <code>workspace-write</code>를 출력한다</li>
+        <li>Codex 화면에서 <code>/debug-config</code>를 치면 설정 층 목록이 나온다. LAB 2에서 <code>.codex/config.toml</code>을 만든 뒤에는 <code>project (…/minishop/.codex/config.toml) (enabled)</code> 줄이 보여야 한다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">SOURCE</span><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/config/src/loader/mod.rs">config/loader (trust)</a><a href="https://developers.openai.com/codex/config-advanced">config advanced</a></div>
+</section>
+
+<!-- ============ LAB 1 ============ -->
+<section class="slide divider" data-sec="LAB 1">
+  <div class="num">1</div>
+  <div class="kicker o">LAB 1</div>
+  <h1>내장 subagent 써 보기</h1>
+  <p class="lead">목표: Codex가 언제 subagent를 띄우는지, 위임 한 번이 부모 스레드와 자식 스레드에 각각 무엇을 남기는지 눈으로 확인한다.</p>
+  <div class="toc"><span><b>1-1</b>부탁해야 띄운다</span><span><b>1-2</b>자식 스레드 들어가기</span><span><b>1-3</b>부모와 자식 비교</span><span><b>1-4</b>AGENTS.md로 위임 규칙 두기</span><span><b>1-5</b>정리</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-1 · 부탁해야 띄운다</div>
+  <h2>Codex는 사용자가 subagent를 쓰라고 말해야 띄운다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>터미널에서 <code>codex</code>로 Codex를 연다</span><span><i>2</i>① 문장을 보내고 <code>Spawned</code> 줄이 생기는지 본다</span><span><i>3</i><code>/new</code>로 새 대화를 열고 ② 문장을 보낸다</span><span><i>4</i>답이 끝날 때까지 화면을 오른쪽과 비교한다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>
+<span class="pr">$ </span>codex</pre>
+      <div class="ask sm">① minishop 폴더의 각 파일이 무슨 일을 하는지 한 줄씩 정리해 줘</div>
+      <div class="ask sm">② explorer subagent 하나를 띄워서 minishop 폴더의 각 파일이 무슨 일을 하는지 한 줄씩 정리하게 해 줘</div>
+      <div class="card c-blue" style="padding:16px 20px"><div class="lbl">왜 ①에서는 안 띄우나</div><p style="font-size:17px">부모가 받는 <code>spawn_agent</code> 도구 설명에 이렇게 적혀 있다: "Do not spawn sub-agents unless the user or applicable AGENTS.md/skill instructions explicitly ask for sub-agents, delegation, or parallel agent work." 꼼꼼히 조사해 달라는 말만으로는 허락이 아니다.</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">② 를 보냈을 때 부모 화면 · 별명은 매번 다르다</span>
+<span class="orange">• Spawned</span> <span class="k">Robie</span> [explorer]
+  └ minishop 폴더의 각 파일을 읽고 …     <span class="c">← 부모가 쓴 지시문</span>
+
+<span class="orange">• Waiting for</span> <span class="k">Robie</span> [explorer]
+
+<span class="gk">• Finished waiting</span>
+  └ <span class="k">Robie</span> [explorer]: Completed - cart.py …
+
+<span class="c">(부모가 결과를 받아 다시 정리한 답)</span></pre>
+      <ul class="chk sm">
+        <li>①에서는 <code>Spawned</code> 줄 없이 부모가 직접 파일을 읽었다</li>
+        <li>②에서 <code>Spawned … [explorer]</code> 줄이 생겼다</li>
+        <li>부모의 최종 답이 파일 4개(cart, inventory, report, __init__)를 다룬다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/subagents">codex/subagents</a><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/tools/handlers/multi_agents_spec.rs">spawn_agent 설명 (소스)</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-2 · 자식 스레드 들어가기</div>
+  <h2>자식은 별도 스레드로 돌고, <code>/subagents</code>로 골라 들어가 볼 수 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>1-1 ② 대화에서 <code>/subagents</code>를 입력하고 <kbd>Enter</kbd></span><span><i>2</i>목록에서 explorer 줄을 골라 <kbd>Enter</kbd>로 들어간다</span><span><i>3</i><kbd>Alt+←</kbd> <kbd>Alt+→</kbd>로 스레드를 오가고, <code>Main [default]</code>로 돌아온다</span></div>
+  <div class="split">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="keys" style="font-size:20px">
+        <kbd>/subagents</kbd><span>이 세션의 스레드 목록을 연다. 부모는 <code>Main [default]</code>, 자식은 <code>별명 [역할]</code></span>
+        <kbd>Alt+→</kbd><span>다음 스레드 (macOS는 <kbd>Option+→</kbd>)</span>
+        <kbd>Alt+←</kbd><span>이전 스레드</span>
+        <kbd>Esc</kbd><span>목록 닫기</span>
+      </div>
+      <div class="callout y" style="font-size:18px">공식 문서에는 <code>/agent</code>로 적혀 있지만 0.160.1의 명령 이름은 <code>/subagents</code>다. <code>/agents</code>는 세션 목록을 보는 다른 화면이다.</div>
+      <div class="card c-blue" style="padding:14px 18px"><div class="lbl">자식 스레드에 직접 입력하기</div><p style="font-size:17px">0-3에서 메모한 세트에 따라 다르다. <b>v1</b>은 자식 스레드 입력창에 직접 써서 보낼 수 있다. <b>v2</b>는 자식이 부모 소유라서 직접 입력이 막힌다. 내 모델에서 어느 쪽인지 써 보고 확인한다.</p></div>
+    </div>
+    <svg viewBox="0 0 620 420" width="100%">
+      <rect x="10" y="20" width="600" height="380" rx="16" fill="#070b11" stroke="#263243" stroke-width="1.5"/>
+      <text x="40" y="66" font-size="19" font-weight="800" fill="#eef2f6">Subagents</text>
+      <text x="40" y="96" font-size="15" fill="#8e9cae">Select an agent to watch. ⌥← previous, ⌥→ next.</text>
+      <rect x="30" y="122" width="560" height="44" rx="8" fill="#18222f"/>
+      <text x="44" y="150" font-size="16" class="mono" fill="#58a6ff">› 1. Main [default]</text>
+      <text x="44" y="198" font-size="16" class="mono" fill="#c3cdd8">  2. Robie [explorer]</text>
+      <text x="420" y="198" font-size="14" class="mono" fill="#5a687a">01a1…</text>
+      <text x="44" y="242" font-size="14" fill="#8e9cae">enter select · esc back</text>
+      <line x1="30" y1="270" x2="590" y2="270" stroke="#263243"/>
+      <text x="40" y="304" font-size="16" fill="#ffa657" font-weight="700">Robie [explorer] 스레드 안에서 보이는 것</text>
+      <text x="40" y="334" font-size="15" class="mono" fill="#c3cdd8">첫 메시지: 부모가 쓴 지시문</text>
+      <text x="40" y="360" font-size="15" class="mono" fill="#c3cdd8">rg --files · sed -n … cart.py · cat …</text>
+      <text x="40" y="386" font-size="15" class="mono" fill="#7ee787">마지막 답 → 부모의 Finished waiting 으로</text>
+    </svg>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-3 · 부모와 자식 비교</div>
+  <h2>파일을 읽은 흔적은 자식에만 남고, 부모는 마지막 답 하나만 받는다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>1-1 ② 대화에서 <code>Main [default]</code>와 explorer 스레드를 오가며(1-2 키) 왼쪽·오른쪽 항목을 세어 본다</span><span><i>2</i>아래 체크 두 가지를 적어 본다</span></div>
+  <div class="g2">
+    <div class="card c-blue"><div class="lbl">부모 스레드에서 세어 보기</div>
+      <ul><li>subagent 관련 줄: <b>Spawned 1개, Waiting/Finished 한 쌍</b></li>
+      <li>Finished waiting 아래 결과: 자식의 <b>마지막 답 텍스트</b></li>
+      <li>자식이 읽은 파일 내용과 실행한 명령은 부모 대화에 <b>없다</b></li></ul>
+    </div>
+    <div class="card c-orange"><div class="lbl">자식 스레드에서 세어 보기</div>
+      <ul><li>실행한 명령: 파일 찾기, 읽기 등 <b>여러 개</b></li>
+      <li>첫 메시지: 사용자가 쓴 문장이 아니라 <b>부모가 새로 쓴 지시문</b></li>
+      <li>부모와 나눈 앞선 대화는 자식에게 <b>없다</b></li></ul>
+    </div>
+  </div>
+  <div class="g2" style="margin-top:22px">
+    <ul class="chk">
+      <li>자식 스레드의 첫 메시지를 읽고, 내가 입력한 문장과 어떻게 다른지 적어 본다</li>
+      <li>자식 스레드의 명령 실행 수와 부모 스레드의 명령 실행 수를 비교한다</li>
+    </ul>
+    <div class="callout">들어가는 것은 <b>지시문</b>, 나오는 것은 <b>마지막 답</b>, 넘어가지 않는 것은 <b>중간 과정</b>이다. 앞선 대화까지 넘기려면 부모가 <code>fork_context</code>(v1)나 <code>fork_turns</code>(v2)를 써야 하고, 기본값은 넘기지 않는 쪽이다.</div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-4 · AGENTS.md로 위임 규칙 두기</div>
+  <h2>AGENTS.md에 위임 규칙을 적어 두면 매번 부탁하지 않아도 subagent를 띄운다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에 <code>AGENTS.md</code>를 새로 만들고 왼쪽 내용을 저장한다</span><span><i>2</i>Codex를 다시 열고 아래 문장을 보낸다</span><span><i>3</i>끝나면 오른쪽 아래 명령으로 <code>AGENTS.md</code>를 지운다 (뒤 랩에 영향을 주지 않도록)</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">새 파일 · minishop/AGENTS.md</span>
+<span class="gk"># minishop 작업 규칙</span>
+- 코드 조사를 부탁받으면 직접 읽지 말고
+  explorer subagent에게 맡긴다.
+- 조사할 대상이 둘 이상이면 대상마다
+  explorer를 하나씩 동시에 띄운다.</pre>
+      <div class="ask">테스트가 왜 실패하는지 원인만 조사해 줘. 아직 고치지는 마.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-blue"><div class="lbl">AGENTS.md가 하는 일</div><p>Codex가 대화를 시작할 때 읽는 <b>프로젝트 지시문</b>이다. 1-1의 도구 설명이 말한 "applicable AGENTS.md instructions"가 이것이다. 역할을 정의하는 파일은 아니다. 역할은 LAB 2의 <code>.codex/agents/</code>에서 만든다.</p></div>
+      <ul class="chk sm">
+        <li>문장에 subagent라는 말이 없는데도 <code>Spawned … [explorer]</code>가 생겼다</li>
+        <li>실패한 테스트 두 개를 각각 다른 explorer가 조사했는지 <code>/subagents</code> 목록으로 확인했다</li>
+      </ul>
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · 끝나면 되돌리기</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>rm AGENTS.md</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>Remove-Item AGENTS.md</pre></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/guides/agents-md">AGENTS.md</a><a href="https://developers.openai.com/codex/subagents">subagents</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-5 · 정리</div>
+  <h2>explorer와 worker는 설명만 다르고, 쓸 수 있는 도구와 권한은 부모와 같다</h2>
+  <div class="split" style="align-items:start">
+<pre class="xs"><span class="fn">Codex 소스 · core/src/agent/role.rs (0.160.1, 줄임)</span>
+<span class="k">"explorer"</span> =&gt; AgentRoleConfig {
+  description: <span class="s">"Use `explorer` for specific codebase questions.
+    Explorers are fast and authoritative. …
+    You are encouraged to spawn up multiple explorers
+    in parallel …"</span>,
+  config_file: <span class="s">"explorer.toml"</span>,   <span class="c">// 내용이 빈 파일</span>
+}
+<span class="k">"worker"</span> =&gt; AgentRoleConfig {
+  description: <span class="s">"Use for execution and production work. …
+    Explicitly assign **ownership** of the task …"</span>,
+  config_file: None,               <span class="c">// 덧붙이는 설정 없음</span>
+}
+<span class="k">"default"</span> =&gt; { description: <span class="s">"Default agent."</span>, … }</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-green"><div class="lbl">LAB 1에서 확인한 것</div>
+        <ul><li>사용자나 AGENTS.md가 부탁해야 subagent를 띄운다</li>
+        <li>자식은 새 스레드에서 부모가 쓴 지시문만 받고 시작한다</li>
+        <li>부모에게 돌아오는 것은 자식의 마지막 답뿐이다</li>
+        <li>자식 스레드는 <code>/subagents</code>와 <kbd style="font:700 15px var(--mono)">Alt+←/→</kbd>로 본다</li></ul>
+      </div>
+      <div class="callout y" style="font-size:19px">explorer라는 이름과 달리 <b>파일 수정을 막는 설정은 없다</b>. 내장 역할은 부모가 고를 때 읽는 설명만 다르다. 자식이 무엇을 쓸 수 있는지는 부모 세션의 sandbox가 정한다 (LAB 3).</div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">SOURCE</span><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/agent/role.rs">agent/role.rs</a><a href="https://github.com/openai/codex/tree/rust-v0.160.1/codex-rs/core/assets/agent/builtins">assets/agent/builtins</a></div>
+</section>
+
+<!-- ============ LAB 2 ============ -->
+<section class="slide divider" data-sec="LAB 2">
+  <div class="num">2</div>
+  <div class="kicker o">LAB 2</div>
+  <h1>내 agent 만들기</h1>
+  <p class="lead">목표: 역할 파일 하나로, 또 <code>config.toml</code> 선언으로 subagent 역할을 만들고, 모델에게 일을 시키기 전에 설정부터 검사한다.</p>
+  <div class="toc"><span><b>2-1</b>역할 파일로 reviewer</span><span><b>2-2</b>config.toml로 tester</span><span><b>2-3</b>모델 없이 검사</span><span><b>2-4</b>불러 보기</span><span><b>2-5</b>description 실험</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-1 · 역할 파일 방식 · 직접 만들기</div>
+  <h2><code>.codex/agents/</code>의 TOML 파일 하나가 역할 하나가 된다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 오른쪽 아래 명령으로 폴더를 만든다</span><span><i>2</i>에디터로 <code>.codex/agents/reviewer.toml</code>을 새로 만들고 왼쪽 내용을 그대로 붙여 넣어 저장한다</span><span><i>3</i>확인은 2-3에서 한다</span></div>
+  <div class="split" style="align-items:start;grid-template-columns:1.15fr 1fr">
+<pre class="sm"><span class="fn">새 파일 · minishop/.codex/agents/reviewer.toml</span>
+<span class="v">name</span> = <span class="s">"reviewer"</span>
+<span class="v">description</span> = <span class="s">"""
+코드를 읽고 버그와 위험을 찾아 보고한다.
+리뷰나 점검을 부탁받으면 사용한다."""</span>
+<span class="v">developer_instructions</span> = <span class="s">"""
+너는 읽기 전용 코드 리뷰어다.
+파일을 고치지 말고 발견한 문제만 보고한다.
+
+보고 형식:
+- 파일:줄 — 문제 한 줄 — 근거 한 줄
+- 마지막 줄에 "총 N건"
+"""</span></pre>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <table class="tight sm">
+        <tr><th>키</th><th>뜻</th></tr>
+        <tr><td class="h">name</td><td>역할 이름 (필수). <b>파일 이름이 아니라 이 값</b>이 이름이 된다</td></tr>
+        <tr><td class="h">description</td><td>부모가 맡길 역할을 고를 때 읽는 문장 (필수)</td></tr>
+        <tr><td class="h">developer_instructions</td><td>자식이 받는 지시문 (필수)</td></tr>
+        <tr><td class="h dim">선택</td><td><code>model</code>, <code>model_reasoning_effort</code>, <code>nickname_candidates</code> 등</td></tr>
+      </table>
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>mkdir -p .codex/agents</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>New-Item -ItemType Directory -Force .codex\agents</pre></div>
+      <p class="muted" style="font-size:16px">개인용 역할은 <code>~/.codex/agents/</code>에 둔다. 프로젝트의 <code>.codex/agents/</code>는 0-4에서 저장소를 신뢰했을 때만 읽힌다.</p>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/subagents">subagents · custom agents</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-2 · config.toml 방식 · 직접 만들기</div>
+  <h2><code>config.toml</code>에 이름과 설명을 쓰고, 나머지 설정은 파일로 빼 둘 수 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 <code>mkdir .codex/roles</code>(Windows는 <code>mkdir .codex\roles</code>)</span><span><i>2</i><code>.codex/config.toml</code>을 새로 만들고 왼쪽 내용을 저장한다</span><span><i>3</i><code>.codex/roles/tester.toml</code>을 새로 만들고 오른쪽 위 내용을 저장한다</span></div>
+  <div class="split" style="align-items:start;grid-template-columns:1.15fr 1fr">
+<pre class="sm"><span class="fn">새 파일 · minishop/.codex/config.toml</span>
+[<span class="k">agents.tester</span>]
+<span class="v">description</span> = <span class="s">"""
+테스트를 실행하고 실패 원인을 요약한다.
+테스트 실행이나 결과 확인을 부탁받으면 사용한다."""</span>
+<span class="v">config_file</span> = <span class="s">"./roles/tester.toml"</span>
+<span class="v">nickname_candidates</span> = [<span class="s">"Tess"</span>, <span class="s">"Toby"</span>]</pre>
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">새 파일 · minishop/.codex/roles/tester.toml</span>
+<span class="v">developer_instructions</span> = <span class="s">"""
+너는 테스트 담당이다.
+python -m unittest -v 만 실행한다 (환경에 따라 python3).
+실패한 테스트마다 "테스트 이름 / 기대값 / 실제값 /
+의심되는 파일"을 한 줄로 보고하고, 코드는 고치지 않는다.
+"""</span></pre>
+      <div class="card c-blue"><div class="lbl">두 방식의 차이</div><p style="font-size:17px">표 이름 <code>[agents.tester]</code>가 역할 이름이 된다. <code>config_file</code> 경로는 이 <code>config.toml</code>이 있는 폴더 기준이다. 별명 후보(<code>nickname_candidates</code>)를 주면 <code>Spawned Tess [tester]</code>처럼 그 이름이 붙는다. 영문, 숫자, 공백, <code>-</code>, <code>_</code>만 쓸 수 있다.</p></div>
+      <div class="callout y" style="font-size:17px">역할 설정으로 "이 명령 하나만 허락" 같은 규칙은 둘 수 없다. tester가 코드를 고치지 않게 하는 것은 지시문뿐이다. 실제로 막는 방법은 LAB 3에서 본다.</div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/config-reference">config reference · agents</a><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/agent-roles/src/loader.rs">agent-roles/loader.rs</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-3 · 모델 없이 검사</div>
+  <h2>모델에게 일을 시키기 전에 설정 오류와 시작 경고부터 본다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 ① 명령을 실행해 <code>설정 OK</code>가 나오는지 본다</span><span><i>2</i>Codex를 열고 첫 화면에 ② 같은 경고가 <b>없는지</b> 본다</span><span><i>3</i>일부러 <code>reviewer.toml</code>의 <code>developer_instructions</code>를 <code>developer_instruction</code>으로 바꿔 저장하고 Codex를 다시 열어 ② 경고를 본다</span><span><i>4</i>원래대로 고쳐 저장하고 다시 열어 경고가 사라졌는지 본다</span></div>
+  <div class="split" style="align-items:start;grid-template-columns:1.2fr 1fr">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="sm" data-os="unix"><span class="c"># ① Codex가 config.toml을 받아들이는지</span>
+<span class="pr">$ </span>codex debug prompt-input &gt; /dev/null &amp;&amp; echo 설정 OK
+설정 OK
+
+<span class="c"># 틀렸을 때의 예 (config.toml에 오타가 있으면)</span>
+<span class="r">Error: …/.codex/config.toml:1:1: invalid type: …</span></pre><pre class="sm" data-os="win"><span class="c"># ① Codex가 config.toml을 받아들이는지</span>
+<span class="pr">PS&gt; </span>codex debug prompt-input &gt; $null; if ($?) { '설정 OK' }
+설정 OK
+
+<span class="c"># 틀렸을 때의 예 (config.toml에 오타가 있으면)</span>
+<span class="r">Error: …\.codex\config.toml:1:1: invalid type: …</span></pre></div>
+<pre class="xs"><span class="fn">② 역할 파일이 틀렸을 때 · Codex 첫 화면의 경고</span>
+<span class="y">Ignoring malformed agent role definition:
+failed to deserialize agent role file at
+…/minishop/.codex/agents/reviewer.toml:
+unknown field `developer_instruction`</span>
+
+<span class="c"># 따옴표 같은 문법 오류면: failed to parse agent role file at …</span></pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <table class="tight sm">
+        <tr><th>검사</th><th>잡아내는 것</th></tr>
+        <tr><td class="h">①</td><td><code>config.toml</code>의 문법 오류, 잘못된 키와 값. 오류면 Codex가 아예 시작하지 않는다</td></tr>
+        <tr><td class="h">②</td><td>역할 파일의 문법 오류, 오타, 빠진 필수 키. Codex는 <b>그 역할만 빼고</b> 시작한다</td></tr>
+      </table>
+      <p class="muted" style="font-size:16px">①은 모델에게 보낼 첫 입력을 모델 없이 만들어 보는 명령이라, 설정을 끝까지 읽을 수 있는지만 확인된다. ②는 Codex를 여는 것만으로 나오고, 아무것도 보내지 않으면 모델을 쓰지 않는다.</p>
+      <div class="card c-yellow" style="padding:14px 18px"><div class="lbl">경고를 놓쳤다면</div><p style="font-size:16.5px">Codex 화면에서 <code>/warnings</code>로 다시 본다. 역할이 빠진 채 시작해도 모델은 "그런 역할이 없다"고만 하므로, 새 역할을 만들 때마다 한 번은 이 경고를 확인한다.</p></div>
+      <ul class="chk sm">
+        <li>①이 <code>설정 OK</code>다</li>
+        <li>오타를 넣었을 때 ② 경고를 봤고, 고친 뒤 사라졌다</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-4 · 불러 보기</div>
+  <h2>역할 이름을 말해서 부르기와, 역할을 고르게 하기를 둘 다 해 본다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>Codex를 다시 열고 ⓪ 문장으로 역할 목록을 본다</span><span><i>2</i>① 두 문장을 하나씩 보낸다</span><span><i>3</i><code>/new</code> 후 ② 두 문장을 하나씩 보낸다</span></div>
+  <div class="ask sm" style="margin-bottom:16px">⓪ spawn_agent 도구 설명에 있는 역할 목록(Available roles)을 이름만 그대로 보여 줘. subagent는 띄우지 마.</div>
+  <div class="g2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card c-orange" style="padding:14px 20px"><div class="lbl">① 역할 이름을 말해서</div></div>
+      <div class="ask sm">reviewer subagent를 띄워서 minishop/cart.py 를 리뷰하게 해 줘</div>
+      <div class="ask sm">tester subagent를 띄워서 테스트를 돌리고 실패 원인을 알려 달라고 해 줘</div>
+      <ul class="chk sm"><li>⓪에 reviewer, tester, default, explorer, worker가 보인다</li><li>reviewer의 보고가 지시문에서 정한 형식("파일:줄 — …", "총 N건")을 따른다</li></ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card c-blue" style="padding:14px 20px"><div class="lbl">② 역할은 고르게 하고</div></div>
+      <div class="ask sm">subagent 하나를 띄워 inventory.py 를 점검하게 해 줘. 역할은 알맞은 것으로 골라.</div>
+      <div class="ask sm">subagent 하나에게 테스트 결과 확인을 맡겨 줘. 역할은 알맞은 것으로 골라.</div>
+      <ul class="chk sm"><li>"점검"은 <code>[reviewer]</code>, "테스트"는 <code>[tester]</code>로 갔는지 <code>Spawned</code> 줄로 확인했다</li><li>tester의 별명이 Tess나 Toby다</li></ul>
+    </div>
+  </div>
+  <div class="callout b" style="margin-top:18px">"subagent"라는 말은 빼지 않는다. 1-1에서 본 대로 부탁이 없으면 역할이 있어도 띄우지 않는다. 새 역할이 ⓪에 안 보이면 Codex를 다시 열고 2-3의 경고를 본다.</div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-5 · description 실험</div>
+  <h2>description을 흐리게 쓰면 부모가 그 역할을 덜 고른다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.toml</code>의 description만 실험 A로 바꿔 저장하고 Codex를 다시 연다</span><span><i>2</i><code>/new</code> 후 아래 문장 보내기를 3번 하고 표에 적는다</span><span><i>3</i>실험 B로 바꿔 같은 일을 한다. 끝나면 B로 둔다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">실험 A · 흐린 description</span>
+<span class="v">description</span> = <span class="s">"도와주는 agent"</span></pre>
+<pre class="xs"><span class="fn">실험 B · 언제 쓰는지까지 적은 description</span>
+<span class="v">description</span> = <span class="s">"""
+코드를 읽고 버그와 위험을 찾아 보고한다.
+리뷰, 점검, 버그 찾기를 부탁받으면 반드시 사용한다."""</span></pre>
+      <div class="ask sm">cart.py 에 문제 없는지 subagent 하나에게 봐 달라고 해 줘. 역할은 알맞은 것으로 골라.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>실험</th><th>3번 요청했을 때 [reviewer]가 붙은 횟수</th></tr>
+        <tr><td class="h">A</td><td>__ / 3</td></tr>
+        <tr><td class="h">B</td><td>__ / 3</td></tr>
+      </table>
+      <p class="muted" style="font-size:18px">매번 새 대화(<code>/new</code>)에서 같은 문장을 보낸다. A에서는 내장 역할(default, explorer, worker)이 대신 골라질 수 있다. 모델에 따라 결과가 다르니 숫자는 직접 채운다.</p>
+      <div class="card c-green"><div class="lbl">정리</div><p>description은 사람이 읽는 설명이 아니라 <b>부모 모델이 읽고 고르는 기준</b>이다. "무엇을 하는지"와 "언제 쓰는지"를 함께 적는다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 3 ============ -->
+<section class="slide divider" data-sec="LAB 3">
+  <div class="num">3</div>
+  <div class="kicker o">LAB 3</div>
+  <h1>권한과 모델</h1>
+  <p class="lead">목표: 자식이 무엇을 쓸 수 있고 언제 나에게 묻는지, 어떤 모델로 도는지가 어디서 정해지는지 확인한다.</p>
+  <div class="toc"><span><b>3-1</b>읽기 전용 부모</span><span><b>3-2</b>역할의 sandbox_mode</span><span><b>3-3</b>모델 지정</span><span><b>3-4</b>승인 정책 물려받기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-1 · 읽기 전용 부모</div>
+  <h2>부모를 읽기 전용으로 열면 자식도 파일을 고치지 못한다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>Codex를 <code>/exit</code>로 닫고 <code>codex -s read-only</code>로 다시 연다</span><span><i>2</i>아래 문장을 보낸다</span><span><i>3</i>승인 요청이 뜨면 <b>거절</b>한다</span><span><i>4</i>다른 터미널 창에서 <code>git status</code>를 실행한다</span><span><i>5</i>끝나면 <code>/exit</code> 후 그냥 <code>codex</code>로 연다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px">
+<pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>
+<span class="pr">$ </span>codex -s read-only</pre>
+      <div class="ask">worker subagent를 띄워서 cart.py 의 할인 계산 버그를 고치게 해 줘</div>
+<pre class="xs"><span class="fn">자식이 쓰려고 할 때 부모 화면 아래</span>
+  <span class="r">!</span> Approval needed in <span class="k">Robie</span> [worker]
+    <span class="k">/subagents</span> to switch threads</pre>
+<pre class="xs"><span class="fn">terminal · 모든 OS 공통</span>
+<span class="pr">$ </span>git status --short minishop tests   <span class="c"># 아무것도 안 나와야 정상</span></pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-blue"><div class="lbl">소스에서 확인한 규칙</div><p>자식 설정은 부모의 설정을 복사해서 만들고, 마지막에 <b>부모 턴의 승인 정책, 작업 폴더, 파일 권한</b>을 덮어쓴다(<code>apply_spawn_agent_runtime_overrides</code>). 그래서 worker라도 부모가 <code>read-only</code>면 쓰기는 sandbox에 막혀 승인을 요청한다.</p></div>
+      <ul class="chk sm">
+        <li>승인 요청이 <b>자식 이름</b>과 함께 부모 화면에 떴다</li>
+        <li>거절한 뒤 <code>git status</code>에 코드 변경이 없다</li>
+        <li><code>/subagents</code>로 worker 스레드에 들어가 거절된 명령을 봤다</li>
+      </ul>
+      <div class="callout y" style="font-size:18px">읽기 전용 subagent가 필요하면 역할 파일이 아니라 <b>부모 세션</b>을 <code>-s read-only</code>로 연다. 왜 역할 파일로는 안 되는지는 3-2에서 본다.</div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">SOURCE</span><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/agent/child_config.rs">agent/child_config.rs</a><a href="https://developers.openai.com/codex/subagents">subagents · approvals and sandbox</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-2 · 역할의 sandbox_mode</div>
+  <h2>문서는 역할 파일의 <code>sandbox_mode</code>가 먹힌다고 하지만, 0.160.1 소스는 이 값을 쓰지 않는다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.toml</code> 맨 아래에 초록 줄을 추가해 왼쪽처럼 만든다</span><span><i>2</i>Codex를 다시 연다(<code>-s</code> 없이)</span><span><i>3</i>아래 문장을 보내고 <code>git status</code>로 결과를 표에 적는다</span><span><i>4</i>끝나면 추가한 줄을 지우고 <code>git checkout -- minishop</code>으로 코드를 되돌린다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">고칠 파일 · .codex/agents/reviewer.toml (저장 후 전체)</span>
+<span class="v">name</span> = <span class="s">"reviewer"</span>
+<span class="v">description</span> = <span class="s">"""
+코드를 읽고 버그와 위험을 찾아 보고한다.
+리뷰, 점검, 버그 찾기를 부탁받으면 반드시 사용한다."""</span>
+<span class="v">developer_instructions</span> = <span class="s">"""
+너는 읽기 전용 코드 리뷰어다.
+파일을 고치지 말고 발견한 문제만 보고한다.
+
+보고 형식:
+- 파일:줄 — 문제 한 줄 — 근거 한 줄
+- 마지막 줄에 "총 N건"
+"""</span>
+<span class="gk">sandbox_mode = "read-only"</span></pre>
+      <div class="ask sm">reviewer subagent를 띄워서 cart.py 의 할인 계산 버그를 직접 고치게 해 줘. 이번에는 리뷰어 지시와 달라도 고쳐도 된다.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <table class="tight sm">
+        <tr><th>출처</th><th>역할 파일의 sandbox_mode</th></tr>
+        <tr><td class="h blue">공식 문서</td><td>"Override for individual custom agents by setting sandbox_mode in their file."</td></tr>
+        <tr><td class="h orange">소스 0.160.1</td><td>역할에서 가져오는 값은 지시문, model, 추론 강도, verbosity, personality, service_tier, 일부 기능 끄기뿐이다(<code>role.rs</code>). 파일 권한은 3-1처럼 부모 것으로 덮어쓴다</td></tr>
+      </table>
+      <table class="tight sm">
+        <tr><th>내 결과</th><th>git status --short minishop</th></tr>
+        <tr><td class="h">cart.py</td><td>바뀌었다 □ &nbsp; 그대로다 □</td></tr>
+      </table>
+      <p class="muted" style="font-size:16px">파일 자체는 오류 없이 읽힌다(2-3의 ② 경고가 안 나온다). 값을 받아 주기만 하고 적용하지 않는다는 뜻이다. 버전이 바뀌면 결과도 바뀔 수 있으니 직접 확인한다.</p>
+      <ul class="chk sm"><li>결과를 표에 적고, 문서와 소스 중 어느 쪽과 맞는지 적었다</li></ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">SOURCE</span><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/agent/role.rs">agent/role.rs · AgentRoleOverrides</a><a href="https://developers.openai.com/codex/subagents">subagents</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-3 · 모델 지정</div>
+  <h2>역할 파일에 <code>model</code>을 적으면 그 역할은 늘 그 모델로 돈다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 ① 명령이나 Codex의 <code>/model</code> 목록에서 작은 모델 이름 하나를 고른다</span><span><i>2</i><code>reviewer.toml</code>에 <code>model</code> 줄을 넣어 왼쪽 ②처럼 만든다 (3-2의 줄은 지운 상태)</span><span><i>3</i>Codex를 다시 열고 아래 문장을 보낸다. <code>model</code> 줄은 남겨 둬도 된다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:12px">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ① 모델 이름 찾기</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>codex debug models | jq -r '.models[].slug'
+<span class="gk">&lt;모델ID&gt;</span>     <span class="c">← 이 한 줄을 그대로 model에 쓴다</span></pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>(codex debug models | ConvertFrom-Json).models.slug
+<span class="gk">&lt;모델ID&gt;</span>     <span class="c">← 이 한 줄을 그대로 model에 쓴다</span></pre></div>
+<pre class="xs"><span class="fn">② 고칠 파일 · .codex/agents/reviewer.toml (저장 후 전체)</span>
+<span class="v">name</span> = <span class="s">"reviewer"</span>
+<span class="gk">model = "&lt;모델ID&gt;"</span>   <span class="c"># ①에서 고른 이름. 꺾쇠는 쓰지 않는다</span>
+<span class="v">description</span> = <span class="s">"""
+코드를 읽고 버그와 위험을 찾아 보고한다.
+리뷰, 점검, 버그 찾기를 부탁받으면 반드시 사용한다."""</span>
+<span class="v">developer_instructions</span> = <span class="s">"""
+너는 읽기 전용 코드 리뷰어다.
+파일을 고치지 말고 발견한 문제만 보고한다.
+
+보고 형식:
+- 파일:줄 — 문제 한 줄 — 근거 한 줄
+- 마지막 줄에 "총 N건"
+"""</span></pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">reviewer subagent를 띄워서 report.py 를 리뷰하게 해 줘</div>
+      <table class="tight sm">
+        <tr><th>자식 모델이 정해지는 순서 (소스 기준)</th></tr>
+        <tr><td>① 역할 파일의 <code>model</code> (부모에게 "바꿀 수 없음"으로 알려짐)</td></tr>
+        <tr><td>② 부모가 spawn 요청에 넣은 <code>model</code> (사용자가 부탁할 때만)</td></tr>
+        <tr><td>③ <code>config.toml</code>의 <code>[agents] default_subagent_model</code></td></tr>
+        <tr><td>④ 없으면 부모 모델 (<code>codex -m</code>, <code>config.toml</code>의 <code>model</code>)</td></tr>
+      </table>
+<pre class="xs"><span class="fn">부모 화면 · 모델과 강도가 괄호로 붙는다</span>
+<span class="orange">• Spawned</span> <span class="k">Robie</span> [reviewer] (<span class="gk">&lt;모델ID&gt;</span> &lt;강도&gt;)</pre>
+      <p class="muted" style="font-size:15.5px">②, ③은 ① 목록에 있는 이름만 받는다(없으면 <code>Unknown model … for spawn_agent</code>). 역할 파일의 <code>model</code>은 이 검사가 없어서 사내 모델 이름을 쓰기에 확실하다.</p>
+      <ul class="chk sm">
+        <li><code>Spawned</code> 줄 괄호 안에 고른 모델 이름이 보이고, <code>/status</code>의 부모 모델은 그대로다</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-4 · 승인 정책 물려받기</div>
+  <h2>부모를 <code>-a never</code>로 열면 자식도 묻지 않고 바로 실패한다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>Codex를 닫고 <code>codex -a never</code>로 연다</span><span><i>2</i>아래 문장을 보내고 tester가 어떻게 끝나는지 본다</span><span><i>3</i><code>/exit</code> 후 그냥 <code>codex</code>로 열고 같은 문장을 보낸다</span><span><i>4</i>승인 요청이 뜨면 <b>거절</b>한다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>
+<span class="pr">$ </span>codex -a never     <span class="c"># ① 묻지 않음</span>
+<span class="pr">$ </span>codex              <span class="c"># ② 기본값 on-request</span></pre>
+      <div class="ask">tester subagent를 띄워서 pip install pytest 부터 하고 테스트를 돌리게 해 줘</div>
+      <p class="muted" style="font-size:17px"><code>pip install</code>은 네트워크가 필요하다. 기본 sandbox(<code>workspace-write</code>)는 네트워크를 막으므로 sandbox 밖에서 실행해야 하고, 그러려면 승인이 필요하다.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>부모 승인 정책</th><th>자식이 sandbox 밖 명령을 원할 때</th></tr>
+        <tr><td class="h">never</td><td>묻지 않는다. 실패 결과가 바로 자식에게 돌아간다</td></tr>
+        <tr><td class="h">on-request</td><td>부모 화면에 <code>Approval needed in Tess [tester]</code></td></tr>
+      </table>
+      <ul class="chk sm">
+        <li>①에서 승인 창 없이 tester가 설치 실패를 보고했다</li>
+        <li>②에서 승인 요청에 tester 이름이 붙어 있었다</li>
+        <li>"자식의 권한과 승인 방식은 부모 세션이 정한다"를 내 말로 적어 본다</li>
+      </ul>
+      <div class="callout b" style="font-size:18px">승인 정책은 Codex 화면에서 <code>/permissions</code>로도 바꿀 수 있다. 바꾼 뒤 띄운 자식부터 새 정책을 따른다.</div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/cli/reference">cli reference · -s, -a</a><a href="https://developers.openai.com/codex/subagents">subagents</a></div>
+</section>
+
+<!-- ============ LAB 4 ============ -->
+<section class="slide divider" data-sec="LAB 4">
+  <div class="num">4</div>
+  <div class="kicker o">LAB 4</div>
+  <h1>위임 범위 정하기</h1>
+  <p class="lead">목표: 한 세션에서 subagent를 몇 개까지, 몇 단계까지 띄울 수 있는지, 아예 끄려면 무엇을 바꾸는지 <code>[agents]</code> 설정으로 확인한다.</p>
+  <div class="toc"><span><b>4-1</b>동시 개수 max_threads</span><span><b>4-2</b>중첩 깊이 max_depth</span><span><b>4-3</b>기능 끄기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 4">
+  <div class="kicker o">4-1 · 동시 개수</div>
+  <h2><code>max_threads</code>를 넘는 subagent는 자리가 날 때까지 띄울 수 없다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>.codex/config.toml</code> 맨 위에 초록 두 줄을 추가해 왼쪽처럼 만든다</span><span><i>2</i>Codex를 다시 열고 <code>/debug-config</code>로 값을 확인한다</span><span><i>3</i><code>/new</code> 후 아래 문장을 보낸다</span><span><i>4</i>끝나면 초록 두 줄과 빈 줄을 지운다 (LAB 5에서 셋을 동시에 띄운다)</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">고칠 파일 · .codex/config.toml (저장 후 전체)</span>
+<span class="gk">[agents]
+max_threads = 2</span>
+
+[<span class="k">agents.tester</span>]
+<span class="v">description</span> = <span class="s">"""
+테스트를 실행하고 실패 원인을 요약한다.
+테스트 실행이나 결과 확인을 부탁받으면 사용한다."""</span>
+<span class="v">config_file</span> = <span class="s">"./roles/tester.toml"</span>
+<span class="v">nickname_candidates</span> = [<span class="s">"Tess"</span>, <span class="s">"Toby"</span>]</pre>
+<pre class="xs"><span class="fn">Codex 화면 · /debug-config 의 일부</span>
+[agents]:
+  - enabled = true
+  - <span class="gk">max_concurrent_threads_per_session = 2</span>
+  - max_depth = 1 (V1 only; ignored by V2)</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">explorer subagent 네 개를 동시에 띄워서 cart.py, inventory.py, report.py, tests 폴더를 하나씩 조사하게 해 줘.</div>
+      <table class="tight sm">
+        <tr><th>세트</th><th>기본값</th><th>max_threads = 2일 때</th></tr>
+        <tr><td class="h">v1</td><td>자식 6개</td><td>자식 2개. 셋째 spawn은 <code>agent thread limit reached</code> 오류</td></tr>
+        <tr><td class="h">v2</td><td>부모 포함 4자리</td><td>부모 포함 3자리 (자식 2개)</td></tr>
+      </table>
+      <div class="card c-yellow" style="padding:14px 18px"><div class="lbl">끝난 자식도 자리를 차지한다 (v1)</div><p style="font-size:16.5px">v1에서는 완료된 자식도 <code>close_agent</code>로 닫기 전까지 한 자리로 센다. 부모가 둘을 닫고(<code>• Closed …</code>) 나머지를 띄우는지 본다.</p></div>
+      <ul class="chk sm">
+        <li><code>/debug-config</code>에 2가 보인다</li>
+        <li>네 개 중 두 개만 먼저 떴고, 나머지는 오류나 닫기 뒤에 떴다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/subagents">subagents · [agents]</a><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/config/mod.rs">config/mod.rs · effective_agent_max_threads</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 4">
+  <div class="kicker o">4-2 · 중첩 깊이</div>
+  <h2>기본값에서는 subagent가 다시 subagent를 띄울 수 없다 (v1)</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code> 후 아래 문장을 보낸다</span><span><i>2</i><code>/subagents</code>로 worker 스레드에 들어가 explorer를 못 띄운 이유를 본다</span><span><i>3</i><code>config.toml</code> 맨 위에 초록 두 줄을 넣고 Codex를 다시 연다</span><span><i>4</i><code>/new</code> 후 같은 문장을 보낸다</span><span><i>5</i>끝나면 초록 두 줄과 빈 줄을 지운다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">worker subagent 하나에게만 일을 맡겨 줘. 너는 explorer를 직접 띄우지 말고, worker에게 아래 지시를 그대로 전달해.
+
+[worker에게 줄 지시]
+1. minishop/report.py 의 TODO를 조사한다.
+2. data 폴더 조사는 직접 하지 말고, 반드시 explorer subagent를 띄워 맡긴다.
+3. 두 결과를 합쳐 보고한다.</div>
+<pre class="xs"><span class="fn">고칠 파일 · .codex/config.toml (저장 후 전체)</span>
+<span class="gk">[agents]
+max_depth = 2</span>
+
+[<span class="k">agents.tester</span>]
+<span class="v">description</span> = <span class="s">"""
+테스트를 실행하고 실패 원인을 요약한다.
+테스트 실행이나 결과 확인을 부탁받으면 사용한다."""</span>
+<span class="v">config_file</span> = <span class="s">"./roles/tester.toml"</span>
+<span class="v">nickname_candidates</span> = [<span class="s">"Tess"</span>, <span class="s">"Toby"</span>]</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>max_depth</th><th>뜻 (v1)</th></tr>
+        <tr><td class="h">1 (기본)</td><td>부모 → 자식까지. 자식에게는 spawn 도구 자체가 주어지지 않는다</td></tr>
+        <tr><td class="h">2</td><td>자식이 한 단계 더 띄울 수 있다 (손자)</td></tr>
+      </table>
+      <div class="card c-blue" style="padding:14px 18px"><div class="lbl">v2 모델이라면</div><p style="font-size:16.5px"><code>/debug-config</code>에 적힌 대로 v2는 <code>max_depth</code>를 쓰지 않는다. 깊이 대신 4-1의 자리 수로만 제한되므로, 기본값에서도 worker가 explorer를 띄울 수 있다.</p></div>
+      <ul class="chk sm">
+        <li>기본값(v1)에서 worker가 "subagent를 띄울 도구가 없다"며 직접 조사했다</li>
+        <li>2로 올린 뒤 <code>/subagents</code> 목록에 worker와 그 아래 explorer가 함께 보인다</li>
+        <li>손자의 결과와 부모의 최종 답을 비교해 무엇이 빠졌는지 적어 본다</li>
+      </ul>
+      <div class="callout y" style="font-size:17px">되돌리는 까닭: 깊이가 늘면 결과가 두 번 요약되어 정보가 더 많이 깎인다.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 4">
+  <div class="kicker o">4-3 · 기능 끄기</div>
+  <h2>subagent를 확실히 끄는 스위치는 <code>[agents] enabled = false</code>다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 ① 명령을 실행해 두 줄을 비교한다</span><span><i>2</i><code>config.toml</code> 맨 위에 초록 두 줄을 넣고 Codex를 다시 연다</span><span><i>3</i>아래 문장을 보낸다</span><span><i>4</i>끝나면 초록 두 줄과 빈 줄을 지운다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ① 스위치 비교 (v2 모델일 때)</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>codex debug prompt-input --disable multi_agent | grep -c multi_agent_role
+<span class="r">1</span>     <span class="c">← 그대로 켜져 있다</span>
+<span class="pr">$ </span>codex debug prompt-input -c agents.enabled=false | grep -c multi_agent_role
+<span class="ok">0</span>     <span class="c">← 꺼졌다</span></pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>(codex debug prompt-input --disable multi_agent | Select-String multi_agent_role).Count
+<span class="r">1</span>     <span class="c">← 그대로 켜져 있다</span>
+<span class="pr">PS&gt; </span>(codex debug prompt-input -c agents.enabled=false | Select-String multi_agent_role).Count
+<span class="ok">0</span>     <span class="c">← 꺼졌다</span></pre></div>
+      <p class="muted" style="font-size:16px">①은 모델에게 보낼 첫 입력에 v2용 subagent 안내문(<code>multi_agent_role</code>)이 들어가는지 센다. v1 모델에는 이 안내문이 원래 없어서 둘 다 0이 나온다. 그때는 오른쪽 문장으로 확인한다.</p>
+<pre class="xs"><span class="fn">고칠 파일 · .codex/config.toml (저장 후 전체)</span>
+<span class="gk">[agents]
+enabled = false</span>
+
+[<span class="k">agents.tester</span>]
+<span class="v">description</span> = <span class="s">"""
+테스트를 실행하고 실패 원인을 요약한다.
+테스트 실행이나 결과 확인을 부탁받으면 사용한다."""</span>
+<span class="v">config_file</span> = <span class="s">"./roles/tester.toml"</span>
+<span class="v">nickname_candidates</span> = [<span class="s">"Tess"</span>, <span class="s">"Toby"</span>]</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">explorer subagent 하나를 띄워서 tests 폴더를 조사하게 해 줘</div>
+      <table class="tight sm">
+        <tr><th>바꾸는 곳</th><th>v1 모델</th><th>v2 모델</th></tr>
+        <tr><td class="h">[agents] enabled = false</td><td class="ok">꺼짐</td><td class="ok">꺼짐</td></tr>
+        <tr><td class="h">--disable multi_agent<br><span class="dim" style="font-weight:400">= [features] multi_agent = false</span></td><td class="ok">꺼짐</td><td class="ng">안 꺼짐</td></tr>
+        <tr><td class="h">[features] multi_agent_v2 = true</td><td colspan="2">어느 모델이든 v2 도구 세트로 바꾼다</td></tr>
+      </table>
+      <p class="muted" style="font-size:16px">세트는 ① <code>multi_agent_v2</code> 켜짐 → ② <code>agents.enabled = false</code> → ③ 모델 목록의 <code>multi_agent_version</code> → ④ <code>multi_agent</code> 스위치 순으로 정해진다(<code>config/mod.rs</code>). v2 모델은 ③에서 끝나서 ④를 보지 않는다.</p>
+      <ul class="chk sm">
+        <li>오른쪽 문장에 Codex가 subagent 도구가 없다고 하고 직접 조사했다</li>
+        <li>되돌린 뒤 같은 문장으로 다시 <code>Spawned</code> 줄이 생겼다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">SOURCE</span><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/core/src/config/mod.rs">config/mod.rs · multi_agent_version_for_model</a><a href="https://developers.openai.com/codex/subagents">subagents</a></div>
+</section>
+
+<!-- ============ LAB 5 ============ -->
+<section class="slide divider" data-sec="LAB 5">
+  <div class="num">5</div>
+  <div class="kicker o">LAB 5</div>
+  <h1>병렬 위임과 결과 받기</h1>
+  <p class="lead">목표: 모듈 세 개를 worker 셋에게 동시에 맡기고, 결과를 정해진 형식의 파일로 받고, 판정은 테스트로 한다. 끝난 자식에게 이어서 일을 시켜 본다.</p>
+  <div class="toc"><span><b>5-1</b>브리프 쓰기</span><span><b>5-2</b>동시에 맡기기</span><span><b>5-3</b>결과 확인과 판정</span><span><b>5-4</b>이어서 시키기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-1 · 브리프 쓰기</div>
+  <h2>자식은 앞선 대화를 모르므로, 브리프 하나로 일이 끝나야 한다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>다른 터미널 창에서 <code>git checkout -- minishop tests</code>로 코드를 처음 상태로 돌린다</span><span><i>2</i>minishop 폴더에 <code>brief.md</code>를 새로 만들고 왼쪽 내용을 그대로 저장한다 (<code>&lt;대상&gt;</code>은 그대로 둔다)</span></div>
+  <div class="split" style="align-items:start;grid-template-columns:1.2fr 1fr">
+<pre class="xs"><span class="fn">새 파일 · minishop/brief.md</span>
+<span class="gk">## 목표</span>
+minishop/&lt;대상&gt;.py 의 버그나 미완성 부분을 찾아 고친다.
+
+<span class="gk">## 범위</span>
+- 고쳐도 되는 파일: minishop/&lt;대상&gt;.py 하나
+- tests/ 와 다른 모듈은 읽기만 한다
+- 다른 worker가 같은 폴더에서 동시에 일한다. 남의 수정을 되돌리지 않는다
+
+<span class="gk">## 완료 조건</span>
+- python -m unittest tests.test_&lt;대상&gt; 이 통과한다
+  (Linux·macOS에서는 python3)
+- 고칠 것이 없으면 고치지 않고 그렇게 보고한다
+
+<span class="gk">## 결과 형식</span>
+reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
+상태: 고침 | 문제 없음 | 막힘
+원인: (한 줄)
+바꾼 곳: 파일:줄
+테스트: 통과 N / 실패 N</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-green"><div class="lbl">브리프의 네 칸</div>
+        <ul><li><b>목표</b>: 무엇을 끝내야 하나</li>
+        <li><b>범위</b>: 어디까지 손대도 되나 (동시 작업 충돌 방지)</li>
+        <li><b>완료 조건</b>: 끝났는지 무엇으로 판단하나</li>
+        <li><b>결과 형식</b>: 무엇을 어디에 남기나</li></ul>
+      </div>
+      <p class="muted" style="font-size:18px">Codex의 자식들은 <b>같은 폴더를 함께 쓴다</b>. 한 자식이 고친 내용은 다른 자식에게 바로 보인다. 그래서 범위를 파일 하나로 나누고, 남의 수정을 되돌리지 말라고 적는다. 내장 worker 설명에 적힌 규칙과 같다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-2 · 동시에 맡기기</div>
+  <h2>부모가 한 번에 spawn을 여러 번 부르면 자식들이 동시에 돈다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code> 후 아래 문장을 보낸다</span><span><i>2</i><code>Spawned</code> 줄 세 개가 뜨면 <code>/subagents</code>와 <kbd>Alt+←</kbd> <kbd>Alt+→</kbd>로 세 스레드를 둘러본다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">brief.md 를 읽고, 대상을 cart, inventory, report 로 바꾼 브리프 세 개를 만들어 worker subagent 세 개를 동시에 띄워 맡겨 줘. 셋이 끝나면 reports/ 의 파일을 모아 표 하나로 정리해 줘.</div>
+<pre class="xs"><span class="fn">부모 화면 · 별명은 매번 다르다</span>
+<span class="orange">• Spawned</span> <span class="k">Ada</span> [worker]    └ minishop/cart.py …
+<span class="orange">• Spawned</span> <span class="k">Bob</span> [worker]    └ minishop/inventory.py …
+<span class="orange">• Spawned</span> <span class="k">Cleo</span> [worker]   └ minishop/report.py …
+<span class="orange">• Waiting for 3 agents</span></pre>
+      <ul class="chk sm">
+        <li><code>Spawned</code> 줄 세 개가 이어서 뜬다</li>
+        <li><code>/subagents</code> 목록에 <code>Main [default]</code>와 worker 세 개가 보인다</li>
+        <li>각 자식의 첫 메시지에 자기 대상만 적혀 있다</li>
+      </ul>
+    </div>
+    <svg viewBox="0 0 620 400" width="100%">
+      <defs><marker id="mc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8e9cae"/></marker></defs>
+      <rect x="10" y="160" width="140" height="80" rx="14" class="sb"/><text x="80" y="196" text-anchor="middle" font-size="17" font-weight="800" fill="#58a6ff">Main</text><text x="80" y="220" text-anchor="middle" font-size="13">브리프 3개</text>
+      <g font-size="15">
+        <rect x="230" y="30" width="170" height="70" rx="12" fill="#2c1d0e" stroke="#78481b"/><text x="315" y="62" text-anchor="middle" fill="#ffa657" class="mono">worker #1</text><text x="315" y="84" text-anchor="middle">cart.py</text>
+        <rect x="230" y="165" width="170" height="70" rx="12" fill="#2c1d0e" stroke="#78481b"/><text x="315" y="197" text-anchor="middle" fill="#ffa657" class="mono">worker #2</text><text x="315" y="219" text-anchor="middle">inventory.py</text>
+        <rect x="230" y="300" width="170" height="70" rx="12" fill="#2c1d0e" stroke="#78481b"/><text x="315" y="332" text-anchor="middle" fill="#ffa657" class="mono">worker #3</text><text x="315" y="354" text-anchor="middle">report.py</text>
+        <rect x="470" y="140" width="140" height="120" rx="12" fill="#11261a" stroke="#2c6b3c"/><text x="540" y="172" text-anchor="middle" fill="#7ee787" class="mono">reports/</text><text x="540" y="200" text-anchor="middle" class="mono" font-size="13">cart.md</text><text x="540" y="222" text-anchor="middle" class="mono" font-size="13">inventory.md</text><text x="540" y="244" text-anchor="middle" class="mono" font-size="13">report.md</text>
+      </g>
+      <path d="M150,190 L225,70" class="ar" marker-end="url(#mc)"/><path d="M150,200 L225,200" class="ar" marker-end="url(#mc)"/><path d="M150,210 L225,330" class="ar" marker-end="url(#mc)"/>
+      <path d="M400,65 L465,165" class="ar" stroke="#7ee787" marker-end="url(#mc)"/><path d="M400,200 L465,200" class="ar" stroke="#7ee787" marker-end="url(#mc)"/><path d="M400,335 L465,235" class="ar" stroke="#7ee787" marker-end="url(#mc)"/>
+    </svg>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-3 · 결과 확인과 판정</div>
+  <h2>자식의 보고를 믿지 말고, 테스트로 판정한다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>세 자식이 끝나면 다른 터미널 창에서 왼쪽 명령 세 개를 차례로 실행한다</span><span><i>2</i>결과를 오른쪽 체크와 비교한다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="sm" data-os="unix"><span class="c"># 1. 결과 파일이 형식대로 왔는지 (파일마다 앞 4줄)</span>
+<span class="pr">$ </span>head -n 4 reports/*.md
+
+<span class="c"># 2. 실제로 무엇이 바뀌었는지 (파일별 줄 수)</span>
+<span class="pr">$ </span>git diff --stat
+
+<span class="c"># 3. 최종 판정은 테스트로</span>
+<span class="pr">$ </span>python3 -m unittest -v</pre><pre class="sm" data-os="win"><span class="c"># 1. 결과 파일이 형식대로 왔는지 (파일마다 앞 4줄)</span>
+<span class="pr">PS&gt; </span>Get-ChildItem reports\*.md | ForEach-Object {
+  "--- $($_.Name)"; Get-Content $_ -TotalCount 4 }
+
+<span class="c"># 2. 실제로 무엇이 바뀌었는지 (파일별 줄 수)</span>
+<span class="pr">PS&gt; </span>git diff --stat
+
+<span class="c"># 3. 최종 판정은 테스트로</span>
+<span class="pr">PS&gt; </span>python -m unittest -v</pre></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <ul class="chk sm">
+        <li>reports/ 에 파일 세 개가 있고 모두 네 줄 형식이다</li>
+        <li><code>git diff --stat</code>에 각 자식이 자기 범위 파일만 고쳤다</li>
+        <li>테스트가 모두 통과한다</li>
+        <li>report.py 담당 자식이 TODO(top_products)를 어떻게 처리했는지 확인했다. 테스트가 없는 부분이다</li>
+      </ul>
+      <div class="callout r" style="font-size:19px">report.py의 TODO는 테스트가 없어서 "통과"만으로는 맞는지 알 수 없다. 자식이 <b>테스트까지 추가했는지</b>, 아니면 "문제 없음"으로 넘겼는지가 브리프 품질을 보여 준다.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-4 · 이어서 시키기</div>
+  <h2>끝난 자식에게 새 스레드가 아니라 같은 스레드로 이어서 일을 시킬 수 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>5-2 대화 화면에서 그대로 아래 문장을 보낸다</span><span><i>2</i>새 <code>Spawned</code> 줄 대신 어떤 줄이 생기는지 본다</span><span><i>3</i><code>/subagents</code>로 report 담당 스레드에 메시지가 이어 붙었는지 본다</span></div>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">report.py 를 맡았던 worker에게, 새로 띄우지 말고 같은 agent에 이어서 top_products 테스트를 tests/test_report.py 에 추가하라고 해 줘.</div>
+<pre class="xs"><span class="fn">부모 화면 (v1) · 이미 닫힌 자식이면 Resumed 가 먼저 나온다</span>
+<span class="orange">• Resumed</span> <span class="k">Cleo</span> [worker]
+<span class="orange">• Sent input to</span> <span class="k">Cleo</span> [worker]
+  └ top_products 테스트를 tests/test_report.py 에 …
+<span class="orange">• Waiting for</span> <span class="k">Cleo</span> [worker]</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>세트</th><th>이어서 시키는 도구</th></tr>
+        <tr><td class="h">v1</td><td><code>send_input</code> (자식 id로 보냄), 닫힌 자식은 먼저 <code>resume_agent</code></td></tr>
+        <tr><td class="h">v2</td><td><code>followup_task</code> (작업 이름으로 보내고 새 턴 시작), 진행 중에 한마디만 보낼 때는 <code>send_message</code></td></tr>
+      </table>
+      <ul class="chk sm">
+        <li>새 <code>Spawned</code> 줄이 생기지 않았다</li>
+        <li>5-2와 같은 별명의 스레드에 메시지가 이어 붙었다</li>
+        <li>자식이 report.py를 다시 읽지 않고 바로 테스트를 썼는지 확인했다</li>
+      </ul>
+      <p class="muted" style="font-size:17px">새로 맡기기와 이어서 시키기 중 무엇이 나은지는 앞의 맥락이 도움이 되는지로 정한다. v1이라면 1-2에서 본 대로 그 스레드에 들어가 내가 직접 입력해도 된다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 6 ============ -->
+<section class="slide divider" data-sec="LAB 6">
+  <div class="num">6</div>
+  <div class="kicker o">LAB 6</div>
+  <h1>터미널에서 실행하기</h1>
+  <p class="lead">목표: 화면(TUI) 없이 <code>codex exec</code> 한 줄로 위임을 실행하고, 어떤 subagent가 불렸는지 JSON 출력으로 센다.</p>
+  <div class="toc"><span><b>6-1</b>exec로 위임</span><span><b>6-2</b>JSON으로 spawn 세기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 6">
+  <div class="kicker o">6-1 · exec로 위임</div>
+  <h2><code>codex exec</code>도 화면과 같은 역할과 설정을 쓰지만, 승인은 묻지 않는다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>Codex 화면을 <code>/exit</code>로 닫는다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다. 모델 이름은 <code>M</code>에 한 번 담아 <code>-m</code>으로 넘긴다</span><span><i>3</i><code>last.md</code>를 열어 마지막 답이 들어 있는지 본다</span></div>
+  <div class="split" style="align-items:start">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix" style="font-size:13.5px"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (.codex 설정은 남김)</span>
+<span class="pr">$ </span>git checkout -- minishop tests &amp;&amp; rm -rf reports
+
+<span class="c"># 0-1에서 메모한 모델 이름을 M에 담는다 (꺾쇠 없이)</span>
+<span class="pr">$ </span>M=<span class="gk">&lt;모델ID&gt;</span>
+
+<span class="c"># reviewer에게 맡기고 마지막 답만 last.md 에도 저장</span>
+<span class="pr">$ </span>codex exec -m "$M" -o last.md \
+  "reviewer subagent를 띄워 cart.py 리뷰를 맡기고 결과만 알려 줘"
+
+<span class="c"># 방금 세션에 이어서 (오른쪽 초록 상자)</span>
+<span class="pr">$ </span>codex exec resume --last -m "$M" \
+  "같은 리뷰를 inventory.py 에도 맡겨 줘"
+
+<span class="c"># 고치는 일은 sandbox를 명시해서 실행</span>
+<span class="pr">$ </span>codex exec -m "$M" -s workspace-write \
+  "worker subagent를 띄워 cart.py 버그를 고치고 테스트로 확인하게 해 줘"</pre><pre class="xs" data-os="win" style="font-size:13px"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (.codex 설정은 남김)</span>
+<span class="pr">PS&gt; </span>git checkout -- minishop tests
+<span class="pr">PS&gt; </span>Remove-Item -Recurse -Force reports -ErrorAction SilentlyContinue
+
+<span class="c"># 0-1에서 메모한 모델 이름을 $M에 담는다 (꺾쇠 없이)</span>
+<span class="pr">PS&gt; </span>$M = <span class="gk">'&lt;모델ID&gt;'</span>
+
+<span class="c"># reviewer에게 맡기고 마지막 답만 last.md 에도 저장</span>
+<span class="pr">PS&gt; </span>codex exec -m $M -o last.md `
+  "reviewer subagent를 띄워 cart.py 리뷰를 맡기고 결과만 알려 줘"
+
+<span class="c"># 방금 세션에 이어서 (오른쪽 초록 상자)</span>
+<span class="pr">PS&gt; </span>codex exec resume --last -m $M `
+  "같은 리뷰를 inventory.py 에도 맡겨 줘"
+
+<span class="c"># 고치는 일은 sandbox를 명시해서 실행</span>
+<span class="pr">PS&gt; </span>codex exec -m $M -s workspace-write `
+  "worker subagent를 띄워 cart.py 버그를 고치고 테스트로 확인하게 해 줘"</pre></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card c-orange" style="padding:16px 20px"><div class="lbl">화면(TUI)과 다른 점</div>
+        <ul style="font-size:17px"><li>승인 정책이 <code>never</code>로 시작한다. 승인이 필요한 일은 묻지 않고 실패로 돌아간다 (3-4의 ①)</li>
+        <li>자식 스레드에 들어가 볼 수 없다. 대신 진행 표시가 stderr에 <code>collab: SpawnAgent</code>처럼 한 줄씩 나온다</li>
+        <li>stdout에는 마지막 답만 나온다. <code>-o 파일</code>은 그 답을 파일로도 저장한다</li></ul>
+      </div>
+      <div class="card c-green" style="padding:16px 20px"><div class="lbl"><code>resume --last</code>가 하는 일</div>
+        <ul style="font-size:17px"><li>이 폴더에서 가장 최근 세션에 이어서 보낸다. 그래서 "같은 리뷰"가 무엇인지 안다</li>
+        <li>특정 세션은 <code>codex exec resume &lt;세션 id&gt; "…"</code>로, 다른 폴더 세션까지 보려면 <code>--all</code>을 붙인다</li></ul></div>
+      <ul class="chk sm"><li>둘째 명령의 답이 첫 리뷰를 알고 있다</li><li>stderr에 <code>collab:</code> 줄이 보였다</li></ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/noninteractive">non-interactive mode</a><a href="https://developers.openai.com/codex/cli/reference">cli reference</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 6">
+  <div class="kicker o">6-2 · JSON으로 spawn 세기</div>
+  <h2><code>--json</code>으로 받으면 subagent를 몇 번 띄웠는지 스크립트로 셀 수 있다</h2>
+  <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 첫 명령을 실행해 <code>run.jsonl</code>이 생기는지 본다</span><span><i>2</i>둘째 명령으로 subagent 관련 사건만 골라 본다</span><span><i>3</i>셋째 명령으로 spawn 횟수를 센다</span></div>
+  <div class="split" style="align-items:start">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="c"># M은 6-1에서 담은 모델 이름</span>
+<span class="pr">$ </span>codex exec -m "$M" --json \
+  "explorer subagent 두 개로 tests, minishop 폴더를 동시에 조사해 줘" \
+  &gt; run.jsonl
+
+<span class="c"># subagent 관련 사건만: 도구, 받는 스레드 수, 지시문 앞부분</span>
+<span class="pr">$ </span>jq -c 'select(.type=="item.completed"
+              and .item.type=="collab_tool_call")
+  | {tool: .item.tool,
+     to: (.item.receiver_thread_ids | length),
+     prompt: (.item.prompt // "" | .[0:20])}' run.jsonl
+{<span class="v">"tool"</span>:<span class="s">"spawn_agent"</span>,<span class="v">"to"</span>:1,<span class="v">"prompt"</span>:<span class="s">"tests 폴더를 조사해 …"</span>}
+{<span class="v">"tool"</span>:<span class="s">"spawn_agent"</span>,<span class="v">"to"</span>:1,<span class="v">"prompt"</span>:<span class="s">"minishop 폴더의 …"</span>}
+{<span class="v">"tool"</span>:<span class="s">"wait"</span>,<span class="v">"to"</span>:2,<span class="v">"prompt"</span>:<span class="s">""</span>}
+
+<span class="c"># spawn 횟수만</span>
+<span class="pr">$ </span>jq -s 'map(select(.type=="item.completed"
+    and .item.tool=="spawn_agent")) | length' run.jsonl
+2</pre><pre class="xs" data-os="win"><span class="c"># $M은 6-1에서 담은 모델 이름</span>
+<span class="pr">PS&gt; </span>codex exec -m $M --json `
+  "explorer subagent 두 개로 tests, minishop 폴더를 동시에 조사해 줘" `
+  &gt; run.jsonl
+
+<span class="c"># subagent 관련 사건만: 도구, 받는 스레드 수, 지시문</span>
+<span class="pr">PS&gt; </span>$ev = Get-Content run.jsonl | ConvertFrom-Json
+<span class="pr">PS&gt; </span>$cx = $ev | Where-Object { $_.type -eq 'item.completed' -and
+                          $_.item.type -eq 'collab_tool_call' }
+<span class="pr">PS&gt; </span>$cx | ForEach-Object { $_.item } |
+  Select-Object tool, @{n='to';e={$_.receiver_thread_ids.Count}}, prompt
+<span class="v">tool        to prompt</span>
+spawn_agent  1 tests 폴더를 조사해 …
+spawn_agent  1 minishop 폴더의 …
+wait         2
+
+<span class="c"># spawn 횟수만</span>
+<span class="pr">PS&gt; </span>($cx | Where-Object { $_.item.tool -eq 'spawn_agent' }).Count
+2</pre></div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card c-blue"><div class="lbl">collab_tool_call 사건에 담기는 것</div>
+        <ul style="font-size:17px"><li><code>tool</code>: <code>spawn_agent</code>, <code>send_input</code>, <code>wait</code>, <code>close_agent</code></li>
+        <li><code>receiver_thread_ids</code>: 자식 스레드 id</li>
+        <li><code>prompt</code>: 부모가 쓴 지시문</li>
+        <li><code>agents_states</code>: 자식별 상태와 마지막 답 (<code>wait</code>에서)</li></ul>
+      </div>
+      <div class="callout y" style="font-size:16.5px">역할 이름은 이 사건에 없다. 역할은 지시문이나 화면의 <code>[역할]</code>로 확인한다. 또 0.160.1에서는 v2의 <code>send_message</code>, <code>followup_task</code>가 JSON에 나오지 않고, <code>resume_agent</code>는 <code>wait</code>로 찍힌다(소스 확인).</div>
+      <ul class="chk sm">
+        <li>spawn이 두 번 잡혔다</li>
+        <li><code>wait</code> 사건의 <code>agents_states</code>에서 자식의 마지막 답을 찾았다</li>
+      </ul>
+      <p class="muted" style="font-size:16px">이 방법으로 2-5의 description 실험을 여러 번 자동으로 돌려 셀 수 있다.</p>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">SOURCE</span><a href="https://github.com/openai/codex/blob/rust-v0.160.1/codex-rs/exec/src/exec_events.rs">exec/exec_events.rs</a><a href="https://developers.openai.com/codex/noninteractive">non-interactive · --json</a></div>
+</section>
+
+<!-- ============ 마무리 ============ -->
+<section class="slide" data-sec="마무리">
+  <div class="kicker o">Summary</div>
+  <h2>Codex 실습에서 직접 확인한 것</h2>
+  <div class="g3">
+    <div class="card c-orange"><div class="lbl">선언</div><ul>
+      <li><code>.codex/agents/*.toml</code> (name, description, developer_instructions) 또는 <code>config.toml</code>의 <code>[agents.이름]</code> + <code>config_file</code></li>
+      <li>프로젝트 설정은 저장소를 신뢰해야 읽힌다</li>
+      <li><code>debug prompt-input</code>과 시작 경고(<code>/warnings</code>)로 먼저 검사</li></ul></div>
+    <div class="card c-blue"><div class="lbl">제한</div><ul>
+      <li>파일 권한과 승인은 <b>부모 세션</b>이 정한다 (<code>-s</code>, <code>-a</code>)</li>
+      <li>역할이 바꾸는 것은 지시문과 모델 쪽이다</li>
+      <li><code>[agents]</code>: <code>max_threads</code>, <code>max_depth</code>(v1), <code>enabled</code></li></ul></div>
+    <div class="card c-green"><div class="lbl">운용</div><ul>
+      <li>subagent는 부탁하거나 AGENTS.md에 적어야 띄운다</li>
+      <li>브리프 네 칸: 목표, 범위, 완료 조건, 결과 형식</li>
+      <li>판정은 테스트로, 이어서 시킬 땐 같은 스레드에 (<code>send_input</code> / <code>followup_task</code>)</li></ul></div>
+  </div>
+  <div class="callout" style="margin-top:26px">도구 이름과 일부 설정은 모델이 쓰는 세트(v1, v2)에 따라 다르고, 문서와 소스가 다른 곳도 있었다(<code>/agent</code> 명령 이름, 역할의 <code>sandbox_mode</code>). 버전이 바뀌면 <code>codex debug models</code>와 이 덱의 확인 단계를 다시 돌려 본다.</div>
+</section>
+
+<section class="slide" data-sec="마무리">
+  <div class="kicker o">Appendix · 정답</div>
+  <h2>minishop에 숨겨 둔 문제 세 가지</h2>
+  <div class="g3">
+    <div class="card c-red"><div class="lbl">버그 1 · cart.py</div>
+<pre class="xs">return subtotal - discount_percent</pre>
+      <p>할인율(%)을 금액처럼 뺐다. <code>subtotal * (100 - discount_percent) / 100</code>이 맞다. <code>test_total_with_discount</code>가 실패한다.</p></div>
+    <div class="card c-red"><div class="lbl">버그 2 · inventory.py</div>
+<pre class="xs">if self.available(name) &gt; qty:</pre>
+      <p>남은 수량을 전부 예약하는 경우를 막는다. <code>&gt;=</code>가 맞다. <code>test_reserve_all_remaining</code>이 실패한다.</p></div>
+    <div class="card c-yellow"><div class="lbl">미완성 · report.py</div>
+<pre class="xs">def top_products(orders, n=3):
+    raise NotImplementedError</pre>
+      <p>판매 수량 순 상위 n개. 테스트가 없어서 테스트 실행만으로는 드러나지 않는다. 기대값: mouse 10, cable 10, keyboard 3.</p></div>
+  </div>
+  <div class="callout y" style="margin-top:22px">mouse와 cable이 10개로 같다. 같은 수량일 때 순서를 어떻게 정할지는 정해져 있지 않으므로, 자식이 이 점을 보고했는지도 확인해 볼 만하다.</div>
+</section>
+
+<section class="slide" data-sec="마무리">
+  <div class="kicker o">Appendix · 명령 모음</div>
+  <h2>실습에 쓴 명령과 설정 한눈에 보기</h2>
+  <div class="g2">
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix"><span class="c"># 모델 없이 되는 확인</span>
+<span class="pr">$ </span>codex features list | grep '^multi_agent'
+<span class="pr">$ </span>codex debug models \
+  | jq -r '.models[] | "\(.slug) \(.multi_agent_version)"'
+<span class="pr">$ </span>codex debug prompt-input | grep -o 'sandbox_mode. is .[a-z-]*'
+<span class="pr">$ </span>codex debug prompt-input &gt; /dev/null &amp;&amp; echo 설정 OK
+
+<span class="c"># 실행 (M=모델 이름)</span>
+<span class="pr">$ </span>codex                               <span class="c"># 화면(TUI)</span>
+<span class="pr">$ </span>codex -s read-only -a never          <span class="c"># 권한을 좁혀서</span>
+<span class="pr">$ </span>codex exec -m "$M" "..."              <span class="c"># 한 번 실행</span>
+<span class="pr">$ </span>codex exec resume --last -m "$M" "..."  <span class="c"># 직전 세션에 이어서</span>
+<span class="pr">$ </span>codex exec -m "$M" --json "..."       <span class="c"># 사건을 JSON 줄로</span>
+<span class="pr">$ </span>codex exec -m "$M" -o last.md "..."   <span class="c"># 마지막 답을 파일로</span>
+
+<span class="c"># 화면 안에서 쓰는 명령: /subagents /debug-config</span>
+<span class="c">#   /warnings /status /model /permissions /new</span></pre><pre class="xs" data-os="win"><span class="c"># 모델 없이 되는 확인</span>
+<span class="pr">PS&gt; </span>codex features list | Select-String '^multi_agent'
+<span class="pr">PS&gt; </span>(codex debug models | ConvertFrom-Json).models |
+  Format-Table slug, multi_agent_version
+<span class="pr">PS&gt; </span>codex debug prompt-input |
+  Select-String -AllMatches 'sandbox_mode. is .[a-z-]+' | % { $_.Matches.Value }
+<span class="pr">PS&gt; </span>codex debug prompt-input &gt; $null; if ($?) { '설정 OK' }
+
+<span class="c"># 실행 ($M = '모델 이름')</span>
+<span class="pr">PS&gt; </span>codex                               <span class="c"># 화면(TUI)</span>
+<span class="pr">PS&gt; </span>codex -s read-only -a never          <span class="c"># 권한을 좁혀서</span>
+<span class="pr">PS&gt; </span>codex exec -m $M "..."                <span class="c"># 한 번 실행</span>
+<span class="pr">PS&gt; </span>codex exec resume --last -m $M "..."  <span class="c"># 직전 세션에 이어서</span>
+<span class="pr">PS&gt; </span>codex exec -m $M --json "..."         <span class="c"># 사건을 JSON 줄로</span>
+<span class="pr">PS&gt; </span>codex exec -m $M -o last.md "..."     <span class="c"># 마지막 답을 파일로</span>
+
+<span class="c"># 화면 안에서 쓰는 명령: /subagents /debug-config</span>
+<span class="c">#   /warnings /status /model /permissions /new</span></pre></div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>설정</th><th>위치</th><th>LAB</th></tr>
+        <tr><td class="h">name · description · developer_instructions</td><td>역할 파일</td><td>2</td></tr>
+        <tr><td class="h">[agents.이름] + config_file</td><td>config.toml</td><td>2</td></tr>
+        <tr><td class="h">model · model_reasoning_effort</td><td>역할 파일</td><td>3</td></tr>
+        <tr><td class="h">sandbox_mode · approval_policy</td><td>부모 세션 (<code>-s</code>, <code>-a</code>)</td><td>3</td></tr>
+        <tr><td class="h">default_subagent_model</td><td>[agents]</td><td>3</td></tr>
+        <tr><td class="h">max_threads · max_depth · enabled</td><td>[agents]</td><td>4</td></tr>
+        <tr><td class="h">projects."경로".trust_level</td><td>~/.codex/config.toml</td><td>0</td></tr>
+      </table>
+      <div class="keys"><kbd>/subagents</kbd><span>스레드 목록</span><kbd>Alt+← →</kbd><span>스레드 사이 이동 (macOS Option)</span><kbd>/new</kbd><span>새 대화</span></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://developers.openai.com/codex/subagents">subagents</a><a href="https://developers.openai.com/codex/config-reference">config reference</a><a href="https://developers.openai.com/codex/cli/reference">cli</a><a href="https://developers.openai.com/codex/noninteractive">exec</a><a href="https://github.com/openai/codex/tree/rust-v0.160.1">source 0.160.1</a></div>
+</section>
+
+<div class="bar" id="bar"></div>
+</div>
+<nav id="ov" aria-label="슬라이드 목차"></nav>
+<script>
+(()=>{let os='unix';try{os=localStorage.getItem('lab-os')||(/Win/i.test(navigator.platform||navigator.userAgent)?'win':'unix')}catch(e){}
+document.documentElement.dataset.os=os;
+document.addEventListener('click',e=>{const b=e.target.closest('.os-tabs button');if(!b)return;document.documentElement.dataset.os=b.dataset.os;try{localStorage.setItem('lab-os',b.dataset.os)}catch(e){}});})();
+</script>
+<script>
+(()=>{
+const stage=document.getElementById('stage');
+const S=[...stage.querySelectorAll('.slide')];
+const SECS=['시작','LAB 0','LAB 1','LAB 2','LAB 3','LAB 4','LAB 5','LAB 6','마무리'];
+let i=0;
+S.forEach((el,n)=>{
+  const top=document.createElement('div');top.className='chrome-top';
+  top.innerHTML=SECS.map(s=>`<span class="${s===el.dataset.sec?'on':''}">${s}</span>`).join('');
+  el.prepend(top);
+  const no=document.createElement('div');no.className='pageno';no.textContent=String(n+1).padStart(2,'0')+' / '+S.length;el.appendChild(no);
+});
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+const ov=document.getElementById('ov');
+ov.innerHTML=S.map((el,n)=>{const h=el.querySelector('h1,h2');const t=h?h.textContent.replace(/\s+/g,' ').trim():'';return `<a href="#${n+1}" data-n="${n}"><b>${String(n+1).padStart(2,'0')} · ${el.dataset.sec||''}</b>${t}</a>`}).join('');
+ov.addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();go(+a.dataset.n);ov.classList.remove('on');});
+function go(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((el,k)=>el.classList.toggle('active',k===i));
+  document.getElementById('bar').style.width=((i+1)/S.length*100)+'%';
+  [...ov.children].forEach((a,k)=>a.classList.toggle('cur',k===i));
+  if(location.hash!=='#'+(i+1))history.replaceState(null,'','#'+(i+1));}
+addEventListener('keydown',e=>{
+  if(e.key==='o'||e.key==='O'){ov.classList.toggle('on');return;}
+  if(e.key==='Escape'){ov.classList.remove('on');return;}
+  if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.();return;}
+  if(ov.classList.contains('on'))return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(i+1)}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(S.length-1);});
+stage.addEventListener('click',e=>{if(e.target.closest('a,button'))return;const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width;if(x>.6)go(i+1);else if(x<.25)go(i-1);});
+let tx=null;addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)go(i+(d<0?1:-1));tx=null;});
+addEventListener('hashchange',()=>{const h=parseInt(location.hash.slice(1));if(!isNaN(h)&&h-1!==i)go(h-1);});
+const h=parseInt(location.hash.slice(1));go(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>

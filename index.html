@@ -84,7 +84,7 @@
     </div>
 
     <h2>실습</h2>
-    <p class="sub">실습은 도구별로 따로 만듭니다. OpenCode를 먼저 완성하고, 같은 순서를 Claude Code와 Codex로 옮깁니다. 세 실습 모두 같은 샘플 프로젝트 <code>minishop</code>을 씁니다.</p>
+    <p class="sub">실습은 도구별로 따로 만듭니다. 세 실습은 같은 순서(LAB 0–6)를 따르고, 각 폴더에 들어 있는 같은 샘플 프로젝트 <code>minishop</code>을 씁니다.</p>
     <div class="grid">
       <article class="card ready">
         <span class="meta"><span class="badge b-ready">v1</span> &nbsp;OpenCode · 40장 · LAB 0–6</span>
@@ -101,15 +101,35 @@
         </div>
         <a class="btn" href="https://github.com/ljd6805/subagent-study/tree/main/labs/01-opencode/minishop">샘플 프로젝트 minishop</a>
       </article>
-      <article class="card todo">
-        <span class="meta"><span class="badge b-todo">준비 중</span></span>
-        <h3>Claude Code subagent 실습</h3>
-        <p>OpenCode 실습과 같은 순서로 <code>.claude/agents/</code> 정의, 내장 agent, 권한·모델, 병렬 위임을 확인합니다.</p>
+      <article class="card ready">
+        <span class="meta"><span class="badge b-ready">v1</span> &nbsp;Claude Code · 40장 · LAB 0–6</span>
+        <h3><a href="labs/02-claude-code/">Claude Code subagent 실습</a></h3>
+        <p><code>.claude/agents/</code>와 <code>--agents</code> JSON으로 agent 선언, tools·permissionMode·model, <code>Agent(이름)</code> 권한과 중첩 깊이, 병렬 위임과 SendMessage, <code>claude -p</code>까지.</p>
+        <div class="jumps" aria-label="랩 바로 가기">
+          <a href="labs/02-claude-code/#4">LAB 0 준비</a>
+          <a href="labs/02-claude-code/#9">LAB 1 내장 subagent</a>
+          <a href="labs/02-claude-code/#15">LAB 2 내 agent</a>
+          <a href="labs/02-claude-code/#21">LAB 3 권한과 모델</a>
+          <a href="labs/02-claude-code/#26">LAB 4 위임 범위</a>
+          <a href="labs/02-claude-code/#30">LAB 5 병렬과 결과</a>
+          <a href="labs/02-claude-code/#35">LAB 6 터미널 실행</a>
+        </div>
+        <a class="btn" href="https://github.com/ljd6805/subagent-study/tree/main/labs/02-claude-code/minishop">샘플 프로젝트 minishop</a>
       </article>
-      <article class="card todo">
-        <span class="meta"><span class="badge b-todo">준비 중</span></span>
-        <h3>Codex subagent 실습</h3>
-        <p>역할 TOML과 <code>[agents]</code> 설정, 스레드 띄우기와 기다리기를 같은 샘플로 확인합니다.</p>
+      <article class="card ready">
+        <span class="meta"><span class="badge b-ready">v1</span> &nbsp;Codex · 40장 · LAB 0–6</span>
+        <h3><a href="labs/03-codex/">Codex subagent 실습</a></h3>
+        <p>역할 TOML과 <code>[agents]</code> 설정, 부탁해야 띄우는 동작, sandbox·승인 상속과 모델 순서, max_threads·max_depth, 병렬 worker와 이어서 시키기, <code>codex exec</code>까지.</p>
+        <div class="jumps" aria-label="랩 바로 가기">
+          <a href="labs/03-codex/#4">LAB 0 준비</a>
+          <a href="labs/03-codex/#9">LAB 1 내장 subagent</a>
+          <a href="labs/03-codex/#15">LAB 2 내 agent</a>
+          <a href="labs/03-codex/#21">LAB 3 권한과 모델</a>
+          <a href="labs/03-codex/#26">LAB 4 위임 범위</a>
+          <a href="labs/03-codex/#30">LAB 5 병렬과 결과</a>
+          <a href="labs/03-codex/#35">LAB 6 터미널 실행</a>
+        </div>
+        <a class="btn" href="https://github.com/ljd6805/subagent-study/tree/main/labs/03-codex/minishop">샘플 프로젝트 minishop</a>
       </article>
     </div>
 
