@@ -10,7 +10,7 @@ OpenCode · Codex · Claude Code의 **subagent**를 공통 원리로 이해하�
 | 경로 | 내용 | 상태 |
 |---|---|---|
 | [`index.html`](index.html) | 허브 페이지 — 슬라이드와 실습을 한곳에서 연결 | |
-| [`slides/theory/index.html`](slides/theory/index.html) | 이론 슬라이드 47장 (단일 HTML, 16:9 고정 캔버스, ←/→ 이동, `O` 목차, `#번호`로 바로 가기) | v2 |
+| [`slides/theory/index.html`](slides/theory/index.html) | 이론 슬라이드 48장 (단일 HTML, 16:9 고정 캔버스, ←/→ 이동, `O` 목차, `#번호`로 바로 가기) | v2 |
 | [`docs/outline-draft.md`](docs/outline-draft.md) | 이론 덱 목차 초안 | |
 | [`docs/research/`](docs/research/) | 도구별 조사 노트 (OpenCode · Codex · Claude Code) | |
 | [`labs/`](labs/) | 실습 자료 | 준비 중 |
