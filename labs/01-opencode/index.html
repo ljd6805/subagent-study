@@ -92,7 +92,9 @@ pre{font-family:var(--mono);font-size:18px;line-height:1.6;background:#070b11;bo
 pre .fn{position:absolute;top:0;right:0;font:600 12px var(--mono);color:var(--muted);background:var(--panel2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0 16px 0 10px;padding:6px 12px}
 pre.sm{font-size:16px;padding:18px 22px}
 pre.xs{font-size:14.5px;padding:16px 18px;line-height:1.55}
-.c{color:#6b7d93}.k{color:#79c0ff}.s{color:#a5d6ff}.v{color:var(--yellow)}.r{color:var(--red)}.p{color:var(--purple)}.gk{color:var(--green)}
+.c{color:#6b7d93}
+pre[data-os="win"].xs{font-size:13.5px}
+.pr{color:var(--orange);user-select:none;-webkit-user-select:none;font-weight:700}.k{color:#79c0ff}.s{color:#a5d6ff}.v{color:var(--yellow)}.r{color:var(--red)}.p{color:var(--purple)}.gk{color:var(--green)}
 .mark{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font:800 13px var(--sans);color:#0a0e14;background:var(--green);margin-left:8px;vertical-align:1px}
 .mark.b{background:var(--blue)}.mark.y{background:var(--yellow)}.mark.p{background:var(--purple)}.mark.r{background:var(--red)}.mark.o{background:var(--orange)}
 
@@ -262,8 +264,8 @@ html[data-os="unix"] .os>pre[data-os="win"],html[data-os="win"] .os>pre[data-os=
     <div class="g3">
       <div style="display:flex;flex-direction:column;gap:12px"><div class="card" style="padding:16px 20px"><div class="lbl">터미널 명령</div></div>
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 셸에서 그대로 실행</span>
-opencode --pure agent list</pre><pre class="sm" data-os="win"><span class="c"># 셸에서 그대로 실행</span>
-opencode --pure agent list</pre></div></div>
+<span class="pr">$ </span>opencode --pure agent list</pre><pre class="sm" data-os="win"><span class="c"># 셸에서 그대로 실행</span>
+<span class="pr">PS&gt; </span>opencode --pure agent list</pre></div></div>
       <div style="display:flex;flex-direction:column;gap:12px"><div class="card c-blue" style="padding:16px 20px"><div class="lbl">OpenCode에 입력할 문장</div></div>
 <div class="ask sm">@explore minishop 폴더 파일마다 하는 일을 한 줄씩 정리해 줘</div></div>
       <div style="display:flex;flex-direction:column;gap:12px"><div class="card c-green" style="padding:16px 20px"><div class="lbl">만들 파일</div></div>
@@ -273,7 +275,7 @@ opencode --pure agent list</pre></div></div>
     </div>
     <div class="todo" style="margin:4px 0 0"><b>할 일</b><span><i>1</i>실습 장에는 제목 아래 이 줄이 있다. 번호 순서대로 따라 한다</span><span><i>2</i>끝나면 초록 체크 상자로 결과를 확인한다</span><span><i>3</i>이 줄이 없는 장은 읽기만 한다</span></div>
     <div class="callout b" style="margin-top:8px">모든 실습은 저장소를 받은 뒤 <code>subagent-study/labs/01-opencode/minishop</code> 폴더 안에서 한다. 이 덱에서 "minishop 폴더"라고 하면 이 경로다. 코드는 저장소의 <code>git</code>으로 언제든 처음 상태로 되돌릴 수 있다. 설정 파일을 고친 뒤 "OpenCode를 다시 연다"는 <code>/exit</code>로 닫고 터미널에서 <code>opencode --pure</code>를 다시 실행한다는 뜻이다. 설정은 시작할 때 읽는다.</div>
-    <div class="callout p">터미널 명령은 <b>Linux · macOS</b>(bash)와 <b>Windows</b>(PowerShell 7) 탭으로 나눠 두었다. 탭을 바꾸면 덱 전체가 같이 바뀐다. 출력은 OpenCode <b>1.18.34</b>에서 직접 확인했다.</div>
+    <div class="callout p">터미널 명령은 <b>Linux · macOS</b>(bash)와 <b>Windows</b>(PowerShell 7) 탭으로 나눠 두었다. 탭을 바꾸면 덱 전체가 같이 바뀐다. 주황색 <code style="color:var(--orange)">$</code>·<code style="color:var(--orange)">PS&gt;</code> 뒤가 입력할 명령이고(기호는 치지 않는다), 기호가 없는 줄은 그 명령의 출력이다. 출력은 OpenCode <b>1.18.34</b>에서 직접 확인했다.</div>
   </div>
 </section>
 
@@ -292,31 +294,31 @@ opencode --pure agent list</pre></div></div>
   <div class="todo"><b>할 일</b><span><i>1</i>내 OS 탭을 고른다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다 (설치는 둘 중 하나만)</span><span><i>3</i><code>models</code> 목록에서 큰 모델 하나, 작은 모델 하나를 메모한다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre data-os="unix"><span class="c"># 설치 (jq는 설정 확인용)</span>
-curl -fsSL https://opencode.ai/install | bash
-npm i -g opencode-ai          <span class="c"># 둘 중 하나</span>
-sudo apt install jq           <span class="c"># macOS: brew install jq</span>
+<span class="pr">$ </span>curl -fsSL https://opencode.ai/install | bash
+<span class="pr">$ </span>npm i -g opencode-ai          <span class="c"># 둘 중 하나</span>
+<span class="pr">$ </span>sudo apt install jq           <span class="c"># macOS: brew install jq</span>
 
 <span class="c"># 버전 확인 (이 덱은 1.18.34에서 확인)</span>
-opencode --pure --version
+<span class="pr">$ </span>opencode --pure --version
 
 <span class="c"># 모델 제공자 로그인 (API 키 또는 구독 계정)</span>
-opencode --pure auth login
+<span class="pr">$ </span>opencode --pure auth login
 
 <span class="c"># 쓸 수 있는 모델 이름 보기: 제공자/모델</span>
-opencode --pure models</pre><pre data-os="win"><span class="c"># PowerShell 7 (pwsh) 기준</span>
-winget install Microsoft.PowerShell   <span class="c"># 없으면</span>
+<span class="pr">$ </span>opencode --pure models</pre><pre data-os="win"><span class="c"># PowerShell 7 (pwsh) 기준</span>
+<span class="pr">PS&gt; </span>winget install Microsoft.PowerShell   <span class="c"># 없으면</span>
 
 <span class="c"># 설치 (Node.js 필요)</span>
-npm i -g opencode-ai
+<span class="pr">PS&gt; </span>npm i -g opencode-ai
 
 <span class="c"># 버전 확인 (이 덱은 1.18.34에서 확인)</span>
-opencode --pure --version
+<span class="pr">PS&gt; </span>opencode --pure --version
 
 <span class="c"># 모델 제공자 로그인 (API 키 또는 구독 계정)</span>
-opencode --pure auth login
+<span class="pr">PS&gt; </span>opencode --pure auth login
 
 <span class="c"># 쓸 수 있는 모델 이름 보기: 제공자/모델</span>
-opencode --pure models</pre></div>
+<span class="pr">PS&gt; </span>opencode --pure models</pre></div>
     <div style="display:flex;flex-direction:column;gap:18px">
       <div class="card"><div class="lbl">모델 이름 형식</div><p>OpenCode는 모델을 <code>제공자/모델</code>로 부른다. 예: <code>anthropic/claude-haiku-4-5</code>. LAB 3에서 이 이름을 agent 설정에 그대로 쓴다.</p></div>
       <div class="card c-yellow"><div class="lbl">모델 두 개를 골라 두기</div><p><code>opencode --pure models</code> 목록에서 <b>크고 똑똑한 모델 하나</b>와 <b>작고 빠른 모델 하나</b>를 메모해 둔다. 사내 서빙 모델을 쓴다면 사내 제공자의 모델에서 고른다. 찾는 법은 3-3에 자세히 있다.</p></div>
@@ -335,32 +337,32 @@ opencode --pure models</pre></div>
   <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 위 세 줄(clone, cd, 테스트)을 실행한다</span><span><i>2</i><code>FAILED (failures=2)</code>가 나오면 정상이다</span><span><i>3</i>아래 되돌리기 두 줄은 <b>지금 실행하지 않는다</b>. 실습 중 처음으로 돌아갈 때 쓴다</span></div>
   <div class="split" style="align-items:start;grid-template-columns:1.1fr 1fr">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 저장소를 받고 샘플 폴더로 이동한다</span>
-git clone https://github.com/ljd6805/subagent-study
-cd subagent-study/labs/01-opencode/minishop
+<span class="pr">$ </span>git clone https://github.com/ljd6805/subagent-study
+<span class="pr">$ </span>cd subagent-study/labs/01-opencode/minishop
 
 <span class="c"># 테스트 실행 (Python 3.10+, 설치할 패키지 없음)</span>
-python3 -m unittest
+<span class="pr">$ </span>python3 -m unittest
 <span class="r">FAILED (failures=2)</span>
 
 <span class="c"># ── 여기부터는 나중에 쓴다 ──</span>
 <span class="c"># 코드만 처음 상태로 (만든 agent 설정은 남김)</span>
-git checkout -- minishop tests
+<span class="pr">$ </span>git checkout -- minishop tests
 
 <span class="c"># 이 폴더 전체를 처음 상태로 (agent 설정도 지움)</span>
-git checkout -- . &amp;&amp; git clean -fd .</pre><pre class="sm" data-os="win"><span class="c"># 저장소를 받고 샘플 폴더로 이동한다</span>
-git clone https://github.com/ljd6805/subagent-study
-cd subagent-study\labs\01-opencode\minishop
+<span class="pr">$ </span>git checkout -- . &amp;&amp; git clean -fd .</pre><pre class="sm" data-os="win"><span class="c"># 저장소를 받고 샘플 폴더로 이동한다</span>
+<span class="pr">PS&gt; </span>git clone https://github.com/ljd6805/subagent-study
+<span class="pr">PS&gt; </span>cd subagent-study\labs\01-opencode\minishop
 
 <span class="c"># 테스트 실행 (Python 3.10+, 설치할 패키지 없음)</span>
-python -m unittest
+<span class="pr">PS&gt; </span>python -m unittest
 <span class="r">FAILED (failures=2)</span>
 
 <span class="c"># ── 여기부터는 나중에 쓴다 ──</span>
 <span class="c"># 코드만 처음 상태로 (만든 agent 설정은 남김)</span>
-git checkout -- minishop tests
+<span class="pr">PS&gt; </span>git checkout -- minishop tests
 
 <span class="c"># 이 폴더 전체를 처음 상태로 (agent 설정도 지움)</span>
-git checkout -- . ; git clean -fd .</pre></div>
+<span class="pr">PS&gt; </span>git checkout -- . ; git clean -fd .</pre></div>
 <pre class="sm"><span class="fn">tree</span>minishop/
   <span class="k">minishop/</span>
     cart.py        <span class="c"># 장바구니 합계와 할인</span>
@@ -381,7 +383,7 @@ git checkout -- . ; git clean -fd .</pre></div>
   <h2>아무것도 만들지 않아도 agent는 이미 일곱 개 있다</h2>
   <div class="todo"><b>할 일</b><span><i>1</i>minishop 폴더에서 왼쪽 명령을 실행한다</span><span><i>2</i>출력이 왼쪽과 같은 일곱 개인지 비교한다</span></div>
   <div class="split" style="align-items:start">
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="sm" data-os="unix">opencode --pure agent list | grep -E '^[a-z]'
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="sm" data-os="unix"><span class="pr">$ </span>opencode --pure agent list | grep -E '^[a-z]'
 
 <span class="k">build</span> (primary)
 compaction (primary)
@@ -389,7 +391,7 @@ compaction (primary)
 <span class="gk">general</span> (subagent)
 <span class="k">plan</span> (primary)
 summary (primary)
-title (primary)</pre><pre class="sm" data-os="win">opencode --pure agent list | Select-String '^[a-z]'
+title (primary)</pre><pre class="sm" data-os="win"><span class="pr">PS&gt; </span>opencode --pure agent list | Select-String '^[a-z]'
 
 <span class="k">build</span> (primary)
 compaction (primary)
@@ -420,18 +422,18 @@ title (primary)</pre></div>
   <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 첫 명령을 실행해 <code>true</code>인지 본다</span><span><i>2</i>false면 둘째 명령으로 task 규칙을 보고 오른쪽 설명을 따른다</span><span><i>3</i><code>opencode.json</code>은 이미 들어 있으니 만들지 않는다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix">opencode --pure debug agent build | jq .tools.task
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure debug agent build | jq .tools.task
 <span class="ok">true</span>   <span class="c">← 이래야 정상</span>
 
 <span class="c"># false라면 task 규칙을 본다 (마지막 줄이 적용됨)</span>
-opencode --pure debug agent build \
+<span class="pr">$ </span>opencode --pure debug agent build \
   | jq -c '.permission[] | select(.permission=="task")'
-{<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"*"</span>,<span class="v">"action"</span>:<span class="r">"deny"</span>}</pre><pre class="xs" data-os="win">$a = opencode --pure debug agent build | Out-String | ConvertFrom-Json
-$a.tools.task
+{<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"*"</span>,<span class="v">"action"</span>:<span class="r">"deny"</span>}</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>$a = opencode --pure debug agent build | Out-String | ConvertFrom-Json
+<span class="pr">PS&gt; </span>$a.tools.task
 <span class="ok">True</span>   <span class="c">← 이래야 정상</span>
 
 <span class="c"># False라면 task 규칙을 본다 (마지막 줄이 적용됨)</span>
-$a.permission | Where-Object permission -eq 'task'
+<span class="pr">PS&gt; </span>$a.permission | Where-Object permission -eq 'task'
 <span class="v">permission action pattern</span>
 task       <span class="r">deny</span>   *</pre></div>
 <pre class="xs"><span class="fn">opencode.json · minishop 폴더에 이미 들어 있음</span>{
@@ -469,7 +471,7 @@ task       <span class="r">deny</span>   *</pre></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:18px">
 <pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>
-opencode --pure</pre>
+<span class="pr">$ </span>opencode --pure</pre>
       <div class="ask">@explore minishop 폴더의 각 파일이 무슨 일을 하는지 한 줄씩 정리해 줘</div>
       <p class="muted" style="font-size:19px"><code>@</code>를 치면 부를 수 있는 agent 목록이 뜬다. <code>explore</code>를 고르면 된다.</p>
     </div>
@@ -558,21 +560,21 @@ opencode --pure</pre>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
 <div class="card c-blue" style="padding:14px 18px;gap:6px"><div class="lbl">이 명령으로 보는 것</div><p style="font-size:16.5px;line-height:1.5">부모가 맡길 agent를 고를 때 읽는 <b>설명문(description)</b>이다. 플러그인이나 내 설정으로 바뀔 수 있으니, 부모가 실제로 보는 문장을 터미널에서 직접 확인한다.</p></div>
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · description 확인</span></div><pre class="xs" data-os="unix">opencode --pure debug agent explore | jq -r .description
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · description 확인</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure debug agent explore | jq -r .description
 
 <span class="s">Fast agent specialized for exploring codebases.
 Use this when you need to quickly find files ...</span>
 
-opencode --pure debug agent general | jq -r .description
+<span class="pr">$ </span>opencode --pure debug agent general | jq -r .description
 
 <span class="s">General-purpose agent for researching complex
 questions and executing multi-step tasks. Use this
-agent to execute multiple units of work in parallel.</span></pre><pre class="xs" data-os="win">(opencode --pure debug agent explore | Out-String | ConvertFrom-Json).description
+agent to execute multiple units of work in parallel.</span></pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>(opencode --pure debug agent explore | Out-String | ConvertFrom-Json).description
 
 <span class="s">Fast agent specialized for exploring codebases.
 Use this when you need to quickly find files ...</span>
 
-(opencode --pure debug agent general | Out-String | ConvertFrom-Json).description
+<span class="pr">PS&gt; </span>(opencode --pure debug agent general | Out-String | ConvertFrom-Json).description
 
 <span class="s">General-purpose agent for researching complex
 questions and executing multi-step tasks. Use this
@@ -590,17 +592,17 @@ agent to execute multiple units of work in parallel.</span></pre></div>
   <h2>explore는 고칠 수 없게, general은 고칠 수 있게 만들어져 있다</h2>
   <div class="todo"><b>할 일</b><span><i>1</i>다른 터미널 창에서 왼쪽 명령을 실행해 explore와 general의 도구를 비교한다</span><span><i>2</i>오른쪽 정리를 읽고 LAB 1을 마친다</span></div>
   <div class="split" style="align-items:start">
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix">opencode --pure debug agent explore | jq .tools
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure debug agent explore | jq .tools
 { <span class="v">"read"</span>: <span class="ok">true</span>, <span class="v">"glob"</span>: <span class="ok">true</span>, <span class="v">"grep"</span>: <span class="ok">true</span>, <span class="v">"bash"</span>: <span class="ok">true</span>,
   <span class="v">"edit"</span>: <span class="ng">false</span>, <span class="v">"write"</span>: <span class="ng">false</span>, <span class="v">"task"</span>: <span class="ng">false</span>, ... }
 
-opencode --pure debug agent general | jq .tools
+<span class="pr">$ </span>opencode --pure debug agent general | jq .tools
 { <span class="v">"read"</span>: <span class="ok">true</span>, <span class="v">"bash"</span>: <span class="ok">true</span>, <span class="v">"edit"</span>: <span class="ok">true</span>, <span class="v">"write"</span>: <span class="ok">true</span>,
-  <span class="v">"task"</span>: <span class="ok">true</span>, <span class="v">"todowrite"</span>: <span class="ng">false</span>, ... }</pre><pre class="xs" data-os="win">(opencode --pure debug agent explore | Out-String | ConvertFrom-Json).tools
+  <span class="v">"task"</span>: <span class="ok">true</span>, <span class="v">"todowrite"</span>: <span class="ng">false</span>, ... }</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>(opencode --pure debug agent explore | Out-String | ConvertFrom-Json).tools
 <span class="v">read</span>  : <span class="ok">True</span>    <span class="v">bash</span>  : <span class="ok">True</span>
 <span class="v">edit</span>  : <span class="ng">False</span>   <span class="v">write</span> : <span class="ng">False</span>   <span class="v">task</span> : <span class="ng">False</span>  ...
 
-(opencode --pure debug agent general | Out-String | ConvertFrom-Json).tools
+<span class="pr">PS&gt; </span>(opencode --pure debug agent general | Out-String | ConvertFrom-Json).tools
 <span class="v">read</span>  : <span class="ok">True</span>    <span class="v">bash</span>  : <span class="ok">True</span>    <span class="v">edit</span> : <span class="ok">True</span>
 <span class="v">write</span> : <span class="ok">True</span>    <span class="v">task</span>  : <span class="ok">True</span>    <span class="v">todowrite</span> : <span class="ng">False</span> ...</pre></div>
     <div style="display:flex;flex-direction:column;gap:16px">
@@ -652,7 +654,7 @@ opencode --pure debug agent general | jq .tools
         <tr><td class="h">permission</td><td>도구별 <code>allow</code> / <code>ask</code> / <code>deny</code></td></tr>
         <tr><td class="h">본문</td><td>자식이 받는 시스템 지시문</td></tr>
       </table>
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix">mkdir -p .opencode/agents</pre><pre class="xs" data-os="win">New-Item -ItemType Directory -Force .opencode\agents</pre></div>
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>mkdir -p .opencode/agents</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>New-Item -ItemType Directory -Force .opencode\agents</pre></div>
     </div>
   </div>
   <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/">agents · markdown</a></div>
@@ -700,40 +702,40 @@ python -m unittest -v 만 실행할 수 있다
   <h2>모델을 부르기 전에 <code>debug agent</code>로 설정이 읽혔는지 본다</h2>
   <div class="todo"><b>할 일</b><span><i>1</i>다른 터미널 창에서 왼쪽 명령을 하나씩 실행한다</span><span><i>2</i>결과가 다르면 2-1, 2-2의 파일 위치와 이름을 다시 본다</span></div>
   <div class="split" style="align-items:start">
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · 실제 출력 (1.18.34)</span></div><pre class="xs" data-os="unix">opencode --pure agent list | grep -E '^[a-z]'
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · 실제 출력 (1.18.34)</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure agent list | grep -E '^[a-z]'
 ...
 <span class="gk">reviewer (subagent)</span>
 <span class="gk">tester (subagent)</span>
 
-opencode --pure debug agent reviewer \
+<span class="pr">$ </span>opencode --pure debug agent reviewer \
   | jq '{name, mode, description}'
 { <span class="v">"name"</span>: <span class="s">"reviewer"</span>, <span class="v">"mode"</span>: <span class="s">"subagent"</span>,
   <span class="v">"description"</span>: <span class="s">"코드를 읽고 버그와 위험을 ..."</span> }
 
-opencode --pure debug agent tester \
+<span class="pr">$ </span>opencode --pure debug agent tester \
   | jq -c '.permission[] | select(.permission=="bash")'
 {<span class="v">"permission"</span>:<span class="s">"bash"</span>,<span class="v">"pattern"</span>:<span class="s">"*"</span>,<span class="v">"action"</span>:<span class="r">"deny"</span>}
 {<span class="v">"permission"</span>:<span class="s">"bash"</span>,<span class="v">"pattern"</span>:<span class="s">"python* -m unittest*"</span>,<span class="v">"action"</span>:<span class="gk">"allow"</span>}
 
-opencode --pure debug agent tester | jq .tools.edit
-<span class="ng">false</span></pre><pre class="xs" data-os="win" style="font-size:13.5px">opencode --pure agent list | Select-String '^[a-z]'
+<span class="pr">$ </span>opencode --pure debug agent tester | jq .tools.edit
+<span class="ng">false</span></pre><pre class="xs" data-os="win" style="font-size:13px"><span class="pr">PS&gt; </span>opencode --pure agent list | Select-String '^[a-z]'
 ...
 <span class="gk">reviewer (subagent)</span>
 <span class="gk">tester (subagent)</span>
 
-opencode --pure debug agent reviewer | Out-String | ConvertFrom-Json |
+<span class="pr">PS&gt; </span>opencode --pure debug agent reviewer | Out-String | ConvertFrom-Json |
   Format-List name, mode, description
 <span class="v">name</span>        : reviewer
 <span class="v">mode</span>        : subagent
 <span class="v">description</span> : 코드를 읽고 버그와 위험을 ...
 
-(opencode --pure debug agent tester | Out-String | ConvertFrom-Json).permission |
+<span class="pr">PS&gt; </span>(opencode --pure debug agent tester | Out-String | ConvertFrom-Json).permission |
   Where-Object permission -eq 'bash'
 <span class="v">permission pattern              action</span>
 bash       *                    <span class="r">deny</span>
 bash       python* -m unittest* <span class="gk">allow</span>
 
-(opencode --pure debug agent tester | Out-String | ConvertFrom-Json).tools.edit
+<span class="pr">PS&gt; </span>(opencode --pure debug agent tester | Out-String | ConvertFrom-Json).tools.edit
 <span class="ng">False</span></pre></div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card c-green"><div class="lbl">debug agent가 보여 주는 것</div>
@@ -825,7 +827,7 @@ bash       python* -m unittest* <span class="gk">allow</span>
         <li>자식 세션에 들어가서 거부된 도구 호출이 어떻게 보이는지 확인했다</li>
       </ul>
 <pre class="xs"><span class="fn">terminal · 모든 OS 공통</span>
-git status --short minishop tests   <span class="c"># 아무것도 안 나와야 정상</span></pre>
+<span class="pr">$ </span>git status --short minishop tests   <span class="c"># 아무것도 안 나와야 정상</span></pre>
     </div>
   </div>
 </section>
@@ -860,26 +862,26 @@ git status --short minishop tests   <span class="c"># 아무것도 안 나와야
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ① 모델 이름 찾기</span></div><pre class="xs" data-os="unix"><span class="c"># 쓸 수 있는 모델 전체. 한 줄이 "제공자/모델" 이름이다</span>
-opencode --pure models
+<span class="pr">$ </span>opencode --pure models
 <span class="c"># 사내 제공자만 거르기 (제공자ID = 위 출력에서 / 앞부분)</span>
-opencode --pure models <span class="gk">&lt;제공자ID&gt;</span>
+<span class="pr">$ </span>opencode --pure models <span class="gk">&lt;제공자ID&gt;</span>
 <span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c">← 이 한 줄을 그대로 model에 쓴다</span></pre><pre class="xs" data-os="win"><span class="c"># 쓸 수 있는 모델 전체. 한 줄이 "제공자/모델" 이름이다</span>
-opencode --pure models
+<span class="pr">PS&gt; </span>opencode --pure models
 <span class="c"># 사내 제공자만 거르기 (제공자ID = 위 출력에서 / 앞부분)</span>
-opencode --pure models <span class="gk">&lt;제공자ID&gt;</span>
+<span class="pr">PS&gt; </span>opencode --pure models <span class="gk">&lt;제공자ID&gt;</span>
 <span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c">← 이 한 줄을 그대로 model에 쓴다</span></pre></div>
 <pre class="xs"><span class="fn">.opencode/agents/reviewer.md (일부)</span>
 <span class="v">mode</span>: subagent
 <span class="v">model</span>: <span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c"># ①에서 찾은 이름. 꺾쇠는 쓰지 않는다</span></pre>
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ② 읽혔는지 확인</span></div><pre class="xs" data-os="unix">opencode --pure debug agent reviewer | jq -c .model
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ② 읽혔는지 확인</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure debug agent reviewer | jq -c .model
 {<span class="v">"providerID"</span>:<span class="s">"&lt;제공자ID&gt;"</span>,<span class="v">"modelID"</span>:<span class="s">"&lt;모델ID&gt;"</span>}
 
-opencode --pure debug agent explore | jq -c .model
-<span class="c">null   ← 안 정했으므로 부른 쪽 모델을 쓴다</span></pre><pre class="xs" data-os="win">(opencode --pure debug agent reviewer | Out-String | ConvertFrom-Json).model
+<span class="pr">$ </span>opencode --pure debug agent explore | jq -c .model
+<span class="c">null   ← 안 정했으므로 부른 쪽 모델을 쓴다</span></pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>(opencode --pure debug agent reviewer | Out-String | ConvertFrom-Json).model
 <span class="v">providerID modelID</span>
 &lt;제공자ID&gt; &lt;모델ID&gt;
 
-$null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).model
+<span class="pr">PS&gt; </span>$null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).model
 <span class="c">True   ← 안 정했으므로 부른 쪽 모델을 쓴다</span></pre></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
@@ -955,11 +957,11 @@ $null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).
     }
   }
 }</pre>
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · 실제 출력</span></div><pre class="xs" data-os="unix">opencode --pure debug agent build \
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · 실제 출력</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure debug agent build \
   | jq -c '.permission[] | select(.permission=="task")'
 {<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"*"</span>,<span class="v">"action"</span>:<span class="r">"deny"</span>}
 {<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"reviewer"</span>,<span class="v">"action"</span>:<span class="gk">"allow"</span>}
-{<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"explore"</span>,<span class="v">"action"</span>:<span class="gk">"allow"</span>}</pre><pre class="xs" data-os="win">(opencode --pure debug agent build | Out-String | ConvertFrom-Json).permission |
+{<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"explore"</span>,<span class="v">"action"</span>:<span class="gk">"allow"</span>}</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>(opencode --pure debug agent build | Out-String | ConvertFrom-Json).permission |
   Where-Object permission -eq 'task'
 <span class="v">permission pattern  action</span>
 task       *        <span class="r">deny</span>
@@ -991,8 +993,8 @@ task       explore  <span class="gk">allow</span></pre></div>
       <tr><td class="h">all (기본값)</td><td class="ok">보임</td><td class="ok">됨</td><td class="ok">됨</td></tr>
     </table>
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="xs"><span class="fn">terminal · 실제 경고 문구 · 모든 OS 공통</span>
-opencode --pure run --agent reviewer "cart.py 리뷰"
+<pre class="xs"><span class="fn">terminal · 모든 OS 공통 · 입력 1줄 + 출력 2줄</span>
+<span class="pr">$ </span>opencode --pure run --agent reviewer "cart.py 리뷰"
 <span class="y">! agent "reviewer" is a subagent, not a primary
   agent. Falling back to default agent</span></pre>
       <ol class="num">
@@ -1114,21 +1116,21 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="sm" data-os="unix"><span class="c"># 1. 결과 파일이 형식대로 왔는지</span>
-head -n 4 reports/*.md
+<span class="pr">$ </span>head -n 4 reports/*.md
 
 <span class="c"># 2. 실제로 무엇이 바뀌었는지</span>
-git diff --stat
+<span class="pr">$ </span>git diff --stat
 
 <span class="c"># 3. 최종 판정은 테스트로</span>
-python3 -m unittest -v</pre><pre class="sm" data-os="win"><span class="c"># 1. 결과 파일이 형식대로 왔는지</span>
-Get-ChildItem reports\*.md | ForEach-Object {
+<span class="pr">$ </span>python3 -m unittest -v</pre><pre class="sm" data-os="win"><span class="c"># 1. 결과 파일이 형식대로 왔는지</span>
+<span class="pr">PS&gt; </span>Get-ChildItem reports\*.md | ForEach-Object {
   "--- $($_.Name)"; Get-Content $_ -TotalCount 4 }
 
 <span class="c"># 2. 실제로 무엇이 바뀌었는지</span>
-git diff --stat
+<span class="pr">PS&gt; </span>git diff --stat
 
 <span class="c"># 3. 최종 판정은 테스트로</span>
-python -m unittest -v</pre></div>
+<span class="pr">PS&gt; </span>python -m unittest -v</pre></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <ul class="chk sm">
@@ -1183,28 +1185,28 @@ python -m unittest -v</pre></div>
   <h2><code>opencode run</code>도 TUI와 같은 agent와 설정을 쓴다</h2>
   <div class="todo"><b>할 일</b><span><i>1</i>OpenCode 화면을 <code>/exit</code>로 닫는다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다</span><span><i>3</i><code>opencode --pure session list</code>로 방금 세션을 확인한다</span></div>
   <div class="split" style="align-items:start">
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
-git checkout -- minishop tests &amp;&amp; rm -rf reports
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix" style="font-size:13.5px"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
+<span class="pr">$ </span>git checkout -- minishop tests &amp;&amp; rm -rf reports
 
 <span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
-opencode --pure run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
+<span class="pr">$ </span>opencode --pure run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
 
 <span class="c"># 방금 세션에 이어서 묻기</span>
-opencode --pure run -c "같은 리뷰를 inventory.py 에도 해 줘"
+<span class="pr">$ </span>opencode --pure run -c "같은 리뷰를 inventory.py 에도 해 줘"
 
 <span class="c"># primary(또는 all) agent로 직접 실행</span>
-opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</pre><pre class="xs" data-os="win"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
-git checkout -- minishop tests
-Remove-Item -Recurse -Force reports -ErrorAction SilentlyContinue
+<span class="pr">$ </span>opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</pre><pre class="xs" data-os="win"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
+<span class="pr">PS&gt; </span>git checkout -- minishop tests
+<span class="pr">PS&gt; </span>Remove-Item -Recurse -Force reports -ErrorAction SilentlyContinue
 
 <span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
-opencode --pure run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
+<span class="pr">PS&gt; </span>opencode --pure run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
 
 <span class="c"># 방금 세션에 이어서 묻기</span>
-opencode --pure run -c "같은 리뷰를 inventory.py 에도 해 줘"
+<span class="pr">PS&gt; </span>opencode --pure run -c "같은 리뷰를 inventory.py 에도 해 줘"
 
 <span class="c"># primary(또는 all) agent로 직접 실행</span>
-opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</pre></div>
+<span class="pr">PS&gt; </span>opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</pre></div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card c-orange"><div class="lbl">TUI와 다른 점</div>
         <ul><li>자식 세션을 들어가서 볼 수 없다. 대신 task가 시작될 때 한 줄 표시가 나온다</li>
@@ -1222,24 +1224,24 @@ opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</
   <h2><code>--format json</code>으로 받으면 어떤 자식이 불렸는지 스크립트로 셀 수 있다</h2>
   <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 첫 명령을 실행해 <code>run.jsonl</code>이 생기는지 본다</span><span><i>2</i>둘째 명령으로 task만 골라 본다</span></div>
   <div class="split" style="align-items:start">
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix">opencode --pure run --format json \
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure run --format json \
   "tests 와 minishop 폴더를 explore subagent 두 개에게 동시에 조사시켜 줘" \
   &gt; run.jsonl
 
 <span class="c"># 부모가 부른 task만 골라 보기</span>
-jq -c 'select(.type=="tool_use" and .part.tool=="task")
+<span class="pr">$ </span>jq -c 'select(.type=="tool_use" and .part.tool=="task")
        | .part.state.input
        | {subagent_type, description}' run.jsonl
 
 <span class="c"># 출력 예</span>
 {<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"tests 폴더 조사"</span>}
-{<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"minishop 폴더 조사"</span>}</pre><pre class="xs" data-os="win">opencode --pure run --format json `
+{<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"minishop 폴더 조사"</span>}</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>opencode --pure run --format json `
   "tests 와 minishop 폴더를 explore subagent 두 개에게 동시에 조사시켜 줘" `
   &gt; run.jsonl
 
 <span class="c"># 부모가 부른 task만 골라 보기</span>
-$ev = Get-Content run.jsonl | ConvertFrom-Json
-$ev | Where-Object { $_.type -eq 'tool_use' -and
+<span class="pr">PS&gt; </span>$ev = Get-Content run.jsonl | ConvertFrom-Json
+<span class="pr">PS&gt; </span>$ev | Where-Object { $_.type -eq 'tool_use' -and
                      $_.part.tool -eq 'task' } |
   ForEach-Object { $_.part.state.input } |
   Select-Object subagent_type, description
@@ -1307,38 +1309,38 @@ explore       minishop 폴더 조사</pre></div>
   <h2>실습에 쓴 명령과 설정 한눈에 보기</h2>
   <div class="g2">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix"><span class="c"># agent 목록과 설정 검사 (모델 호출 없음)</span>
-opencode --pure agent list
-opencode --pure debug agent &lt;이름&gt;
-opencode --pure debug agent &lt;이름&gt; | jq .tools
-opencode --pure agent create   <span class="c"># 대화형으로 agent 파일 만들기</span>
+<span class="pr">$ </span>opencode --pure agent list
+<span class="pr">$ </span>opencode --pure debug agent &lt;이름&gt;
+<span class="pr">$ </span>opencode --pure debug agent &lt;이름&gt; | jq .tools
+<span class="pr">$ </span>opencode --pure agent create   <span class="c"># 대화형으로 agent 파일 만들기</span>
 
 <span class="c"># 실행</span>
-opencode --pure                         <span class="c"># TUI</span>
-opencode --pure run "..."               <span class="c"># 한 번 실행</span>
-opencode --pure run -c "..."            <span class="c"># 직전 세션에 이어서</span>
-opencode --pure run --agent plan "..."  <span class="c"># primary/all agent로</span>
-opencode --pure run --format json "..." <span class="c"># 사건을 JSON 줄로</span>
+<span class="pr">$ </span>opencode --pure                         <span class="c"># TUI</span>
+<span class="pr">$ </span>opencode --pure run "..."               <span class="c"># 한 번 실행</span>
+<span class="pr">$ </span>opencode --pure run -c "..."            <span class="c"># 직전 세션에 이어서</span>
+<span class="pr">$ </span>opencode --pure run --agent plan "..."  <span class="c"># primary/all agent로</span>
+<span class="pr">$ </span>opencode --pure run --format json "..." <span class="c"># 사건을 JSON 줄로</span>
 
 <span class="c"># 기록</span>
-opencode --pure session list
-opencode --pure export &lt;세션 id&gt;
-opencode --pure stats</pre><pre class="xs" data-os="win"><span class="c"># agent 목록과 설정 검사 (모델 호출 없음)</span>
-opencode --pure agent list
-opencode --pure debug agent &lt;이름&gt;
-(opencode --pure debug agent &lt;이름&gt; | Out-String | ConvertFrom-Json).tools
-opencode --pure agent create   <span class="c"># 대화형으로 agent 파일 만들기</span>
+<span class="pr">$ </span>opencode --pure session list
+<span class="pr">$ </span>opencode --pure export &lt;세션 id&gt;
+<span class="pr">$ </span>opencode --pure stats</pre><pre class="xs" data-os="win"><span class="c"># agent 목록과 설정 검사 (모델 호출 없음)</span>
+<span class="pr">PS&gt; </span>opencode --pure agent list
+<span class="pr">PS&gt; </span>opencode --pure debug agent &lt;이름&gt;
+<span class="pr">PS&gt; </span>(opencode --pure debug agent &lt;이름&gt; | Out-String | ConvertFrom-Json).tools
+<span class="pr">PS&gt; </span>opencode --pure agent create   <span class="c"># 대화형으로 agent 파일 만들기</span>
 
 <span class="c"># 실행</span>
-opencode --pure                         <span class="c"># TUI</span>
-opencode --pure run "..."               <span class="c"># 한 번 실행</span>
-opencode --pure run -c "..."            <span class="c"># 직전 세션에 이어서</span>
-opencode --pure run --agent plan "..."  <span class="c"># primary/all agent로</span>
-opencode --pure run --format json "..." <span class="c"># 사건을 JSON 줄로</span>
+<span class="pr">PS&gt; </span>opencode --pure                         <span class="c"># TUI</span>
+<span class="pr">PS&gt; </span>opencode --pure run "..."               <span class="c"># 한 번 실행</span>
+<span class="pr">PS&gt; </span>opencode --pure run -c "..."            <span class="c"># 직전 세션에 이어서</span>
+<span class="pr">PS&gt; </span>opencode --pure run --agent plan "..."  <span class="c"># primary/all agent로</span>
+<span class="pr">PS&gt; </span>opencode --pure run --format json "..." <span class="c"># 사건을 JSON 줄로</span>
 
 <span class="c"># 기록</span>
-opencode --pure session list
-opencode --pure export &lt;세션 id&gt;
-opencode --pure stats</pre></div>
+<span class="pr">PS&gt; </span>opencode --pure session list
+<span class="pr">PS&gt; </span>opencode --pure export &lt;세션 id&gt;
+<span class="pr">PS&gt; </span>opencode --pure stats</pre></div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <table class="tight sm">
         <tr><th>설정</th><th>위치</th><th>LAB</th></tr>
