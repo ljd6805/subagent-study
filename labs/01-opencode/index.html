@@ -319,7 +319,7 @@ opencode --pure auth login
 opencode --pure models</pre></div>
     <div style="display:flex;flex-direction:column;gap:18px">
       <div class="card"><div class="lbl">모델 이름 형식</div><p>OpenCode는 모델을 <code>제공자/모델</code>로 부른다. 예: <code>anthropic/claude-haiku-4-5</code>. LAB 3에서 이 이름을 agent 설정에 그대로 쓴다.</p></div>
-      <div class="card c-yellow"><div class="lbl">모델 두 개를 골라 두기</div><p><code>opencode --pure models</code> 목록에서 <b>크고 똑똑한 모델 하나</b>와 <b>작고 빠른 모델 하나</b>를 메모해 둔다. 부모와 자식에 다른 모델을 줄 때 쓴다.</p></div>
+      <div class="card c-yellow"><div class="lbl">모델 두 개를 골라 두기</div><p><code>opencode --pure models</code> 목록에서 <b>크고 똑똑한 모델 하나</b>와 <b>작고 빠른 모델 하나</b>를 메모해 둔다. 사내 서빙 모델을 쓴다면 사내 제공자의 모델에서 고른다. 찾는 법은 3-3에 자세히 있다.</p></div>
       <ul class="chk sm">
         <li><code>opencode --pure --version</code>이 버전을 출력한다</li>
         <li><code>opencode --pure models</code>에 내가 로그인한 제공자의 모델이 보인다</li>
@@ -850,18 +850,27 @@ bash       python* -m unittest* <span class="gk">allow</span>
 <section class="slide" data-sec="LAB 3">
   <div class="kicker o">3-3 · 모델 지정</div>
   <h2>모델을 안 정하면 부른 쪽의 모델을 그대로 쓴다</h2>
-  <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.md</code>의 <code>mode</code> 아래에 <code>model</code> 줄을 추가한다. 모델 이름은 0-1에서 메모한 작은 모델로 바꾼다</span><span><i>2</i>다른 터미널 창에서 왼쪽 명령으로 확인하고 OpenCode를 다시 연다</span><span><i>3</i>아래 문장을 보낸다. <code>model</code> 줄은 남겨 둬도 된다</span></div>
+  <div class="todo"><b>할 일</b><span><i>1</i>다른 터미널 창에서 왼쪽 ① 명령으로 쓸 모델 이름(<code>제공자/모델</code> 한 줄)을 찾는다</span><span><i>2</i><code>reviewer.md</code>의 <code>mode</code> 아래에 <code>model:</code> 줄을 추가하고 찾은 이름을 그대로 붙여 넣는다</span><span><i>3</i>② 명령으로 읽혔는지 확인하고 OpenCode를 다시 연다</span><span><i>4</i>아래 문장을 보낸다. <code>model</code> 줄은 남겨 둬도 된다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="sm"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">mode</span>: subagent
-<span class="v">model</span>: anthropic/claude-haiku-4-5   <span class="c"># 0-1에서 메모한 작은 모델</span></pre>
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · 실제 출력</span></div><pre class="xs" data-os="unix">opencode --pure debug agent reviewer | jq -c .model
-{<span class="v">"providerID"</span>:<span class="s">"anthropic"</span>,<span class="v">"modelID"</span>:<span class="s">"claude-haiku-4-5"</span>}
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ① 모델 이름 찾기</span></div><pre class="xs" data-os="unix"><span class="c"># 쓸 수 있는 모델 전체. 한 줄이 "제공자/모델" 이름이다</span>
+opencode --pure models
+<span class="c"># 사내 제공자만 거르기 (제공자ID = 위 출력에서 / 앞부분)</span>
+opencode --pure models <span class="gk">&lt;제공자ID&gt;</span>
+<span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c">← 이 한 줄을 그대로 model에 쓴다</span></pre><pre class="xs" data-os="win"><span class="c"># 쓸 수 있는 모델 전체. 한 줄이 "제공자/모델" 이름이다</span>
+opencode --pure models
+<span class="c"># 사내 제공자만 거르기 (제공자ID = 위 출력에서 / 앞부분)</span>
+opencode --pure models <span class="gk">&lt;제공자ID&gt;</span>
+<span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c">← 이 한 줄을 그대로 model에 쓴다</span></pre></div>
+<pre class="xs"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">mode</span>: subagent
+<span class="v">model</span>: <span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c"># ①에서 찾은 이름. 꺾쇠는 쓰지 않는다</span></pre>
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ② 읽혔는지 확인</span></div><pre class="xs" data-os="unix">opencode --pure debug agent reviewer | jq -c .model
+{<span class="v">"providerID"</span>:<span class="s">"&lt;제공자ID&gt;"</span>,<span class="v">"modelID"</span>:<span class="s">"&lt;모델ID&gt;"</span>}
 
 opencode --pure debug agent explore | jq -c .model
 <span class="c">null   ← 안 정했으므로 부른 쪽 모델을 쓴다</span></pre><pre class="xs" data-os="win">(opencode --pure debug agent reviewer | Out-String | ConvertFrom-Json).model
 <span class="v">providerID modelID</span>
-anthropic  claude-haiku-4-5
+&lt;제공자ID&gt; &lt;모델ID&gt;
 
 $null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).model
 <span class="c">True   ← 안 정했으므로 부른 쪽 모델을 쓴다</span></pre></div>
@@ -873,8 +882,9 @@ $null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).
         <tr><td>② 없으면 task를 부른 부모 메시지의 모델</td></tr>
       </table>
       <div class="ask sm">@reviewer report.py 를 리뷰해 줘</div>
+      <p class="muted" style="font-size:16px">사내 제공자가 ① 목록에 안 보이면 사내 설정이 플러그인으로 들어와 있을 수 있다. 그때는 ① 명령만 <code>--pure</code> 없이 실행해 이름을 찾는다. 그 모델을 쓰려면 실습도 <code>--pure</code> 없이 해야 한다.</p>
       <ul class="chk sm">
-        <li>자식 세션 화면에 작은 모델 이름이 보인다</li>
+        <li>자식 세션 화면에 고른 모델 이름이 보인다</li>
         <li>부모는 원래 모델 그대로다</li>
         <li><code>opencode --pure stats</code>로 모델별 사용량을 확인했다</li>
       </ul>
