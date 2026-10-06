@@ -468,7 +468,8 @@ task       <span class="r">deny</span>   *</pre></div>
   <div class="todo"><b>할 일</b><span><i>1</i>터미널에서 <code>opencode --pure</code>로 OpenCode를 연다</span><span><i>2</i>아래 문장을 입력창에 보낸다</span><span><i>3</i>답이 끝날 때까지 화면을 오른쪽 목록과 비교한다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:18px">
-<pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>opencode --pure</pre>
+<pre class="sm"><span class="fn">terminal · minishop 폴더 · 모든 OS 공통</span>
+opencode --pure</pre>
       <div class="ask">@explore minishop 폴더의 각 파일이 무슨 일을 하는지 한 줄씩 정리해 줘</div>
       <p class="muted" style="font-size:19px"><code>@</code>를 치면 부를 수 있는 agent 목록이 뜬다. <code>explore</code>를 고르면 된다.</p>
     </div>
@@ -682,7 +683,8 @@ opencode --pure debug agent general | jq .tools
   }
 }</pre>
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="xs"><span class="fn">새 파일 · minishop/prompts/tester.md</span>너는 테스트 담당이다.
+<pre class="xs"><span class="fn">새 파일 · minishop/prompts/tester.md</span>
+너는 테스트 담당이다.
 python -m unittest -v 만 실행할 수 있다
 (환경에 따라 python3). 실패한 테스트마다
 "테스트 이름 / 기대값 / 실제값 / 의심되는 파일"을
@@ -776,8 +778,10 @@ bash       python* -m unittest* <span class="gk">allow</span>
   <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.md</code>의 description을 실험 A로 바꿔 저장하고 OpenCode를 다시 연다</span><span><i>2</i><code>/new</code> 후 아래 문장 보내기를 3번 하고 표에 적는다</span><span><i>3</i>실험 B로 바꿔 같은 일을 한다. 끝나면 B로 둔다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="xs"><span class="fn">실험 A · 흐린 description</span><span class="v">description</span>: 도와주는 agent</pre>
-<pre class="xs"><span class="fn">실험 B · 언제 쓰는지까지 적은 description</span><span class="v">description</span>: 코드를 읽고 버그와 위험을 찾아 보고한다.
+<pre class="xs"><span class="fn">실험 A · 흐린 description</span>
+<span class="v">description</span>: 도와주는 agent</pre>
+<pre class="xs"><span class="fn">실험 B · 언제 쓰는지까지 적은 description</span>
+<span class="v">description</span>: 코드를 읽고 버그와 위험을 찾아 보고한다.
   리뷰, 점검, 버그 찾기를 부탁받으면 반드시 사용한다.</pre>
       <div class="ask sm">cart.py 에 문제 없는지 봐 줘. 알맞은 subagent가 있으면 맡겨.</div>
     </div>
@@ -820,7 +824,8 @@ bash       python* -m unittest* <span class="gk">allow</span>
         <li>작업 후 <code>git status</code>에 코드 파일 변경이 없다</li>
         <li>자식 세션에 들어가서 거부된 도구 호출이 어떻게 보이는지 확인했다</li>
       </ul>
-<pre class="xs"><span class="fn">terminal · 모든 OS 공통</span>git status --short minishop tests   <span class="c"># 아무것도 안 나와야 정상</span></pre>
+<pre class="xs"><span class="fn">terminal · 모든 OS 공통</span>
+git status --short minishop tests   <span class="c"># 아무것도 안 나와야 정상</span></pre>
     </div>
   </div>
 </section>
@@ -830,7 +835,8 @@ bash       python* -m unittest* <span class="gk">allow</span>
   <h2><code>ask</code>로 바꾸면 자식이 쓰기 전에 나에게 묻는다</h2>
   <div class="todo"><b>할 일</b><span><i>1</i><code>reviewer.md</code>의 <code>edit: deny</code>를 <code>edit: ask</code>로 바꾸고 OpenCode를 다시 연다</span><span><i>2</i>아래 문장을 보내고 승인 요청에서 <b>거절</b>한다</span><span><i>3</i><code>/new</code> 후 다시 보내 이번에는 <b>승인</b>한다</span><span><i>4</i>끝나면 <code>edit: deny</code>로 되돌리고 <code>git checkout -- minishop</code>으로 고쳐진 코드를 되돌린다</span></div>
   <div class="split" style="align-items:start">
-<pre class="sm"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">permission</span>:
+<pre class="sm"><span class="fn">.opencode/agents/reviewer.md (일부)</span>
+<span class="v">permission</span>:
   <span class="v">edit</span>: <span class="y">ask</span>     <span class="c"># deny → ask</span>
   <span class="v">bash</span>: deny</pre>
     <div style="display:flex;flex-direction:column;gap:16px">
@@ -862,7 +868,8 @@ opencode --pure models
 <span class="c"># 사내 제공자만 거르기 (제공자ID = 위 출력에서 / 앞부분)</span>
 opencode --pure models <span class="gk">&lt;제공자ID&gt;</span>
 <span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c">← 이 한 줄을 그대로 model에 쓴다</span></pre></div>
-<pre class="xs"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">mode</span>: subagent
+<pre class="xs"><span class="fn">.opencode/agents/reviewer.md (일부)</span>
+<span class="v">mode</span>: subagent
 <span class="v">model</span>: <span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>   <span class="c"># ①에서 찾은 이름. 꺾쇠는 쓰지 않는다</span></pre>
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · ② 읽혔는지 확인</span></div><pre class="xs" data-os="unix">opencode --pure debug agent reviewer | jq -c .model
 {<span class="v">"providerID"</span>:<span class="s">"&lt;제공자ID&gt;"</span>,<span class="v">"modelID"</span>:<span class="s">"&lt;모델ID&gt;"</span>}
@@ -938,7 +945,8 @@ $null -eq (opencode --pure debug agent explore | Out-String | ConvertFrom-Json).
   <div class="todo"><b>할 일</b><span><i>1</i><code>opencode.json</code>에서 build의 <code>"task": "allow"</code>를 왼쪽 블록으로 바꾼다</span><span><i>2</i>다른 터미널 창에서 왼쪽 명령으로 확인하고 OpenCode를 다시 연다</span><span><i>3</i><code>/new</code> 후 두 문장을 하나씩 보낸다</span><span><i>4</i>끝나면 <code>"task": "allow"</code>로 되돌린다 (LAB 5에서 general을 쓴다)</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="sm"><span class="fn">opencode.json (일부) · build의 task 값을 이렇게 바꾼다</span><span class="v">"build"</span>: {
+<pre class="sm"><span class="fn">opencode.json (일부) · build의 task 값을 이렇게 바꾼다</span>
+<span class="v">"build"</span>: {
   <span class="v">"permission"</span>: {
     <span class="v">"task"</span>: {
       <span class="v">"*"</span>: <span class="s">"deny"</span>,
@@ -983,7 +991,8 @@ task       explore  <span class="gk">allow</span></pre></div>
       <tr><td class="h">all (기본값)</td><td class="ok">보임</td><td class="ok">됨</td><td class="ok">됨</td></tr>
     </table>
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="xs"><span class="fn">terminal · 실제 경고 문구 · 모든 OS 공통</span>opencode --pure run --agent reviewer "cart.py 리뷰"
+<pre class="xs"><span class="fn">terminal · 실제 경고 문구 · 모든 OS 공통</span>
+opencode --pure run --agent reviewer "cart.py 리뷰"
 <span class="y">! agent "reviewer" is a subagent, not a primary
   agent. Falling back to default agent</span></pre>
       <ol class="num">
@@ -1139,7 +1148,8 @@ python -m unittest -v</pre></div>
   <div class="todo"><b>할 일</b><span><i>1</i>5-2 대화 화면에서 그대로 아래 문장을 보낸다</span><span><i>2</i><kbd>ctrl+x</kbd> <kbd>↓</kbd>로 report 담당 세션에 메시지가 이어 붙었는지 본다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="xs"><span class="fn">부모가 받는 task 결과의 모양</span><span class="k">&lt;task id="ses_..." state="completed"&gt;</span>
+<pre class="xs"><span class="fn">부모가 받는 task 결과의 모양</span>
+<span class="k">&lt;task id="ses_..." state="completed"&gt;</span>
 <span class="gk">&lt;task_result&gt;</span>
 상태: 고침
 원인: 할인율을 퍼센트가 아니라 금액으로 뺐다
