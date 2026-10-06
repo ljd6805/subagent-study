@@ -712,74 +712,51 @@ svg .mono{font-family:var(--mono)}
 <!-- Build 4 -->
 <section class="slide" data-sec="구성">
   <div class="kicker">Components 4 · Model</div>
-  <h2>모델은 <span class="purple">위에서부터 차례로 확인해</span> 처음 값이 있는 곳에서 정해진다</h2>
-  <div class="body" style="gap:22px">
-    <svg viewBox="0 0 1424 470" width="100%">
+  <h2>모델은 <span class="purple">왼쪽부터 확인해</span> 처음 정해진 값으로 쓴다</h2>
+  <div class="body" style="gap:30px">
+    <svg viewBox="0 0 1424 250" width="100%">
       <defs>
         <marker id="a-m4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5a687a"/></marker>
         <marker id="a-m4g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7ee787"/></marker>
       </defs>
-      <!-- start -->
-      <rect x="0" y="0" width="470" height="40" rx="20" fill="#18222f" stroke="#34445a"/>
-      <text x="235" y="26" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">자식 agent를 띄운다. 어떤 모델로?</text>
-      <path d="M235,42 L235,58" stroke="#5a687a" stroke-width="2.5" fill="none" marker-end="url(#a-m4)"/>
-      <!-- rows -->
-      <g font-weight="800">
-        <rect x="0" y="62" width="470" height="80" rx="14" fill="#11261a" stroke="#7ee787" stroke-width="2"/>
-        <text x="22" y="95" font-size="19" fill="#eef2f6">① 부를 때 모델을 직접 넘겼나?</text>
-        <text x="22" y="124" font-size="14" font-weight="600" fill="#a9e7b0">Claude: Agent 도구 호출의 model 인자</text>
-
-        <rect x="0" y="170" width="470" height="80" rx="14" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/>
-        <text x="22" y="203" font-size="19" fill="#eef2f6">② 정의 파일에 model이 있나?</text>
-        <text x="22" y="232" font-size="14" font-weight="600" fill="#9cc7ff">세 도구 모두 · inherit라고 적으면 ④로</text>
-
-        <rect x="0" y="278" width="470" height="80" rx="14" fill="#2a2210" stroke="#e3b341" stroke-width="2"/>
-        <text x="22" y="311" font-size="19" fill="#eef2f6">③ 전역 기본값을 정해 두었나?</text>
-        <text x="22" y="340" font-size="14" font-weight="600" fill="#ecd08a">Claude: CLAUDE_CODE_SUBAGENT_MODEL</text>
-
-        <rect x="0" y="386" width="470" height="80" rx="14" fill="#21183a" stroke="#bc8cff" stroke-width="2"/>
-        <text x="22" y="419" font-size="19" fill="#eef2f6">④ 아무것도 없으면 부모 모델</text>
-        <text x="22" y="448" font-size="14" font-weight="600" fill="#cfb7ff">OpenCode는 호출한 primary, 나머지는 메인 대화</text>
-      </g>
-      <!-- no arrows -->
-      <g stroke="#5a687a" stroke-width="2.5" fill="none"><path d="M235,144 L235,166" marker-end="url(#a-m4)"/><path d="M235,252 L235,274" marker-end="url(#a-m4)"/><path d="M235,360 L235,382" marker-end="url(#a-m4)"/></g>
-      <g font-size="13" font-weight="700" fill="#8e9cae"><text x="252" y="160">아니오</text><text x="252" y="268">아니오</text><text x="252" y="376">아니오</text></g>
-      <!-- yes arrows -->
-      <g stroke="#7ee787" stroke-width="2.5" fill="none"><path d="M474,102 L566,102" marker-end="url(#a-m4g)"/><path d="M474,210 L566,210" marker-end="url(#a-m4g)"/><path d="M474,318 L566,318" marker-end="url(#a-m4g)"/><path d="M474,426 L566,426" marker-end="url(#a-m4g)"/></g>
-      <g font-size="13" font-weight="800" fill="#7ee787"><text x="506" y="94">예</text><text x="506" y="202">예</text><text x="506" y="310">예</text></g>
-      <g font-weight="800" font-size="17" fill="#eef2f6">
-        <rect x="572" y="78" width="210" height="48" rx="12" fill="#11261a" stroke="#2c6b3c"/><text x="590" y="108">그 모델로 확정</text>
-        <rect x="572" y="186" width="210" height="48" rx="12" fill="#11261a" stroke="#2c6b3c"/><text x="590" y="216">그 모델로 확정</text>
-        <rect x="572" y="294" width="210" height="48" rx="12" fill="#11261a" stroke="#2c6b3c"/><text x="590" y="324">그 모델로 확정</text>
-        <rect x="572" y="402" width="210" height="48" rx="12" fill="#11261a" stroke="#2c6b3c"/><text x="590" y="432">부모와 같은 모델</text>
-      </g>
-      <!-- example -->
-      <rect x="840" y="0" width="584" height="466" rx="18" fill="#121923" stroke="#34445a" stroke-width="2"/>
-      <text x="866" y="38" font-size="14" font-weight="800" fill="#bc8cff" letter-spacing="1">예시 · CLAUDE CODE</text>
-      <g font-size="15" font-weight="600" fill="#c3cdd8">
-        <text x="866" y="70">부모(메인) = <tspan fill="#eef2f6" font-weight="800">sonnet</tspan></text>
-        <text x="866" y="96">CLAUDE_CODE_SUBAGENT_MODEL = <tspan fill="#eef2f6" font-weight="800">haiku</tspan></text>
-        <text x="866" y="122">reviewer.md: <tspan fill="#eef2f6" font-weight="800">model: opus</tspan> · helper.md: model 없음</text>
-      </g>
-      <path d="M866,142 L1398,142" stroke="#293445" stroke-width="1.5"/>
-      <g font-size="16" font-weight="700">
-        <text x="866" y="180" fill="#eef2f6">reviewer를 model: haiku로 호출</text><text x="1398" y="180" text-anchor="end" fill="#7ee787">haiku · ①</text>
-        <text x="866" y="226" fill="#eef2f6">reviewer를 그냥 호출</text><text x="1398" y="226" text-anchor="end" fill="#58a6ff">opus · ②</text>
-        <text x="866" y="272" fill="#eef2f6">helper를 그냥 호출</text><text x="1398" y="272" text-anchor="end" fill="#e3b341">haiku · ③</text>
-        <text x="866" y="318" fill="#eef2f6">환경변수를 지우고 helper 호출</text><text x="1398" y="318" text-anchor="end" fill="#bc8cff">sonnet · ④</text>
-      </g>
-      <path d="M866,346 L1398,346" stroke="#293445" stroke-width="1.5"/>
-      <text x="866" y="382" font-size="15" font-weight="600" fill="#c3cdd8">앞 단계에 값이 있으면 뒤 단계는 보지 않는다.</text>
-      <text x="866" y="410" font-size="15" font-weight="600" fill="#c3cdd8">그래서 환경변수는 정의 파일의 model을 덮지 못한다.</text>
-      <text x="866" y="444" font-size="13" fill="#8e9cae">v2.1.251 전에는 환경변수가 ①보다 앞이었다 (공식 문서).</text>
+      <text x="0" y="20" font-size="14" font-weight="800" fill="#7ee787">구체적 · 우선</text><text x="1424" y="20" text-anchor="end" font-size="14" font-weight="800" fill="#5a687a">일반적 · 나중</text>
+      <rect x="0" y="40" width="290" height="110" rx="16" fill="#11261a" stroke="#7ee787" stroke-width="2"/>
+      <text x="145" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">① 호출할 때 지정</text>
+      <text x="145" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">이번 한 번만 쓸 모델</text>
+      <path d="M145,154 L145,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
+      <text x="157" y="182" font-size="13" font-weight="800" fill="#7ee787">있으면</text>
+      <rect x="45" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
+      <text x="145" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">이 값으로 확정</text>
+      <rect x="378" y="40" width="290" height="110" rx="16" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/>
+      <text x="523" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">② 정의 파일</text>
+      <text x="523" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">agent마다 정한 모델</text>
+      <path d="M523,154 L523,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
+      <text x="535" y="182" font-size="13" font-weight="800" fill="#7ee787">있으면</text>
+      <rect x="423" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
+      <text x="523" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">이 값으로 확정</text>
+      <rect x="756" y="40" width="290" height="110" rx="16" fill="#2a2210" stroke="#e3b341" stroke-width="2"/>
+      <text x="901" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">③ 전역 기본값</text>
+      <text x="901" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">모든 자식에 공통</text>
+      <path d="M901,154 L901,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
+      <text x="913" y="182" font-size="13" font-weight="800" fill="#7ee787">있으면</text>
+      <rect x="801" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
+      <text x="901" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">이 값으로 확정</text>
+      <rect x="1134" y="40" width="290" height="110" rx="16" fill="#21183a" stroke="#bc8cff" stroke-width="2"/>
+      <text x="1279" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">④ 부모 모델</text>
+      <text x="1279" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">아무것도 없을 때</text>
+      <path d="M1279,154 L1279,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
+      <text x="1291" y="182" font-size="13" font-weight="800" fill="#7ee787">항상</text>
+      <rect x="1179" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
+      <text x="1279" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">부모와 같은 모델</text>
+      <path d="M294,95 L372,95" stroke="#5a687a" stroke-width="3" fill="none" marker-end="url(#a-m4)"/><text x="333" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#8e9cae" dy="-6">없으면</text><path d="M672,95 L750,95" stroke="#5a687a" stroke-width="3" fill="none" marker-end="url(#a-m4)"/><text x="711" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#8e9cae" dy="-6">없으면</text><path d="M1050,95 L1128,95" stroke="#5a687a" stroke-width="3" fill="none" marker-end="url(#a-m4)"/><text x="1089" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#8e9cae" dy="-6">없으면</text>
     </svg>
     <div class="g3">
-      <div class="card" style="padding:16px 22px;gap:4px"><div class="lbl">찾기 · 모으기</div><h3 style="font-size:22px">작고 빠른 모델 · 낮은 추론 강도</h3><p style="font-size:17px">explore, 로그 요약처럼 양은 많고 판단은 단순한 일</p></div>
-      <div class="card" style="padding:16px 22px;gap:4px"><div class="lbl">구현 · 수정</div><h3 style="font-size:22px">부모와 같은 모델 (inherit)</h3><p style="font-size:17px">담당 범위가 정해진 작업자. 품질을 부모와 맞춘다</p></div>
-      <div class="card" style="padding:16px 22px;gap:4px"><div class="lbl">판단 · 검토</div><h3 style="font-size:22px">큰 모델 · 높은 추론 강도</h3><p style="font-size:17px">리뷰어, 설계 검토처럼 틀리면 비싼 일</p></div>
+      <div class="card"><div class="lbl">찾기 · 모으기</div><h3>작고 빠른 모델 · 낮은 추론 강도</h3><p>explore, 로그 요약처럼 양은 많고 판단은 단순한 일.</p></div>
+      <div class="card"><div class="lbl">구현 · 수정</div><h3>부모와 같은 모델 (inherit)</h3><p>담당 범위가 정해진 작업자. 품질을 부모와 맞춘다.</p></div>
+      <div class="card"><div class="lbl">판단 · 검토</div><h3>큰 모델 · 높은 추론 강도</h3><p>리뷰어, 설계 검토처럼 틀리면 비싼 일.</p></div>
     </div>
   </div>
-  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://code.claude.com/docs/en/sub-agents#choose-a-model">Claude · Choose a model</a><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a></span></div>
+  <div class="note" style="align-items:flex-start"><span class="nt">도구별</span><span style="display:flex;flex-direction:column;gap:2px"><span><b>Claude Code</b> ①~④ 모두 있음. ① Agent 도구의 <code>model</code> 인자, ③ <code>CLAUDE_CODE_SUBAGENT_MODEL</code>.</span><span><b>OpenCode</b> ②와 ④만: <code>model</code>을 안 적으면 호출한 primary의 모델. <b>Codex</b> ②와 ④만: 역할 TOML의 <code>model</code>, 없으면 부모 값.</span></span></div>
 </section>
 
 <!-- ============ Part 1-03 선언 방법 ============ -->
