@@ -1321,7 +1321,7 @@ Return PASS/FAIL + file:line list.
 <!-- CC 1 -->
 <section class="slide" data-sec="Claude Code">
   <div class="kicker" style="color:var(--purple)">Claude 1 · Scope</div>
-  <h2>같은 이름이면 <span class="purple">더 위의 범위</span>가 이긴다</h2>
+  <h2>같은 이름이면 <span class="purple">번호가 작은 위치</span>의 정의를 쓴다</h2>
   <div class="split" style="grid-template-columns:.95fr 1.05fr;align-items:stretch">
     <div style="display:flex;flex-direction:column;gap:10px">
       <div style="display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center"><span class="mark r" style="width:40px;height:40px;font-size:17px;margin:0">1</span><div class="card c-red" style="padding:14px 20px;flex-direction:row;justify-content:space-between;align-items:center"><b style="font-size:21px">Managed</b><span class="muted" style="font-size:16px">조직 관리 설정</span></div></div>
@@ -1335,6 +1335,7 @@ Return PASS/FAIL + file:line list.
   "description":"…","prompt":"…",
   "tools":["Read","Grep"],"model":"sonnet"}}'</pre>
       <ul class="pts p" style="gap:12px">
+        <li style="font-size:19px"><b>예:</b> <code>reviewer</code>가 <code>.claude/agents/</code>(3)와 <code>~/.claude/agents/</code>(4)에 모두 있으면 <b>프로젝트 파일(3)</b>만 쓰고 개인 파일은 무시한다</li>
         <li style="font-size:19px">폴더는 하위까지 찾고, agent 이름은 파일명이 아니라 <code>name</code> 필드로 정해진다</li>
         <li style="font-size:19px">파일을 고치면 <b>재시작 없이 바로 반영</b>된다</li>
         <li style="font-size:19px">플러그인 agent는 <code>hooks</code> · <code>mcpServers</code> · <code>permissionMode</code>가 무시된다 (보안)</li>
