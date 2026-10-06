@@ -4,6 +4,7 @@ OpenCode · Codex · Claude Code의 **subagent**를 공통 원리로 이해하�
 
 - 허브 페이지: https://ljd6805.github.io/subagent-study/
 - 이론 슬라이드: https://ljd6805.github.io/subagent-study/slides/theory/
+- OpenCode 실습 슬라이드: https://ljd6805.github.io/subagent-study/labs/01-opencode/
 
 ## 구성
 
@@ -13,7 +14,8 @@ OpenCode · Codex · Claude Code의 **subagent**를 공통 원리로 이해하�
 | [`slides/theory/index.html`](slides/theory/index.html) | 이론 슬라이드 49장 (단일 HTML, 16:9 고정 캔버스, ←/→ 이동, `O` 목차, `#번호`로 바로 가기) | v2 |
 | [`docs/outline-draft.md`](docs/outline-draft.md) | 이론 덱 목차 초안 | |
 | [`docs/research/`](docs/research/) | 도구별 조사 노트 (OpenCode · Codex · Claude Code) | |
-| [`labs/`](labs/) | 실습 자료 | 준비 중 |
+| [`labs/01-opencode/`](labs/01-opencode/) | OpenCode 실습 슬라이드 39장 (LAB 0–6)과 샘플 프로젝트 `minishop` | v1 |
+| [`labs/`](labs/) | 도구별 실습 목록 (Claude Code, Codex는 준비 중) | |
 
 ## 자료 추가 규칙
 

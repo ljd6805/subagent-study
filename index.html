@@ -83,16 +83,35 @@
       </article>
     </div>
 
-    <h2>실습 <span class="badge b-todo">준비 중</span></h2>
-    <p class="sub">이론 덱을 마친 뒤 만들 실습 자리입니다. 자료가 생기면 <code>labs/</code> 아래에 두고 여기에 링크를 겁니다.</p>
-    <ol class="track">
-      <li><span class="no">LAB 0</span><strong>공통 — 첫 subagent 하나 만들어 위임해 보기</strong><span class="d">정의 파일 작성, description 라우팅, 결과 한 덩어리만 돌아오는지 확인</span></li>
-      <li><span class="no">LAB 1</span><strong>OpenCode — mode, permission.task, child session</strong><span class="d">JSON·Markdown 두 방식 선언과 headless 실행에서 자식 세션 들어가 보기</span></li>
-      <li><span class="no">LAB 2</span><strong>Codex — 역할 TOML과 [agents] 한도</strong><span class="d">스레드 띄우기·기다리기·닫기, fork_context 유무 비교</span></li>
-      <li><span class="no">LAB 3</span><strong>Claude Code — frontmatter, 범위 우선순위, hooks</strong><span class="d">내장 agent와 커스텀 agent 호출 방식, 같은 이름 충돌 확인</span></li>
-      <li><span class="no">LAB 4</span><strong>패턴 — 병렬 fan-out과 반환 계약</strong><span class="d">결과는 파일로, 판정은 코드로 받는 위임 흐름 만들기</span></li>
-    </ol>
-    <p class="sub" style="margin-top:10px">위 목록은 이론 덱 구성에서 뽑은 가안이며, 실습을 만들 때 바뀔 수 있습니다.</p>
+    <h2>실습</h2>
+    <p class="sub">실습은 도구별로 따로 만듭니다. OpenCode를 먼저 완성하고, 같은 순서를 Claude Code와 Codex로 옮깁니다. 세 실습 모두 같은 샘플 프로젝트 <code>minishop</code>을 씁니다.</p>
+    <div class="grid">
+      <article class="card ready">
+        <span class="meta"><span class="badge b-ready">v1</span> &nbsp;OpenCode · 39장 · LAB 0–6</span>
+        <h3><a href="labs/01-opencode/">OpenCode subagent 실습</a></h3>
+        <p>내장 subagent로 격리 확인, Markdown·JSON으로 agent 선언, 권한과 모델, permission.task·mode·중첩 깊이, 병렬 위임과 결과 파일, <code>opencode run</code>까지.</p>
+        <div class="jumps" aria-label="랩 바로 가기">
+          <a href="labs/01-opencode/#4">LAB 0 준비</a>
+          <a href="labs/01-opencode/#8">LAB 1 내장 subagent</a>
+          <a href="labs/01-opencode/#14">LAB 2 내 agent</a>
+          <a href="labs/01-opencode/#20">LAB 3 권한과 모델</a>
+          <a href="labs/01-opencode/#25">LAB 4 위임 범위</a>
+          <a href="labs/01-opencode/#29">LAB 5 병렬과 결과</a>
+          <a href="labs/01-opencode/#34">LAB 6 터미널 실행</a>
+        </div>
+        <a class="btn" href="https://github.com/ljd6805/subagent-study/tree/main/labs/01-opencode/minishop">샘플 프로젝트 minishop</a>
+      </article>
+      <article class="card todo">
+        <span class="meta"><span class="badge b-todo">준비 중</span></span>
+        <h3>Claude Code subagent 실습</h3>
+        <p>OpenCode 실습과 같은 순서로 <code>.claude/agents/</code> 정의, 내장 agent, 권한·모델, 병렬 위임을 확인합니다.</p>
+      </article>
+      <article class="card todo">
+        <span class="meta"><span class="badge b-todo">준비 중</span></span>
+        <h3>Codex subagent 실습</h3>
+        <p>역할 TOML과 <code>[agents]</code> 설정, 스레드 띄우기와 기다리기를 같은 샘플로 확인합니다.</p>
+      </article>
+    </div>
 
     <h2>참고 자료</h2>
     <ul class="refs">

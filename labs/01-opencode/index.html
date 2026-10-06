@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenCode Subagent Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e14;--panel:#121a24;--panel2:#18222f;--panel3:#1f2b3a;--line:#263243;--line2:#34445a;
+  --text:#eef2f6;--sub:#c3cdd8;--muted:#8e9cae;--dim:#5a687a;
+  --green:#7ee787;--blue:#58a6ff;--yellow:#e3b341;--red:#ff7b72;--purple:#bc8cff;--orange:#ffa657;--cyan:#56d4dd;
+  --g-bg:#11261a;--b-bg:#0f2036;--y-bg:#2a2210;--r-bg:#2d1513;--p-bg:#21183a;--o-bg:#2c1d0e;
+  --sans:Inter,"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#05080c;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center center;background:var(--bg);overflow:hidden;box-shadow:0 0 0 1px #111a25}
+.slide{position:absolute;inset:0;display:none;padding:84px 88px 92px;flex-direction:column;word-break:keep-all;
+  background:radial-gradient(1200px 600px at 100% 0%,rgba(88,166,255,.06),transparent 60%),radial-gradient(900px 500px at 0% 100%,rgba(126,231,135,.045),transparent 60%),var(--bg)}
+.slide.active{display:flex}
+.slide::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;
+  mask-image:linear-gradient(180deg,#000,transparent 70%)}
+.slide>*{position:relative}
+
+/* chrome */
+.chrome-top{position:absolute;left:88px;right:88px;top:30px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--dim);z-index:2}
+.chrome-top span{padding:4px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.chrome-top span.on{color:var(--text);border-color:var(--line2);background:var(--panel)}
+.chrome-top .sep{flex:1}
+.pageno{position:absolute;right:88px;bottom:30px;font:600 13px var(--mono);color:var(--dim);z-index:2}
+.bar{position:absolute;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--green));z-index:3;transition:width .25s}
+
+/* type */
+.kicker{font-size:15px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:22px;height:3px;border-radius:2px;background:currentColor}
+h1{font-size:96px;line-height:1.04;letter-spacing:-.045em;margin:0 0 26px;font-weight:800}
+h2{font-size:48px;line-height:1.16;letter-spacing:-.03em;margin:0 0 30px;font-weight:800}
+h3{font-size:24px;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+.lead{font-size:25px;line-height:1.55;color:var(--sub);margin:0;max-width:1300px}
+.lead b,.card b,li b{color:var(--text)}
+p{margin:0}
+.muted{color:var(--muted)}.dim{color:var(--dim)}
+.green{color:var(--green)}.blue{color:var(--blue)}.yellow{color:var(--yellow)}.red{color:var(--red)}.purple{color:var(--purple)}.orange{color:var(--orange)}.cyan{color:var(--cyan)}
+.hl{background:linear-gradient(transparent 62%,rgba(126,231,135,.25) 62%)}
+code{font-family:var(--mono);font-size:.86em;background:#1b2635;border:1px solid #26354a;border-radius:6px;padding:.04em .36em;color:#e6edf3}
+h2 code{font-size:.8em}
+
+/* layout */
+.body{flex:1;min-height:0;display:flex;flex-direction:column;gap:26px}
+.row{display:flex;gap:28px;min-height:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center;flex:1;min-height:0}
+.split.r{grid-template-columns:1fr 1.15fr}
+.center{display:flex;align-items:center;justify-content:center}
+.fill{flex:1;min-height:0}
+.mt-auto{margin-top:auto}
+
+/* card */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;display:flex;flex-direction:column;gap:10px}
+.card .lbl{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card h3{margin:0}
+.card p,.card li{font-size:19px;line-height:1.55;color:var(--sub)}
+.card ul{margin:0;padding-left:1.1em}.card li{margin:4px 0}
+.card.c-green{border-color:#2c6b3c;background:linear-gradient(180deg,var(--g-bg),var(--panel) 70%)}.card.c-green .lbl{color:var(--green)}
+.card.c-blue{border-color:#27578a;background:linear-gradient(180deg,var(--b-bg),var(--panel) 70%)}.card.c-blue .lbl{color:var(--blue)}
+.card.c-yellow{border-color:#6e5719;background:linear-gradient(180deg,var(--y-bg),var(--panel) 70%)}.card.c-yellow .lbl{color:var(--yellow)}
+.card.c-red{border-color:#743230;background:linear-gradient(180deg,var(--r-bg),var(--panel) 70%)}.card.c-red .lbl{color:var(--red)}
+.card.c-purple{border-color:#553a85;background:linear-gradient(180deg,var(--p-bg),var(--panel) 70%)}.card.c-purple .lbl{color:var(--purple)}
+.card.c-orange{border-color:#78481b;background:linear-gradient(180deg,var(--o-bg),var(--panel) 70%)}.card.c-orange .lbl{color:var(--orange)}
+.card .big{font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--panel3);border:1px solid var(--line2)}
+
+/* list */
+ul.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+ul.pts li{font-size:22px;line-height:1.5;color:var(--sub);padding-left:34px;position:relative}
+ul.pts li::before{content:"";position:absolute;left:6px;top:.55em;width:12px;height:12px;border-radius:3px;background:var(--green);transform:rotate(45deg)}
+ul.pts.b li::before{background:var(--blue)}ul.pts.y li::before{background:var(--yellow)}ul.pts.r li::before{background:var(--red)}ul.pts.p li::before{background:var(--purple)}
+ol.num{list-style:none;margin:0;padding:0;counter-reset:n;display:flex;flex-direction:column;gap:14px}
+ol.num li{counter-increment:n;font-size:21px;line-height:1.5;color:var(--sub);padding-left:46px;position:relative}
+ol.num li::before{content:counter(n);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--panel3);border:1px solid var(--line2);font:700 15px var(--mono);color:var(--green);display:grid;place-items:center}
+
+/* code */
+pre{font-family:var(--mono);font-size:18px;line-height:1.6;background:#070b11;border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin:0;color:#dce6f0;white-space:pre;overflow:hidden;position:relative}
+pre .fn{position:absolute;top:0;right:0;font:600 12px var(--mono);color:var(--muted);background:var(--panel2);border-left:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0 16px 0 10px;padding:6px 12px}
+pre.sm{font-size:16px;padding:18px 22px}
+pre.xs{font-size:14.5px;padding:16px 18px;line-height:1.55}
+.c{color:#6b7d93}.k{color:#79c0ff}.s{color:#a5d6ff}.v{color:var(--yellow)}.r{color:var(--red)}.p{color:var(--purple)}.gk{color:var(--green)}
+.mark{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font:800 13px var(--sans);color:#0a0e14;background:var(--green);margin-left:8px;vertical-align:1px}
+.mark.b{background:var(--blue)}.mark.y{background:var(--yellow)}.mark.p{background:var(--purple)}.mark.r{background:var(--red)}.mark.o{background:var(--orange)}
+
+/* table */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:19px;line-height:1.45;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+th,td{padding:13px 18px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--panel2)}
+td{color:var(--sub)}
+td.h{color:var(--text);font-weight:700;white-space:nowrap;background:rgba(255,255,255,.015)}
+table.tight th,table.tight td{padding:10px 16px}
+table.sm{font-size:17px}
+
+/* tool tags */
+.t{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:800;letter-spacing:.04em;padding:4px 11px;border-radius:999px;border:1px solid;white-space:nowrap;vertical-align:middle}
+.t::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.t.oc{color:var(--orange);border-color:#78481b;background:var(--o-bg)}
+.t.cx{color:var(--blue);border-color:#27578a;background:var(--b-bg)}
+.t.cc{color:var(--purple);border-color:#553a85;background:var(--p-bg)}
+.pill{display:inline-block;font-size:14px;font-weight:700;padding:4px 12px;border-radius:999px;background:var(--panel3);border:1px solid var(--line2);color:var(--sub)}
+
+/* footer note */
+.note{position:absolute;left:88px;right:200px;bottom:26px;display:flex;align-items:center;gap:14px;font-size:15px;color:var(--muted);line-height:1.4;z-index:2}
+.note .nt{flex:none;font-size:12px;font-weight:800;letter-spacing:.1em;padding:5px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line2);color:var(--sub)}
+.note .nt.doc{color:var(--blue);border-color:#27578a}
+.note .nt.try{color:var(--yellow);border-color:#6e5719}
+.note a{color:var(--blue);text-decoration:none;margin-right:14px}.note a:hover{text-decoration:underline}
+.note code{font-size:.92em}
+
+/* callout / quote */
+.callout{border-left:4px solid var(--green);background:linear-gradient(90deg,rgba(126,231,135,.08),transparent);padding:16px 22px;border-radius:0 14px 14px 0;font-size:23px;line-height:1.5;color:var(--sub)}
+.callout b{color:var(--text)}
+.callout.y{border-color:var(--yellow);background:linear-gradient(90deg,rgba(227,179,65,.09),transparent)}
+.callout.r{border-color:var(--red);background:linear-gradient(90deg,rgba(255,123,114,.09),transparent)}
+.callout.b{border-color:var(--blue);background:linear-gradient(90deg,rgba(88,166,255,.09),transparent)}
+.callout.p{border-color:var(--purple);background:linear-gradient(90deg,rgba(188,140,255,.09),transparent)}
+.quote{font-size:44px;line-height:1.3;font-weight:800;letter-spacing:-.025em}
+.quote em{font-style:normal;color:var(--green)}
+
+/* divider */
+.divider{justify-content:center}
+.divider .num{position:absolute;right:70px;top:40px;font:900 340px/1 var(--sans);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:2px #1d2836}
+.divider h1{font-size:110px}
+.divider .toc{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px;max-width:1300px}
+.divider .toc span{font-size:19px;font-weight:600;padding:10px 18px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--sub)}
+.divider .toc span b{font-family:var(--mono);color:var(--muted);margin-right:10px;font-weight:600}
+
+/* svg helpers */
+svg{display:block;overflow:visible}
+svg text{font-family:var(--sans);fill:var(--sub)}
+svg .mono{font-family:var(--mono)}
+.sb{fill:var(--panel);stroke:var(--line2);stroke-width:1.5}
+.sb2{fill:var(--panel2);stroke:var(--line2);stroke-width:1.5}
+.ln{stroke:var(--line2);stroke-width:2;fill:none}
+.ar{stroke:var(--muted);stroke-width:2.5;fill:none}
+
+/* overview */
+#ov{position:fixed;inset:0;background:rgba(3,6,10,.94);z-index:50;display:none;overflow:auto;padding:30px}
+#ov.on{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;align-content:start}
+#ov a{display:block;background:#101721;border:1px solid #233042;border-radius:10px;padding:12px 14px;color:#c9d3de;text-decoration:none;font:500 13px/1.45 var(--sans)}
+#ov a:hover,#ov a.cur{border-color:var(--green)}
+#ov a b{display:block;font:700 11px var(--mono);color:#6d7c8f;margin-bottom:4px}
+.help{position:fixed;right:14px;top:10px;color:#3e4b5b;font:500 12px var(--sans);z-index:40}
+
+/* lab extras */
+.slide{background:radial-gradient(1200px 600px at 100% 0%,rgba(255,166,87,.06),transparent 60%),radial-gradient(900px 500px at 0% 100%,rgba(126,231,135,.045),transparent 60%),var(--bg)}
+.bar{background:linear-gradient(90deg,var(--orange),var(--green))}
+.kicker.o{color:var(--orange)}
+ul.chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+ul.chk li{font-size:21px;line-height:1.5;color:var(--sub);padding-left:40px;position:relative}
+ul.chk li::before{content:"";position:absolute;left:2px;top:.22em;width:22px;height:22px;border-radius:6px;border:2px solid var(--green);background:rgba(126,231,135,.06)}
+ul.chk.sm li{font-size:19px}
+.ask{font-family:var(--mono);font-size:18px;line-height:1.6;background:#0d1520;border:1px solid #27578a;border-radius:14px;padding:16px 20px;color:#dce6f0;white-space:pre-wrap}
+.ask::before{content:"OpenCode 입력창";display:block;font:800 12px var(--sans);letter-spacing:.12em;color:var(--blue);margin-bottom:6px}
+.ask.sm{font-size:16px;padding:14px 18px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:12px 18px;align-items:center}
+.keys kbd{font:700 17px var(--mono);color:var(--text);background:var(--panel3);border:1px solid var(--line2);border-bottom-width:3px;border-radius:8px;padding:5px 12px;white-space:nowrap;justify-self:start}
+.keys span{font-size:20px;color:var(--sub)}
+.stepno{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--orange);color:#0a0e14;font:800 15px var(--mono);margin-right:10px;vertical-align:2px}
+.lab-roadmap{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}
+.lab-roadmap .card{padding:18px 16px;gap:8px}
+.lab-roadmap .card .no{font:800 13px var(--mono);color:var(--orange);letter-spacing:.08em}
+.lab-roadmap .card h3{font-size:19px;line-height:1.35}
+.lab-roadmap .card p{font-size:15.5px;line-height:1.5}
+.ok{color:var(--green);font-weight:700}.ng{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<div class="help">← → Space · O 목차 · F 전체화면</div>
+<div id="stage">
+
+<!-- ============ 01 표지 ============ -->
+<section class="slide active" data-sec="시작">
+  <div class="split" style="grid-template-columns:1.3fr 1fr;gap:40px">
+    <div>
+      <div class="kicker o">Subagent · Personal Study · Lab · OpenCode</div>
+      <h1 style="font-size:84px">OpenCode에서<br>subagent를 <span class="orange">직접</span><br>만들고 돌려 본다</h1>
+      <p class="lead">이론 덱에서 본 원리(격리, 정의 파일, 권한, 병렬, 결과 받기)를 작은 샘플 프로젝트 하나로 순서대로 확인한다. 랩은 0번부터 6번까지 7개다.</p>
+      <div style="display:flex;gap:10px;margin-top:30px"><span class="t oc">OpenCode 1.18.x 기준</span><span class="pill">샘플: minishop (Python)</span></div>
+    </div>
+    <svg viewBox="0 0 560 520" width="100%">
+      <defs><marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#ffa657"/></marker></defs>
+      <rect x="10" y="40" width="540" height="440" rx="20" fill="#070b11" stroke="#263243" stroke-width="1.5"/>
+      <rect x="10" y="40" width="540" height="40" rx="20" fill="#18222f"/><rect x="10" y="60" width="540" height="20" fill="#18222f"/>
+      <circle cx="36" cy="60" r="6" fill="#ff7b72"/><circle cx="56" cy="60" r="6" fill="#e3b341"/><circle cx="76" cy="60" r="6" fill="#7ee787"/>
+      <text x="280" y="66" text-anchor="middle" font-size="15" font-weight="700" fill="#8e9cae" class="mono">~/minishop — opencode</text>
+      <text x="40" y="122" font-size="18" class="mono" fill="#58a6ff">build</text>
+      <text x="110" y="122" font-size="18" class="mono" fill="#c3cdd8">@explore 파일마다 하는 일 정리해 줘</text>
+      <rect x="40" y="150" width="480" height="128" rx="12" fill="#2c1d0e" stroke="#78481b"/>
+      <text x="60" y="180" font-size="16" class="mono" fill="#ffa657">task → explore</text>
+      <text x="60" y="210" font-size="15" class="mono" fill="#c3cdd8">파일 구조 정리 (@explore subagent)</text>
+      <text x="60" y="240" font-size="15" class="mono" fill="#8e9cae">glob · read · read · grep · read …</text>
+      <text x="60" y="264" font-size="15" class="mono" fill="#5a687a">ctrl+x ↓ 로 들어가서 보기</text>
+      <path d="M280,288 L280,322" class="ar" stroke="#ffa657" marker-end="url(#ma)"/>
+      <rect x="40" y="332" width="480" height="120" rx="12" fill="#11261a" stroke="#2c6b3c"/>
+      <text x="60" y="362" font-size="16" class="mono" fill="#7ee787">&lt;task_result&gt;</text>
+      <text x="80" y="392" font-size="15" class="mono" fill="#c3cdd8">cart.py — 장바구니 합계와 할인</text>
+      <text x="80" y="418" font-size="15" class="mono" fill="#c3cdd8">inventory.py — 재고 예약 …</text>
+      <text x="60" y="442" font-size="16" class="mono" fill="#7ee787">&lt;/task_result&gt;</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 02 로드맵 ============ -->
+<section class="slide" data-sec="시작">
+  <div class="kicker o">Roadmap</div>
+  <h2>준비 하나, 원리 확인 다섯, 터미널 실행 하나로 끝난다</h2>
+  <div class="body">
+    <div class="lab-roadmap">
+      <div class="card"><span class="no">LAB 0</span><h3>준비</h3><p>설치, 모델 연결, 샘플 프로젝트 받기</p></div>
+      <div class="card c-orange"><span class="no">LAB 1</span><h3>내장 subagent</h3><p>@explore에게 맡기고 자식 세션 들여다보기</p></div>
+      <div class="card c-orange"><span class="no">LAB 2</span><h3>내 agent 만들기</h3><p>Markdown, JSON 두 방식으로 선언하기</p></div>
+      <div class="card c-orange"><span class="no">LAB 3</span><h3>권한과 모델</h3><p>막힌 동작이 어떻게 보이는지 확인</p></div>
+      <div class="card c-orange"><span class="no">LAB 4</span><h3>위임 범위</h3><p>permission.task, mode, 중첩 깊이</p></div>
+      <div class="card c-orange"><span class="no">LAB 5</span><h3>병렬과 결과</h3><p>동시에 맡기고 파일로 받고 이어서 시키기</p></div>
+      <div class="card"><span class="no">LAB 6</span><h3>터미널 실행</h3><p>opencode run으로 화면 없이 돌리기</p></div>
+    </div>
+    <div class="g3" style="margin-top:6px">
+      <div class="card c-blue"><div class="lbl">랩마다 같은 순서</div><p><b>목표</b> → <b>따라 하기</b> → <b>확인할 점</b> → <b>정리</b>. 확인할 점은 체크 박스로 적어 두었다.</p></div>
+      <div class="card c-green"><div class="lbl">모델 없이도 되는 확인</div><p><code>opencode agent list</code>와 <code>opencode debug agent &lt;이름&gt;</code>은 모델을 부르지 않는다. 설정이 의도대로 읽혔는지 먼저 여기서 본다.</p></div>
+      <div class="card c-yellow"><div class="lbl">모델이 필요한 확인</div><p>실제 위임은 모델이 결정한다. 같은 요청이라도 매번 결과가 조금씩 다를 수 있으니, 결과 문장보다 <b>어떤 agent가 불렸는지</b>를 본다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 진행 방식 ============ -->
+<section class="slide" data-sec="시작">
+  <div class="kicker o">How to read</div>
+  <h2>이 덱의 상자는 세 종류다: 터미널, OpenCode 입력창, 파일</h2>
+  <div class="body">
+    <div class="g3">
+      <div style="display:flex;flex-direction:column;gap:12px"><div class="card" style="padding:16px 20px"><div class="lbl">터미널 명령</div></div>
+<pre class="sm"><span class="fn">terminal</span><span class="c"># 셸에서 그대로 실행</span>
+opencode agent list</pre></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div class="card c-blue" style="padding:16px 20px"><div class="lbl">OpenCode에 입력할 문장</div></div>
+<div class="ask sm">@explore minishop 폴더 파일마다 하는 일을 한 줄씩 정리해 줘</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px"><div class="card c-green" style="padding:16px 20px"><div class="lbl">만들 파일</div></div>
+<pre class="sm"><span class="fn">.opencode/agents/reviewer.md</span><span class="k">---</span>
+<span class="v">description</span>: ...
+<span class="k">---</span></pre></div>
+    </div>
+    <div class="callout b" style="margin-top:8px">모든 실습은 샘플 프로젝트 폴더 <code>~/minishop</code> 안에서 한다. 실습마다 <code>git</code>으로 처음 상태로 되돌릴 수 있게 LAB 0에서 커밋을 하나 만들어 둔다.</div>
+    <div class="callout y">명령과 설정은 OpenCode <b>1.18.34</b>에서 <code>opencode agent list</code>, <code>opencode debug agent</code>로 직접 읽어 확인했다. 버전이 다르면 출력 모양이 조금 다를 수 있다.</div>
+  </div>
+</section>
+
+<!-- ============ LAB 0 ============ -->
+<section class="slide divider" data-sec="LAB 0">
+  <div class="num">0</div>
+  <div class="kicker o">LAB 0</div>
+  <h1>준비</h1>
+  <p class="lead">OpenCode가 돌아가고, 모델이 연결되고, 실습용 프로젝트가 있는 상태를 만든다.</p>
+  <div class="toc"><span><b>0-1</b>설치와 모델 연결</span><span><b>0-2</b>샘플 프로젝트 받기</span><span><b>0-3</b>출발점 확인</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 0">
+  <div class="kicker o">0-1 · 설치와 모델 연결</div>
+  <h2>설치하고, 모델 하나만 연결되면 준비 끝이다</h2>
+  <div class="split" style="align-items:start">
+<pre><span class="fn">terminal</span><span class="c"># 둘 중 하나로 설치</span>
+curl -fsSL https://opencode.ai/install | bash
+npm i -g opencode-ai
+
+<span class="c"># 버전 확인 (이 덱은 1.18.34에서 확인)</span>
+opencode --version
+
+<span class="c"># 모델 제공자 로그인 (API 키 또는 구독 계정)</span>
+opencode auth login
+
+<span class="c"># 쓸 수 있는 모델 이름 보기: 제공자/모델</span>
+opencode models</pre>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card"><div class="lbl">모델 이름 형식</div><p>OpenCode는 모델을 <code>제공자/모델</code>로 부른다. 예: <code>anthropic/claude-haiku-4-5</code>. LAB 3에서 이 이름을 agent 설정에 그대로 쓴다.</p></div>
+      <div class="card c-yellow"><div class="lbl">모델 두 개를 골라 두기</div><p><code>opencode models</code> 목록에서 <b>크고 똑똑한 모델 하나</b>와 <b>작고 빠른 모델 하나</b>를 메모해 둔다. 부모와 자식에 다른 모델을 줄 때 쓴다.</p></div>
+      <ul class="chk sm">
+        <li><code>opencode --version</code>이 버전을 출력한다</li>
+        <li><code>opencode models</code>에 내가 로그인한 제공자의 모델이 보인다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/">opencode.ai/docs</a><a href="https://opencode.ai/docs/providers/">providers</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 0">
+  <div class="kicker o">0-2 · 샘플 프로젝트</div>
+  <h2>minishop에는 버그 2개와 미완성 기능 1개가 숨어 있다</h2>
+  <div class="split" style="align-items:start;grid-template-columns:1.1fr 1fr">
+<pre class="sm"><span class="fn">terminal</span><span class="c"># 저장소에서 샘플만 복사해 새 git 저장소로 만든다</span>
+git clone https://github.com/ljd6805/subagent-study
+cp -r subagent-study/labs/01-opencode/minishop ~/minishop
+cd ~/minishop
+git init &amp;&amp; git add -A &amp;&amp; git commit -m "start"
+
+<span class="c"># 테스트 실행 (Python 3.10+, 설치할 패키지 없음)</span>
+python3 -m unittest
+<span class="r">FAILED (failures=2)</span>
+
+<span class="c"># 실습 중간에 처음 상태로 되돌리기</span>
+git checkout -- . &amp;&amp; git clean -fd</pre>
+<pre class="sm"><span class="fn">tree</span>minishop/
+  <span class="k">minishop/</span>
+    cart.py        <span class="c"># 장바구니 합계와 할인</span>
+    inventory.py   <span class="c"># 재고 확인과 예약</span>
+    report.py      <span class="c"># 주문 기록 요약 (TODO)</span>
+  <span class="k">data/</span>orders.csv  <span class="c"># 주문 7건</span>
+  <span class="k">tests/</span>
+    test_cart.py
+    test_inventory.py
+    test_report.py</pre>
+  </div>
+  <div class="callout y" style="margin-top:22px">정답은 일부러 부록에만 적었다. 직접 코드를 읽기보다 <b>subagent에게 찾게 하는 것</b>이 이 실습의 목적이다.</div>
+</section>
+
+<section class="slide" data-sec="LAB 0">
+  <div class="kicker o">0-3 · 출발점 확인</div>
+  <h2>아무것도 만들지 않아도 agent는 이미 일곱 개 있다</h2>
+  <div class="split" style="align-items:start">
+<pre class="sm"><span class="fn">terminal · ~/minishop</span>opencode agent list | grep -E '^\S'
+
+<span class="k">build</span> (primary)
+compaction (primary)
+<span class="gk">explore</span> (subagent)
+<span class="gk">general</span> (subagent)
+<span class="k">plan</span> (primary)
+summary (primary)
+title (primary)</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>이름</th><th>종류</th><th>하는 일</th></tr>
+        <tr><td class="h blue">build</td><td>primary</td><td>기본 작업 agent. 모든 도구 사용</td></tr>
+        <tr><td class="h blue">plan</td><td>primary</td><td>계획용. 수정과 명령 실행을 막아 둠</td></tr>
+        <tr><td class="h green">explore</td><td>subagent</td><td>코드 탐색 전용. 파일 수정 불가</td></tr>
+        <tr><td class="h green">general</td><td>subagent</td><td>여러 단계 작업. 수정도 가능</td></tr>
+        <tr><td class="h dim">compaction 외 2개</td><td>primary</td><td>요약, 제목 짓기용 내부 agent (숨김)</td></tr>
+      </table>
+      <p class="muted" style="font-size:18px">primary는 사용자가 직접 대화하는 agent, subagent는 다른 agent가 일을 맡기는 agent다. <b>Tab</b> 키는 primary 사이만 오간다.</p>
+      <ul class="chk sm"><li>목록에 <code>explore</code>, <code>general</code>이 <code>(subagent)</code>로 보인다</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 1 ============ -->
+<section class="slide divider" data-sec="LAB 1">
+  <div class="num">1</div>
+  <div class="kicker o">LAB 1</div>
+  <h1>내장 subagent 써 보기</h1>
+  <p class="lead">목표: 위임 한 번이 부모 대화에 무엇을 남기고, 자식 세션에 무엇을 남기는지 눈으로 확인한다.</p>
+  <div class="toc"><span><b>1-1</b>@explore에게 맡기기</span><span><b>1-2</b>자식 세션 들어가기</span><span><b>1-3</b>부모와 자식 비교</span><span><b>1-4</b>이름 없이 맡기기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-1 · @explore에게 맡기기</div>
+  <h2><code>@이름</code>을 붙이면 그 subagent가 확실히 불린다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:18px">
+<pre class="sm"><span class="fn">terminal · ~/minishop</span>opencode</pre>
+      <div class="ask">@explore minishop 폴더의 각 파일이 무슨 일을 하는지 한 줄씩 정리해 줘</div>
+      <p class="muted" style="font-size:19px"><code>@</code>를 치면 부를 수 있는 agent 목록이 뜬다. <code>explore</code>를 고르면 된다.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card c-orange"><div class="lbl">화면에서 볼 것</div>
+        <ul><li>대화 중간에 <b>task</b> 도구 블록이 하나 생긴다</li>
+        <li>블록 제목은 <code>설명 (@explore subagent)</code> 꼴이다</li>
+        <li>자식이 일하는 동안 블록 안에 도구 호출 수가 늘어난다</li>
+        <li>끝나면 부모(build)가 결과를 받아 다시 정리해 답한다</li></ul>
+      </div>
+      <ul class="chk sm">
+        <li>task 블록 제목에 <code>(@explore subagent)</code>가 붙어 있다</li>
+        <li>부모의 최종 답이 파일 4개(cart, inventory, report, __init__)를 다룬다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/">opencode.ai/docs/agents</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-2 · 자식 세션 들어가기</div>
+  <h2>자식 세션은 따로 저장되고, 들어가서 볼 수는 있지만 말을 걸 수는 없다</h2>
+  <div class="split">
+    <div class="keys" style="font-size:20px">
+      <kbd>ctrl+x ↓</kbd><span>첫 번째 자식 세션으로 들어가기 (<code>ctrl+x</code>가 기본 leader 키)</span>
+      <kbd>→</kbd><span>다음 자식 세션</span>
+      <kbd>←</kbd><span>이전 자식 세션</span>
+      <kbd>↑</kbd><span>부모 세션으로 돌아가기</span>
+    </div>
+    <svg viewBox="0 0 620 420" width="100%">
+      <defs><marker id="mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8e9cae"/></marker></defs>
+      <rect x="10" y="20" width="270" height="380" rx="16" class="sb"/>
+      <text x="30" y="56" font-size="18" font-weight="800" fill="#58a6ff">부모 세션 · build</text>
+      <rect x="30" y="80" width="230" height="44" rx="8" class="sb2"/><text x="44" y="108" font-size="15">사용자: @explore 정리해 줘</text>
+      <rect x="30" y="140" width="230" height="64" rx="8" fill="#2c1d0e" stroke="#78481b"/><text x="44" y="166" font-size="15" fill="#ffa657" class="mono">task (@explore)</text><text x="44" y="190" font-size="14" fill="#8e9cae">결과 텍스트만 들어옴</text>
+      <rect x="30" y="220" width="230" height="44" rx="8" class="sb2"/><text x="44" y="248" font-size="15">build: 정리한 답</text>
+      <rect x="340" y="20" width="270" height="380" rx="16" fill="#121a24" stroke="#78481b" stroke-width="1.5"/>
+      <text x="360" y="56" font-size="18" font-weight="800" fill="#ffa657">자식 세션 · explore</text>
+      <rect x="360" y="80" width="230" height="40" rx="8" class="sb2"/><text x="374" y="106" font-size="14">부모가 쓴 지시문(prompt)</text>
+      <g class="mono" font-size="14"><text x="374" y="150">glob  minishop/**</text><text x="374" y="176">read  cart.py</text><text x="374" y="202">read  inventory.py</text><text x="374" y="228">read  report.py</text><text x="374" y="254" fill="#5a687a">…</text></g>
+      <rect x="360" y="280" width="230" height="44" rx="8" fill="#11261a" stroke="#2c6b3c"/><text x="374" y="308" font-size="14" fill="#7ee787">마지막 답 → 부모로</text>
+      <text x="374" y="370" font-size="13" fill="#ff7b72">입력창 잠김: 직접 지시 불가</text>
+      <path d="M260,170 L355,100" class="ar" marker-end="url(#mb)"/>
+      <path d="M358,302 L265,185" class="ar" stroke="#7ee787" marker-end="url(#mb)"/>
+    </svg>
+  </div>
+  <div class="callout y" style="margin-top:12px">자식 세션 입력창에 글을 쓰려고 하면 막힌다. 자식에게 더 시키려면 <b>부모에게</b> 부탁해야 한다 (LAB 5의 이어서 시키기).</div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-3 · 부모와 자식 비교</div>
+  <h2>파일을 읽은 흔적은 자식에만 남고, 부모는 결과 한 덩어리만 받는다</h2>
+  <div class="g2">
+    <div class="card c-blue"><div class="lbl">부모 세션에서 세어 보기</div>
+      <ul><li>도구 호출: <b>task 1개</b> (부모가 직접 read를 했다면 그것도 센다)</li>
+      <li>task 블록 안의 결과: 자식의 <b>마지막 답 텍스트</b></li>
+      <li>자식이 읽은 파일 내용은 부모 대화에 <b>없다</b></li></ul>
+    </div>
+    <div class="card c-orange"><div class="lbl">자식 세션에서 세어 보기</div>
+      <ul><li>도구 호출: glob, read, grep 등 <b>여러 개</b></li>
+      <li>첫 메시지: 사용자가 쓴 문장이 아니라 <b>부모가 새로 쓴 지시문</b></li>
+      <li>부모와 나눈 앞선 대화는 자식에게 <b>없다</b></li></ul>
+    </div>
+  </div>
+  <div class="g2" style="margin-top:22px">
+    <ul class="chk">
+      <li>자식 세션의 첫 메시지를 읽고, 내가 입력한 문장과 어떻게 다른지 적어 본다</li>
+      <li>자식 세션의 도구 호출 수와 부모 세션의 도구 호출 수를 비교한다</li>
+    </ul>
+    <div class="callout">이론 덱의 <b>"들어가는 것은 브리프, 나오는 것은 결과, 넘어가지 않는 것은 중간 과정"</b>을 화면으로 확인하는 단계다.</div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-4 · 이름 없이 맡기기</div>
+  <h2>이름을 안 붙이면, 부모가 description을 읽고 맡길 agent를 고른다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="ask">테스트가 왜 실패하는지 원인만 조사해 줘. 코드 조사는 subagent에게 맡기고, 아직 고치지는 마.</div>
+      <div class="ask">tests 폴더와 minishop 폴더를 각각 다른 subagent에게 동시에 조사시켜 줘.</div>
+      <p class="muted" style="font-size:18px">두 번째 문장은 LAB 5의 맛보기다. 한 번에 task가 두 개 뜨는지 본다.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+<pre class="xs"><span class="fn">terminal · description 확인</span>opencode debug agent explore | jq -r .description
+
+<span class="s">Fast agent specialized for exploring codebases.
+Use this when you need to quickly find files ...</span>
+
+opencode debug agent general | jq -r .description
+
+<span class="s">General-purpose agent for researching complex
+questions and executing multi-step tasks. Use this
+agent to execute multiple units of work in parallel.</span></pre>
+      <ul class="chk sm">
+        <li>어느 agent가 골라졌는지 task 블록 제목으로 확인했다</li>
+        <li>왜 그 agent가 골라졌는지 description 문장과 연결해 설명할 수 있다</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 1">
+  <div class="kicker o">1-5 · 정리</div>
+  <h2>explore는 고칠 수 없게, general은 고칠 수 있게 만들어져 있다</h2>
+  <div class="split" style="align-items:start">
+<pre class="xs"><span class="fn">terminal</span>opencode debug agent explore | jq .tools
+{ <span class="v">"read"</span>: <span class="ok">true</span>, <span class="v">"glob"</span>: <span class="ok">true</span>, <span class="v">"grep"</span>: <span class="ok">true</span>, <span class="v">"bash"</span>: <span class="ok">true</span>,
+  <span class="v">"edit"</span>: <span class="ng">false</span>, <span class="v">"write"</span>: <span class="ng">false</span>, <span class="v">"task"</span>: <span class="ng">false</span>, ... }
+
+opencode debug agent general | jq .tools
+{ <span class="v">"read"</span>: <span class="ok">true</span>, <span class="v">"bash"</span>: <span class="ok">true</span>, <span class="v">"edit"</span>: <span class="ok">true</span>, <span class="v">"write"</span>: <span class="ok">true</span>,
+  <span class="v">"task"</span>: <span class="ok">true</span>, <span class="v">"todowrite"</span>: <span class="ng">false</span>, ... }</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-green"><div class="lbl">LAB 1에서 확인한 것</div>
+        <ul><li><code>@이름</code>은 확실한 호출, 이름이 없으면 description으로 고른다</li>
+        <li>자식은 새 세션에서 부모가 쓴 지시문만 받고 시작한다</li>
+        <li>부모에게 돌아오는 것은 자식의 마지막 답뿐이다</li>
+        <li>내장 agent도 쓸 수 있는 도구가 정해져 있다 (<code>debug agent</code>로 확인)</li></ul>
+      </div>
+      <div class="callout y" style="font-size:19px">explore는 <code>bash</code>가 열려 있어서 명령은 실행할 수 있다. "읽기 전용"이라기보다 <b>파일 수정 도구가 없는</b> agent라고 보는 것이 정확하다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 2 ============ -->
+<section class="slide divider" data-sec="LAB 2">
+  <div class="num">2</div>
+  <div class="kicker o">LAB 2</div>
+  <h1>내 agent 만들기</h1>
+  <p class="lead">목표: 같은 일을 하는 subagent를 Markdown 파일과 <code>opencode.json</code> 두 방식으로 선언하고, 모델 없이 설정을 먼저 검사한다.</p>
+  <div class="toc"><span><b>2-1</b>Markdown으로 reviewer</span><span><b>2-2</b>JSON으로 tester</span><span><b>2-3</b>모델 없이 검사</span><span><b>2-4</b>불러 보기</span><span><b>2-5</b>description 바꿔 보기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-1 · Markdown 방식</div>
+  <h2>파일 이름이 agent 이름이 되고, 본문이 지시문이 된다</h2>
+  <div class="split" style="align-items:start;grid-template-columns:1.15fr 1fr">
+<pre class="sm"><span class="fn">.opencode/agents/reviewer.md</span><span class="k">---</span>
+<span class="v">description</span>: 코드를 읽고 버그와 위험을 찾아 보고한다.
+  리뷰나 점검을 부탁받으면 사용한다.
+<span class="v">mode</span>: subagent
+<span class="v">permission</span>:
+  <span class="v">edit</span>: deny
+  <span class="v">bash</span>: deny
+<span class="k">---</span>
+너는 읽기 전용 코드 리뷰어다.
+파일을 고치지 말고 발견한 문제만 보고한다.
+
+보고 형식:
+- 파일:줄 — 문제 한 줄 — 근거 한 줄
+- 마지막 줄에 "총 N건"</pre>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <table class="tight sm">
+        <tr><th>자리</th><th>뜻</th></tr>
+        <tr><td class="h">파일 이름</td><td><code>reviewer</code> → agent 이름</td></tr>
+        <tr><td class="h">description</td><td>부모가 맡길지 판단하는 문장 (필수)</td></tr>
+        <tr><td class="h">mode</td><td><code>subagent</code>: 다른 agent만 부를 수 있음</td></tr>
+        <tr><td class="h">permission</td><td>도구별 <code>allow</code> / <code>ask</code> / <code>deny</code></td></tr>
+        <tr><td class="h">본문</td><td>자식이 받는 시스템 지시문</td></tr>
+      </table>
+<pre class="xs"><span class="fn">terminal</span>mkdir -p .opencode/agents
+<span class="c"># 위 내용을 저장한 뒤</span></pre>
+      <p class="muted" style="font-size:17px">전역으로 두려면 <code>~/.config/opencode/agents/</code>에 둔다. 예전 이름인 <code>agent/</code> 폴더도 읽힌다.</p>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/#markdown">agents · markdown</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-2 · JSON 방식</div>
+  <h2>JSON에서는 키가 이름이 되고, 지시문은 파일로 빼 둘 수 있다</h2>
+  <div class="split" style="align-items:start;grid-template-columns:1.15fr 1fr">
+<pre class="sm"><span class="fn">opencode.json</span>{
+  <span class="v">"$schema"</span>: <span class="s">"https://opencode.ai/config.json"</span>,
+  <span class="v">"agent"</span>: {
+    <span class="v">"tester"</span>: {
+      <span class="v">"description"</span>: <span class="s">"테스트를 실행하고 실패 원인을 요약한다."</span>,
+      <span class="v">"mode"</span>: <span class="s">"subagent"</span>,
+      <span class="v">"prompt"</span>: <span class="s">"{file:./prompts/tester.md}"</span>,
+      <span class="v">"permission"</span>: {
+        <span class="v">"edit"</span>: <span class="s">"deny"</span>,
+        <span class="v">"bash"</span>: {
+          <span class="v">"*"</span>: <span class="s">"deny"</span>,
+          <span class="v">"python3 -m unittest*"</span>: <span class="s">"allow"</span>
+        }
+      }
+    }
+  }
+}</pre>
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">prompts/tester.md</span>너는 테스트 담당이다. python3 -m unittest -v 만
+실행할 수 있다. 실패한 테스트마다
+"테스트 이름 / 기대값 / 실제값 / 의심되는 파일"을
+한 줄로 보고하고, 코드는 고치지 않는다.</pre>
+      <div class="card c-blue"><div class="lbl">bash 규칙 읽는 법</div><p>위에서 아래로 읽고 <b>마지막으로 맞는 규칙</b>이 적용된다. 먼저 전부 막고(<code>*</code>: deny), 필요한 명령 하나만 연다.</p></div>
+      <p class="muted" style="font-size:17px">Markdown과 JSON에 같은 이름이 있으면 두 설정이 합쳐진다. 실습에서는 이름을 다르게 둔다.</p>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/#json">agents · json</a><a href="https://opencode.ai/docs/permissions/">permissions</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-3 · 모델 없이 검사</div>
+  <h2>모델을 부르기 전에 <code>debug agent</code>로 설정이 읽혔는지 본다</h2>
+  <div class="split" style="align-items:start">
+<pre class="xs"><span class="fn">terminal · 실제 출력 (1.18.34)</span>opencode agent list | grep -E '^\S'
+...
+<span class="gk">reviewer (subagent)</span>
+<span class="gk">tester (subagent)</span>
+
+opencode debug agent reviewer \
+  | jq '{name, mode, description}'
+{ <span class="v">"name"</span>: <span class="s">"reviewer"</span>, <span class="v">"mode"</span>: <span class="s">"subagent"</span>,
+  <span class="v">"description"</span>: <span class="s">"코드를 읽고 버그와 위험을 ..."</span> }
+
+opencode debug agent tester \
+  | jq -c '.permission[] | select(.permission=="bash")'
+{<span class="v">"permission"</span>:<span class="s">"bash"</span>,<span class="v">"pattern"</span>:<span class="s">"*"</span>,<span class="v">"action"</span>:<span class="r">"deny"</span>}
+{<span class="v">"permission"</span>:<span class="s">"bash"</span>,<span class="v">"pattern"</span>:<span class="s">"python3 -m unittest*"</span>,<span class="v">"action"</span>:<span class="gk">"allow"</span>}
+
+opencode debug agent tester | jq .tools.edit
+<span class="ng">false</span></pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-green"><div class="lbl">debug agent가 보여 주는 것</div>
+        <ul><li><code>permission</code>: 기본 규칙 뒤에 내가 쓴 규칙이 붙은 최종 목록</li>
+        <li><code>tools</code>: 그 결과 실제로 켜지는 도구 (true / false)</li>
+        <li><code>model</code>: 따로 정했을 때만 나온다</li>
+        <li><code>prompt</code>: 본문이나 파일에서 읽은 지시문</li></ul>
+      </div>
+      <ul class="chk sm">
+        <li><code>agent list</code>에 reviewer, tester가 보인다</li>
+        <li>reviewer의 <code>tools.edit</code>, <code>tools.bash</code>가 false다</li>
+        <li>tester의 <code>prompt</code>에 prompts/tester.md 내용이 들어 있다</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-4 · 불러 보기</div>
+  <h2>직접 부르기와 알아서 고르게 하기를 둘 다 해 본다</h2>
+  <div class="g2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card c-orange" style="padding:16px 20px"><div class="lbl">① 이름으로 직접</div></div>
+      <div class="ask sm">@reviewer minishop/cart.py 를 리뷰해 줘</div>
+      <div class="ask sm">@tester 테스트를 돌려서 실패 원인을 알려 줘</div>
+      <ul class="chk sm"><li>reviewer의 보고가 본문에서 정한 형식("파일:줄 — …", "총 N건")을 따른다</li></ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card c-blue" style="padding:16px 20px"><div class="lbl">② 이름 없이</div></div>
+      <div class="ask sm">inventory.py 를 점검해 줘. 직접 읽지 말고 알맞은 subagent에게 맡겨.</div>
+      <div class="ask sm">테스트 결과를 확인해 줘. 알맞은 subagent에게 맡겨.</div>
+      <ul class="chk sm"><li>"점검"은 reviewer, "테스트"는 tester에게 갔는지 task 블록 제목으로 확인했다</li></ul>
+    </div>
+  </div>
+  <div class="callout b" style="margin-top:22px">@ 목록에는 <code>mode</code>가 <code>subagent</code>나 <code>all</code>인 agent가 보인다. 새로 만든 agent가 안 보이면 OpenCode를 다시 시작한다.</div>
+</section>
+
+<section class="slide" data-sec="LAB 2">
+  <div class="kicker o">2-5 · description 실험</div>
+  <h2>description을 흐리게 쓰면 알아서 맡기는 일이 줄어든다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">실험 A · 흐린 description</span><span class="v">description</span>: 도와주는 agent</pre>
+<pre class="xs"><span class="fn">실험 B · 언제 쓰는지까지 적은 description</span><span class="v">description</span>: 코드를 읽고 버그와 위험을 찾아 보고한다.
+  리뷰, 점검, 버그 찾기를 부탁받으면 반드시 사용한다.</pre>
+      <div class="ask sm">cart.py 에 문제 없는지 봐 줘. 알맞은 subagent가 있으면 맡겨.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>실험</th><th>3번 요청했을 때 reviewer가 불린 횟수</th></tr>
+        <tr><td class="h">A</td><td>__ / 3</td></tr>
+        <tr><td class="h">B</td><td>__ / 3</td></tr>
+      </table>
+      <p class="muted" style="font-size:18px">매번 새 세션(<code>/new</code>)에서 같은 문장을 보낸다. 모델에 따라 결과가 다르니 숫자는 직접 채운다.</p>
+      <div class="card c-green"><div class="lbl">정리</div><p>description은 사람이 읽는 설명이 아니라 <b>부모 모델이 읽고 고르는 기준</b>이다. "무엇을 하는지"와 "언제 쓰는지"를 함께 적는다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 3 ============ -->
+<section class="slide divider" data-sec="LAB 3">
+  <div class="num">3</div>
+  <div class="kicker o">LAB 3</div>
+  <h1>권한과 모델</h1>
+  <p class="lead">목표: 막힌 동작이 화면에 어떻게 보이는지, 부모와 자식의 권한과 모델이 어떻게 정해지는지 확인한다.</p>
+  <div class="toc"><span><b>3-1</b>막힌 일 시키기</span><span><b>3-2</b>ask로 바꾸기</span><span><b>3-3</b>모델 지정</span><span><b>3-4</b>부모 권한 물려받기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-1 · 막힌 일 시키기</div>
+  <h2>deny된 도구는 자식에게 아예 주어지지 않는다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="ask">@reviewer cart.py 의 할인 계산 버그를 직접 고쳐 줘</div>
+      <div class="ask">@tester 테스트 돌리기 전에 pip install pytest 부터 해 줘</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-red"><div class="lbl">예상되는 결과</div>
+        <ul><li>reviewer: <code>edit</code> 도구가 없으므로 고치지 못하고, 고칠 방법을 <b>글로</b> 보고한다</li>
+        <li>tester: <code>pip install</code>은 규칙에 맞지 않아 거부되고, unittest만 실행한다</li></ul>
+      </div>
+      <ul class="chk sm">
+        <li>작업 후 <code>git status</code>에 바뀐 파일이 없다</li>
+        <li>자식 세션에 들어가서 거부된 도구 호출이 어떻게 보이는지 확인했다</li>
+      </ul>
+<pre class="xs"><span class="fn">terminal</span>git status --short   <span class="c"># 아무것도 안 나와야 정상</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-2 · ask로 바꾸기</div>
+  <h2><code>ask</code>로 바꾸면 자식이 쓰기 전에 나에게 묻는다</h2>
+  <div class="split" style="align-items:start">
+<pre class="sm"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">permission</span>:
+  <span class="v">edit</span>: <span class="y">ask</span>     <span class="c"># deny → ask</span>
+  <span class="v">bash</span>: deny</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="ask sm">@reviewer cart.py 의 할인 계산 버그를 직접 고쳐 줘</div>
+      <div class="card c-yellow"><div class="lbl">볼 것</div>
+        <ul><li>자식이 파일을 고치려는 순간 승인 요청이 뜬다</li>
+                <li>거절하면 자식은 그 결과를 받아 다른 방법을 찾거나 보고로 끝낸다</li></ul>
+      </div>
+      <ul class="chk sm">
+        <li><code>debug agent reviewer</code>에서 edit 규칙이 <code>ask</code>로 바뀌었다</li>
+        <li>한 번은 거절, 한 번은 승인해 보고 결과를 비교했다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout y" style="margin-top:20px">실습이 끝나면 <code>edit: deny</code>로 되돌린다. 리뷰어는 고치지 않는 역할로 두는 편이 이후 랩에서 결과를 읽기 쉽다.</div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-3 · 모델 지정</div>
+  <h2>모델을 안 정하면 부른 쪽의 모델을 그대로 쓴다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">.opencode/agents/reviewer.md (일부)</span><span class="v">mode</span>: subagent
+<span class="v">model</span>: anthropic/claude-haiku-4-5   <span class="c"># 0-1에서 메모한 작은 모델</span></pre>
+<pre class="xs"><span class="fn">terminal · 실제 출력</span>opencode debug agent reviewer | jq -c .model
+{<span class="v">"providerID"</span>:<span class="s">"anthropic"</span>,<span class="v">"modelID"</span>:<span class="s">"claude-haiku-4-5"</span>}
+
+opencode debug agent explore | jq -c .model
+<span class="c">null   ← 안 정했으므로 부른 쪽 모델을 쓴다</span></pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>자식 모델이 정해지는 순서</th></tr>
+        <tr><td>① agent 설정의 <code>model</code></td></tr>
+        <tr><td>② 없으면 task를 부른 부모 메시지의 모델</td></tr>
+      </table>
+      <div class="ask sm">@reviewer report.py 를 리뷰해 줘</div>
+      <ul class="chk sm">
+        <li>자식 세션 화면에 작은 모델 이름이 보인다</li>
+        <li>부모는 원래 모델 그대로다</li>
+        <li><code>opencode stats</code>로 모델별 사용량을 확인했다</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 3">
+  <div class="kicker o">3-4 · 부모 권한 물려받기</div>
+  <h2>부모에서 막은 것은 자식에서도 막힌다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">opencode.json (일부) · 부모 build에 bash 금지 추가</span>{
+  <span class="v">"agent"</span>: {
+    <span class="v">"build"</span>: {
+      <span class="v">"permission"</span>: { <span class="v">"bash"</span>: <span class="s">"deny"</span> }
+    },
+    <span class="v">"tester"</span>: { ... }
+  }
+}</pre>
+      <div class="ask sm">@tester 테스트를 돌려서 실패 원인을 알려 줘</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-blue"><div class="lbl">공식 문서 기준</div><p>자식 세션은 부모 세션의 <b>deny 규칙</b>과 작업 폴더 밖 접근 규칙(<code>external_directory</code>)을 물려받는다. 부모가 허락한 것을 자식이 자동으로 얻지는 않는다.</p></div>
+      <ul class="chk sm">
+        <li>tester 설정은 unittest를 허락하지만, 부모가 bash를 막았을 때 실제로 실행되는지 확인했다</li>
+        <li>결과를 보고 "권한은 부모를 넘을 수 없다"를 내 말로 적어 본다</li>
+      </ul>
+      <div class="callout y" style="font-size:18px">확인 후 build의 bash 금지는 지운다. 남겨 두면 이후 랩에서 테스트가 실행되지 않는다.</div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/permissions/">permissions</a><a href="https://opencode.ai/docs/agents/#permissions">agents · permissions</a></div>
+</section>
+
+<!-- ============ LAB 4 ============ -->
+<section class="slide divider" data-sec="LAB 4">
+  <div class="num">4</div>
+  <div class="kicker o">LAB 4</div>
+  <h1>위임 범위 정하기</h1>
+  <p class="lead">목표: 누가 누구에게 맡길 수 있는지를 설정으로 제한한다. 맡길 대상, agent 종류(mode), 중첩 깊이 세 가지다.</p>
+  <div class="toc"><span><b>4-1</b>permission.task</span><span><b>4-2</b>mode 세 가지</span><span><b>4-3</b>중첩 깊이</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 4">
+  <div class="kicker o">4-1 · permission.task</div>
+  <h2><code>permission.task</code>로 부모가 맡길 수 있는 대상을 좁힌다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">opencode.json (일부)</span><span class="v">"build"</span>: {
+  <span class="v">"permission"</span>: {
+    <span class="v">"task"</span>: {
+      <span class="v">"*"</span>: <span class="s">"deny"</span>,
+      <span class="v">"reviewer"</span>: <span class="s">"allow"</span>,
+      <span class="v">"explore"</span>: <span class="s">"allow"</span>
+    }
+  }
+}</pre>
+<pre class="xs"><span class="fn">terminal · 실제 출력</span>opencode debug agent build \
+  | jq -c '.permission[] | select(.permission=="task")'
+{<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"*"</span>,<span class="v">"action"</span>:<span class="r">"deny"</span>}
+{<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"reviewer"</span>,<span class="v">"action"</span>:<span class="gk">"allow"</span>}
+{<span class="v">"permission"</span>:<span class="s">"task"</span>,<span class="v">"pattern"</span>:<span class="s">"explore"</span>,<span class="v">"action"</span>:<span class="gk">"allow"</span>}</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">테스트를 돌려 줘. 알맞은 subagent에게 맡겨.</div>
+      <div class="ask sm">@general 테스트를 돌려 줘</div>
+      <div class="card c-orange"><div class="lbl">볼 것</div>
+        <ul><li>첫 문장: tester와 general이 막혀 있어 build가 다른 방법을 고른다</li>
+        <li>둘째 문장: 공식 문서는 사용자가 <code>@</code>로 직접 부르는 것은 이 규칙과 상관없이 된다고 한다. 실제로 그런지 본다</li></ul>
+      </div>
+      <ul class="chk sm"><li>"모델이 고르는 위임"과 "내가 직접 부르는 위임"이 다르게 막히는 것을 확인했다</li></ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/#task-permissions">agents · task permissions</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 4">
+  <div class="kicker o">4-2 · mode 세 가지</div>
+  <h2><code>mode</code>는 이 agent를 누가 쓸 수 있는지를 정한다</h2>
+  <div class="split" style="align-items:start">
+    <table class="sm">
+      <tr><th>mode</th><th>Tab 전환</th><th>@ 호출 · task</th><th><code>run --agent</code></th></tr>
+      <tr><td class="h">primary</td><td class="ok">보임</td><td class="ng">안 됨</td><td class="ok">됨</td></tr>
+      <tr><td class="h">subagent</td><td class="ng">안 보임</td><td class="ok">됨</td><td class="ng">기본 agent로 대체</td></tr>
+      <tr><td class="h">all (기본값)</td><td class="ok">보임</td><td class="ok">됨</td><td class="ok">됨</td></tr>
+    </table>
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">terminal · 실제 경고 문구</span>opencode run --agent reviewer "cart.py 리뷰"
+<span class="y">! agent "reviewer" is a subagent, not a primary
+  agent. Falling back to default agent</span></pre>
+      <ol class="num">
+        <li>reviewer의 <code>mode</code>를 <code>all</code>로 바꾼다</li>
+        <li>OpenCode를 다시 열고 <b>Tab</b>을 눌러 reviewer가 나오는지 본다</li>
+        <li>같은 <code>run --agent</code> 명령에서 경고가 사라지는지 본다</li>
+      </ol>
+      <p class="muted" style="font-size:17px"><code>hidden: true</code>는 @ 자동완성 목록에서만 숨긴다. 모델은 여전히 task로 부를 수 있다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 4">
+  <div class="kicker o">4-3 · 중첩 깊이</div>
+  <h2>기본값에서는 subagent가 다시 subagent를 부를 수 없다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">@general report.py 의 TODO를 조사해 줘. 그 안에서 explore subagent에게 data 폴더 조사를 따로 맡겨.</div>
+<pre class="xs"><span class="fn">자식(general) 안에서 task를 부르면 · 실제 오류 문구</span><span class="r">Subagent depth limit reached (1). Increase
+"subagent_depth" to allow nested subagents.</span></pre>
+<pre class="sm"><span class="fn">opencode.json (일부)</span>{
+  <span class="v">"subagent_depth"</span>: 2,
+  <span class="v">"agent"</span>: { ... }
+}</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>subagent_depth</th><th>뜻</th></tr>
+        <tr><td class="h">1 (기본)</td><td>부모 → 자식까지. 자식은 위임 불가</td></tr>
+        <tr><td class="h">2</td><td>자식이 한 단계 더 맡길 수 있음 (손자)</td></tr>
+      </table>
+      <ul class="chk sm">
+        <li>기본값에서 위 오류가 나는 것을 확인했다 (자식 세션 안에서 보임)</li>
+        <li>2로 올린 뒤 자식 세션 안에 또 자식 세션이 생기는 것을 확인했다</li>
+      </ul>
+      <div class="callout y" style="font-size:18px">확인 후 1로 되돌린다. 깊이가 늘면 결과가 두 번 요약되어 정보가 더 많이 깎인다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 5 ============ -->
+<section class="slide divider" data-sec="LAB 5">
+  <div class="num">5</div>
+  <div class="kicker o">LAB 5</div>
+  <h1>병렬 위임과 결과 받기</h1>
+  <p class="lead">목표: 모듈 세 개를 동시에 맡기고, 결과를 정해진 형식의 파일로 받고, 판정은 테스트로 한다. 끝난 자식에게 이어서 일을 시켜 본다.</p>
+  <div class="toc"><span><b>5-1</b>브리프 쓰기</span><span><b>5-2</b>동시에 맡기기</span><span><b>5-3</b>결과 확인과 판정</span><span><b>5-4</b>이어서 시키기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-1 · 브리프 쓰기</div>
+  <h2>자식은 앞선 대화를 모르므로, 브리프 하나로 일이 끝나야 한다</h2>
+  <div class="split" style="align-items:start;grid-template-columns:1.2fr 1fr">
+<pre class="xs"><span class="fn">~/minishop/brief.md 로 저장 · <span class="fn">brief.md · 모듈마다 &lt;대상&gt;만 바꿔 쓴다</span>lt;대상<span class="fn">brief.md · 모듈마다 &lt;대상&gt;만 바꿔 쓴다</span>gt;만 바꿔 쓴다</span><span class="gk">## 목표</span>
+minishop/&lt;대상&gt;.py 의 버그나 미완성 부분을 찾아 고친다.
+
+<span class="gk">## 범위</span>
+- 고쳐도 되는 파일: minishop/&lt;대상&gt;.py 하나
+- tests/ 와 다른 모듈은 읽기만 한다
+
+<span class="gk">## 완료 조건</span>
+- python3 -m unittest tests.test_&lt;대상&gt; 이 통과한다
+- 고칠 것이 없으면 고치지 않고 그렇게 보고한다
+
+<span class="gk">## 결과 형식</span>
+reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
+상태: 고침 | 문제 없음 | 막힘
+원인: (한 줄)
+바꾼 곳: 파일:줄
+테스트: 통과 N / 실패 N</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-green"><div class="lbl">브리프의 네 칸</div>
+        <ul><li><b>목표</b>: 무엇을 끝내야 하나</li>
+        <li><b>범위</b>: 어디까지 손대도 되나 (동시 작업 충돌 방지)</li>
+        <li><b>완료 조건</b>: 끝났는지 무엇으로 판단하나</li>
+        <li><b>결과 형식</b>: 무엇을 어디에 남기나</li></ul>
+      </div>
+      <p class="muted" style="font-size:18px">범위를 파일 하나로 나누어 두는 것이 중요하다. 세 자식이 같은 파일을 동시에 고치면 서로의 수정을 덮어쓴다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-2 · 동시에 맡기기</div>
+  <h2>한 번의 답에서 task를 여러 개 부르면 동시에 돈다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="ask sm">brief.md 를 읽고, 대상을 cart, inventory, report 로 바꾼 브리프 세 개를 만들어 general subagent 세 개에게 동시에 맡겨 줘. 셋이 끝나면 reports/ 의 파일을 모아 표 하나로 정리해 줘.</div>
+      <ul class="chk sm">
+        <li>task 블록 세 개가 거의 동시에 시작된다</li>
+        <li><code>ctrl+x ↓</code> 후 <code>←</code> <code>→</code>로 세 자식 세션을 오갈 수 있다</li>
+        <li>각 자식의 첫 메시지에 자기 대상만 적혀 있다</li>
+      </ul>
+    </div>
+    <svg viewBox="0 0 620 400" width="100%">
+      <defs><marker id="mc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8e9cae"/></marker></defs>
+      <rect x="10" y="160" width="140" height="80" rx="14" class="sb"/><text x="80" y="196" text-anchor="middle" font-size="18" font-weight="800" fill="#58a6ff">build</text><text x="80" y="220" text-anchor="middle" font-size="13">브리프 3개</text>
+      <g font-size="15">
+        <rect x="230" y="30" width="170" height="70" rx="12" fill="#2c1d0e" stroke="#78481b"/><text x="315" y="62" text-anchor="middle" fill="#ffa657" class="mono">general #1</text><text x="315" y="84" text-anchor="middle">cart.py</text>
+        <rect x="230" y="165" width="170" height="70" rx="12" fill="#2c1d0e" stroke="#78481b"/><text x="315" y="197" text-anchor="middle" fill="#ffa657" class="mono">general #2</text><text x="315" y="219" text-anchor="middle">inventory.py</text>
+        <rect x="230" y="300" width="170" height="70" rx="12" fill="#2c1d0e" stroke="#78481b"/><text x="315" y="332" text-anchor="middle" fill="#ffa657" class="mono">general #3</text><text x="315" y="354" text-anchor="middle">report.py</text>
+        <rect x="470" y="140" width="140" height="120" rx="12" fill="#11261a" stroke="#2c6b3c"/><text x="540" y="172" text-anchor="middle" fill="#7ee787" class="mono">reports/</text><text x="540" y="200" text-anchor="middle" class="mono" font-size="13">cart.md</text><text x="540" y="222" text-anchor="middle" class="mono" font-size="13">inventory.md</text><text x="540" y="244" text-anchor="middle" class="mono" font-size="13">report.md</text>
+      </g>
+      <path d="M150,190 L225,70" class="ar" marker-end="url(#mc)"/><path d="M150,200 L225,200" class="ar" marker-end="url(#mc)"/><path d="M150,210 L225,330" class="ar" marker-end="url(#mc)"/>
+      <path d="M400,65 L465,165" class="ar" stroke="#7ee787" marker-end="url(#mc)"/><path d="M400,200 L465,200" class="ar" stroke="#7ee787" marker-end="url(#mc)"/><path d="M400,335 L465,235" class="ar" stroke="#7ee787" marker-end="url(#mc)"/>
+    </svg>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-3 · 결과 확인과 판정</div>
+  <h2>자식의 보고를 믿지 말고, 테스트로 판정한다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="sm"><span class="fn">terminal</span><span class="c"># 1. 결과 파일이 형식대로 왔는지</span>
+head -n 4 reports/*.md
+
+<span class="c"># 2. 실제로 무엇이 바뀌었는지</span>
+git diff --stat
+
+<span class="c"># 3. 최종 판정은 테스트로</span>
+python3 -m unittest -v</pre>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <ul class="chk sm">
+        <li>reports/ 에 파일 세 개가 있고 모두 네 줄 형식이다</li>
+        <li><code>git diff --stat</code>에 각 자식이 자기 범위 파일만 고쳤다</li>
+        <li>테스트가 모두 통과한다</li>
+        <li>report.py 담당 자식이 TODO(top_products)를 어떻게 처리했는지 확인했다. 테스트가 없는 부분이다</li>
+      </ul>
+      <div class="callout r" style="font-size:19px">report.py의 TODO는 테스트가 없어서 "통과"만으로는 맞는지 알 수 없다. 자식이 <b>테스트까지 추가했는지</b>, 아니면 "문제 없음"으로 넘겼는지가 브리프 품질을 보여 준다.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-sec="LAB 5">
+  <div class="kicker o">5-4 · 이어서 시키기</div>
+  <h2>task 결과에 붙은 id로 같은 자식에게 이어서 일을 시킬 수 있다</h2>
+  <div class="split" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+<pre class="xs"><span class="fn">부모가 받는 task 결과의 모양</span><span class="k">&lt;task id="ses_..." state="completed"&gt;</span>
+<span class="gk">&lt;task_result&gt;</span>
+상태: 고침
+원인: 할인율을 퍼센트가 아니라 금액으로 뺐다
+...
+<span class="gk">&lt;/task_result&gt;</span>
+<span class="k">&lt;/task&gt;</span></pre>
+      <div class="ask sm">report.py 를 맡았던 subagent에게, 같은 task_id로 이어서 top_products 테스트를 tests/test_report.py 에 추가하라고 해 줘.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-blue"><div class="lbl">task_id가 하는 일</div><p><code>id</code>는 자식 세션의 id다. 부모가 task를 부를 때 이 값을 <code>task_id</code>로 넘기면 <b>새 세션이 아니라 그 세션</b>에서 이어진다. 자식은 앞에서 읽은 파일과 대화를 기억한다.</p></div>
+      <ul class="chk sm">
+        <li>새 자식 세션이 생기지 않고, 기존 report 담당 세션에 메시지가 이어 붙었다</li>
+        <li>자식이 report.py를 다시 읽지 않고 바로 테스트를 썼는지 확인했다</li>
+      </ul>
+      <p class="muted" style="font-size:17px">새로 맡기기와 이어서 시키기 중 무엇이 나은지는 앞의 맥락이 도움이 되는지로 정한다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 6 ============ -->
+<section class="slide divider" data-sec="LAB 6">
+  <div class="num">6</div>
+  <div class="kicker o">LAB 6</div>
+  <h1>터미널에서 실행하기</h1>
+  <p class="lead">목표: 화면(TUI) 없이 <code>opencode run</code> 한 줄로 위임을 실행하고, 어떤 subagent가 불렸는지 JSON 출력으로 확인한다.</p>
+  <div class="toc"><span><b>6-1</b>run으로 위임</span><span><b>6-2</b>JSON으로 task 보기</span></div>
+</section>
+
+<section class="slide" data-sec="LAB 6">
+  <div class="kicker o">6-1 · run으로 위임</div>
+  <h2><code>opencode run</code>도 TUI와 같은 agent와 설정을 쓴다</h2>
+  <div class="split" style="align-items:start">
+<pre class="sm"><span class="fn">terminal · ~/minishop</span><span class="c"># 처음 상태로 되돌리고 시작</span>
+git checkout -- . &amp;&amp; git clean -fd
+
+<span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
+opencode run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
+
+<span class="c"># 방금 세션에 이어서 묻기</span>
+opencode run -c "같은 리뷰를 inventory.py 에도 해 줘"
+
+<span class="c"># primary(또는 all) agent로 직접 실행</span>
+opencode run --agent plan "minishop 버그 수정 계획만 세워 줘"</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-orange"><div class="lbl">TUI와 다른 점</div>
+        <ul><li>자식 세션을 들어가서 볼 수 없다. 대신 task가 시작될 때 한 줄 표시가 나온다</li>
+        <li><code>ask</code> 규칙에 걸리면 <code>permission requested: … auto-rejecting</code>을 출력하고 <b>자동 거절</b>한다. <code>--auto</code>를 주면 deny가 아닌 것은 모두 자동 승인된다</li>
+        <li><code>--agent</code>에는 subagent를 줄 수 없다 (LAB 4-2)</li></ul>
+      </div>
+      <ul class="chk sm"><li><code>opencode session list</code>에 방금 실행한 세션이 보인다</li></ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/cli/#run">cli · run</a></div>
+</section>
+
+<section class="slide" data-sec="LAB 6">
+  <div class="kicker o">6-2 · JSON으로 task 보기</div>
+  <h2><code>--format json</code>으로 받으면 어떤 자식이 불렸는지 스크립트로 셀 수 있다</h2>
+  <div class="split" style="align-items:start">
+<pre class="xs"><span class="fn">terminal</span>opencode run --format json \
+  "tests 와 minishop 폴더를 explore subagent 두 개에게 동시에 조사시켜 줘" \
+  &gt; run.jsonl
+
+<span class="c"># 부모가 부른 task만 골라 보기</span>
+jq -c 'select(.type=="tool_use" and .part.tool=="task")
+       | .part.state.input
+       | {subagent_type, description}' run.jsonl
+
+<span class="c"># 출력 예</span>
+{<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"tests 폴더 조사"</span>}
+{<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"minishop 폴더 조사"</span>}</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card c-blue"><div class="lbl">JSON 출력에 담기는 것</div>
+        <ul><li>한 줄에 사건 하나. 끝난 도구 호출은 <code>type: "tool_use"</code></li>
+        <li><b>부모 세션의 사건만</b> 나온다. 자식 안의 read, grep은 안 나온다</li>
+        <li>task의 <code>state.output</code>에 <code>&lt;task_result&gt;</code>가 들어 있다</li></ul>
+      </div>
+      <ul class="chk sm">
+        <li>task 두 개가 잡혔다</li>
+        <li><code>state.output</code>에서 자식 세션 id(<code>ses_...</code>)를 찾았다</li>
+      </ul>
+      <p class="muted" style="font-size:17px">이 방법으로 LAB 2-5의 description 실험을 여러 번 자동으로 돌려 셀 수 있다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 마무리 ============ -->
+<section class="slide" data-sec="마무리">
+  <div class="kicker o">Summary</div>
+  <h2>OpenCode 실습에서 직접 확인한 것</h2>
+  <div class="g3">
+    <div class="card c-orange"><div class="lbl">선언</div><ul>
+      <li><code>.opencode/agents/이름.md</code> 또는 <code>opencode.json</code>의 <code>agent</code></li>
+      <li>필수는 description, 나머지는 선택</li>
+      <li><code>debug agent</code>로 모델 없이 검사</li></ul></div>
+    <div class="card c-blue"><div class="lbl">제한</div><ul>
+      <li><code>permission</code>: 도구별 allow / ask / deny, 마지막 일치 규칙</li>
+      <li><code>permission.task</code>: 맡길 대상</li>
+      <li><code>mode</code>, <code>subagent_depth</code>: 누가, 몇 단계까지</li></ul></div>
+    <div class="card c-green"><div class="lbl">운용</div><ul>
+      <li>브리프 네 칸: 목표, 범위, 완료 조건, 결과 형식</li>
+      <li>여러 task를 한 번에 → 동시 실행</li>
+      <li>판정은 테스트로, 이어서 시킬 땐 task_id</li></ul></div>
+  </div>
+  <div class="callout" style="margin-top:26px">다음 실습은 같은 순서를 <b>Claude Code</b>로 옮긴다. 샘플 프로젝트 minishop을 그대로 쓰므로, 두 도구에서 같은 요청이 어떻게 다르게 처리되는지 비교할 수 있다.</div>
+</section>
+
+<section class="slide" data-sec="마무리">
+  <div class="kicker o">Appendix · 정답</div>
+  <h2>minishop에 숨겨 둔 문제 세 가지</h2>
+  <div class="g3">
+    <div class="card c-red"><div class="lbl">버그 1 · cart.py</div>
+<pre class="xs">return subtotal - discount_percent</pre>
+      <p>할인율(%)을 금액처럼 뺐다. <code>subtotal * (100 - discount_percent) / 100</code>이 맞다. <code>test_total_with_discount</code>가 실패한다.</p></div>
+    <div class="card c-red"><div class="lbl">버그 2 · inventory.py</div>
+<pre class="xs">if self.available(name) &gt; qty:</pre>
+      <p>남은 수량을 전부 예약하는 경우를 막는다. <code>&gt;=</code>가 맞다. <code>test_reserve_all_remaining</code>이 실패한다.</p></div>
+    <div class="card c-yellow"><div class="lbl">미완성 · report.py</div>
+<pre class="xs">def top_products(orders, n=3):
+    raise NotImplementedError</pre>
+      <p>판매 수량 순 상위 n개. 테스트가 없어서 테스트 실행만으로는 드러나지 않는다. 기대값: mouse 10, cable 10, keyboard 3.</p></div>
+  </div>
+  <div class="callout y" style="margin-top:22px">mouse와 cable이 10개로 같다. 같은 수량일 때 순서를 어떻게 정할지는 정해져 있지 않으므로, 자식이 이 점을 보고했는지도 확인해 볼 만하다.</div>
+</section>
+
+<section class="slide" data-sec="마무리">
+  <div class="kicker o">Appendix · 명령 모음</div>
+  <h2>실습에 쓴 명령과 설정 한눈에 보기</h2>
+  <div class="g2">
+<pre class="xs"><span class="fn">terminal</span><span class="c"># agent 목록과 설정 검사 (모델 호출 없음)</span>
+opencode agent list
+opencode debug agent &lt;이름&gt;
+opencode debug agent &lt;이름&gt; | jq .tools
+opencode agent create   <span class="c"># 대화형으로 agent 파일 만들기</span>
+
+<span class="c"># 실행</span>
+opencode                         <span class="c"># TUI</span>
+opencode run "..."               <span class="c"># 한 번 실행</span>
+opencode run -c "..."            <span class="c"># 직전 세션에 이어서</span>
+opencode run --agent plan "..."  <span class="c"># primary/all agent로</span>
+opencode run --format json "..." <span class="c"># 사건을 JSON 줄로</span>
+
+<span class="c"># 기록</span>
+opencode session list
+opencode export &lt;세션 id&gt;
+opencode stats</pre>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <table class="tight sm">
+        <tr><th>설정</th><th>위치</th><th>LAB</th></tr>
+        <tr><td class="h">description · mode</td><td>agent 정의</td><td>2, 4</td></tr>
+        <tr><td class="h">permission</td><td>agent 정의</td><td>2, 3</td></tr>
+        <tr><td class="h">model</td><td>agent 정의</td><td>3</td></tr>
+        <tr><td class="h">hidden</td><td>agent 정의</td><td>4</td></tr>
+        <tr><td class="h">permission.task</td><td>부르는 쪽 agent</td><td>4</td></tr>
+        <tr><td class="h">subagent_depth</td><td>opencode.json 최상위</td><td>4</td></tr>
+      </table>
+      <div class="keys"><kbd>ctrl+x ↓</kbd><span>자식 세션으로</span><kbd>← →</kbd><span>자식 세션 사이 이동</span><kbd>↑</kbd><span>부모로</span><kbd>Tab</kbd><span>primary agent 전환</span></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/">agents</a><a href="https://opencode.ai/docs/permissions/">permissions</a><a href="https://opencode.ai/docs/cli/">cli</a><a href="https://opencode.ai/docs/config/">config</a></div>
+</section>
+
+<div class="bar" id="bar"></div>
+</div>
+<nav id="ov" aria-label="슬라이드 목차"></nav>
+<script>
+(()=>{
+const stage=document.getElementById('stage');
+const S=[...stage.querySelectorAll('.slide')];
+const SECS=['시작','LAB 0','LAB 1','LAB 2','LAB 3','LAB 4','LAB 5','LAB 6','마무리'];
+let i=0;
+S.forEach((el,n)=>{
+  const top=document.createElement('div');top.className='chrome-top';
+  top.innerHTML=SECS.map(s=>`<span class="${s===el.dataset.sec?'on':''}">${s}</span>`).join('');
+  el.prepend(top);
+  const no=document.createElement('div');no.className='pageno';no.textContent=String(n+1).padStart(2,'0')+' / '+S.length;el.appendChild(no);
+});
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+const ov=document.getElementById('ov');
+ov.innerHTML=S.map((el,n)=>{const h=el.querySelector('h1,h2');const t=h?h.textContent.replace(/\s+/g,' ').trim():'';return `<a href="#${n+1}" data-n="${n}"><b>${String(n+1).padStart(2,'0')} · ${el.dataset.sec||''}</b>${t}</a>`}).join('');
+ov.addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();go(+a.dataset.n);ov.classList.remove('on');});
+function go(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((el,k)=>el.classList.toggle('active',k===i));
+  document.getElementById('bar').style.width=((i+1)/S.length*100)+'%';
+  [...ov.children].forEach((a,k)=>a.classList.toggle('cur',k===i));
+  if(location.hash!=='#'+(i+1))history.replaceState(null,'','#'+(i+1));}
+addEventListener('keydown',e=>{
+  if(e.key==='o'||e.key==='O'){ov.classList.toggle('on');return;}
+  if(e.key==='Escape'){ov.classList.remove('on');return;}
+  if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.();return;}
+  if(ov.classList.contains('on'))return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(i+1)}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(S.length-1);});
+stage.addEventListener('click',e=>{if(e.target.closest('a'))return;const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width;if(x>.6)go(i+1);else if(x<.25)go(i-1);});
+let tx=null;addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)go(i+(d<0?1:-1));tx=null;});
+addEventListener('hashchange',()=>{const h=parseInt(location.hash.slice(1));if(!isNaN(h)&&h-1!==i)go(h-1);});
+const h=parseInt(location.hash.slice(1));go(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>
