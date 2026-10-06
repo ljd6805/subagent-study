@@ -542,6 +542,7 @@ opencode --pure</pre>
       <p class="muted" style="font-size:18px">두 번째 문장은 LAB 5의 맛보기다. 한 번에 task가 두 개 뜨는지 본다.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
+<div class="card c-blue" style="padding:14px 18px;gap:6px"><div class="lbl">이 명령으로 보는 것</div><p style="font-size:16.5px;line-height:1.5">부모가 맡길 agent를 고를 때 읽는 <b>설명문(description)</b>이다. 플러그인이나 내 설정으로 바뀔 수 있으니, 부모가 실제로 보는 문장을 터미널에서 직접 확인한다.</p></div>
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · description 확인</span></div><pre class="xs" data-os="unix">opencode debug agent explore | jq -r .description
 
 <span class="s">Fast agent specialized for exploring codebases.
