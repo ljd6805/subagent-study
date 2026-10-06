@@ -1097,7 +1097,7 @@ FAIL 1건 · 상세는 output/result.json</pre>
   <div class="kicker" style="color:var(--orange)">OpenCode 2 · Declare</div>
   <h2>JSON에 <span class="orange">모아 쓰거나</span>, Markdown 파일로 <span class="orange">나눠 쓴다</span></h2>
   <div class="split" style="grid-template-columns:1fr 1fr;align-items:stretch">
-<pre class="sm"><span class="fn">opencode.json</span>{
+<pre class="sm"><span class="fn">프로젝트 루트 / opencode.json</span>{
   <span class="k">"agent"</span>: {
     <span class="k">"review"</span>: {
       <span class="k">"description"</span>: <span class="s">"Reviews code"</span>,
@@ -1113,7 +1113,7 @@ FAIL 1건 · 상세는 output/result.json</pre>
   }
 }</pre>
     <div style="display:flex;flex-direction:column;gap:16px">
-<pre class="sm"><span class="fn">.opencode/agents/review.md</span><span class="c">---</span>
+<pre class="sm"><span class="fn">프로젝트 루트 / .opencode/agents/review.md</span><span class="c">---</span>
 <span class="k">description</span>: <span class="s">Reviews code for quality</span>
 <span class="k">mode</span>: <span class="s">subagent</span>
 <span class="k">temperature</span>: <span class="v">0.1</span>
@@ -1139,14 +1139,21 @@ You are in code review mode...</pre>
   <h2><code>permission.task</code>로 <span class="orange">누구에게 위임할 수 있는지</span>까지 정한다</h2>
   <div class="split" style="grid-template-columns:1fr 1.1fr;align-items:start">
     <div style="display:flex;flex-direction:column;gap:16px">
-<pre><span class="fn">primary agent 설정</span><span class="k">"permission"</span>: {
-  <span class="k">"task"</span>: {
-    <span class="s">"*"</span>:              <span class="r">"deny"</span>,   <span class="c"># 규칙 1</span>
-    <span class="s">"orchestrator-*"</span>: <span class="gk">"allow"</span>,  <span class="c"># 규칙 2</span>
-    <span class="s">"code-reviewer"</span>:  <span class="v">"ask"</span>     <span class="c"># 규칙 3</span>
+<pre class="sm" style="font-size:16px;line-height:1.5"><span class="fn">프로젝트 루트 / opencode.json</span>{
+  <span class="k">"agent"</span>: {
+    <span class="k">"orchestrator"</span>: {          <span class="c">// 위임하는 쪽 agent</span>
+      <span class="k">"mode"</span>: <span class="s">"primary"</span>,
+      <span class="k">"permission"</span>: {
+        <span class="k">"task"</span>: {             <span class="c">// 이 agent가 부를 수 있는 자식</span>
+          <span class="s">"*"</span>:              <span class="r">"deny"</span>,   <span class="c">// 규칙 1</span>
+          <span class="s">"orchestrator-*"</span>: <span class="gk">"allow"</span>,  <span class="c">// 규칙 2</span>
+          <span class="s">"code-reviewer"</span>:  <span class="v">"ask"</span>     <span class="c">// 규칙 3</span>
+        }
+      }
+    }
   }
 }</pre>
-      <div class="callout"><b>마지막으로 맞은 규칙</b>이 이긴다. 그래서 넓은 규칙(<code>*</code>)을 먼저, 좁은 규칙을 뒤에 쓴다.</div>
+      <div class="callout b" style="font-size:18px">따로 모아 쓰는 설정이 아니다. <b>위임하는 agent 자신의 permission</b> 안에 있고, 값의 키는 <b>부를 자식의 이름</b>이다. Markdown agent라면 frontmatter의 <code>permission: task:</code>에 쓴다. <b>마지막으로 맞은 규칙</b>이 이기므로 <code>*</code>를 먼저 쓴다.</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <table class="sm">
