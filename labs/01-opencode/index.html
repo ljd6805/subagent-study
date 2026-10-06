@@ -357,6 +357,7 @@ git checkout -- . ; git clean -fd .</pre></div>
     inventory.py   <span class="c"># 재고 확인과 예약</span>
     report.py      <span class="c"># 주문 기록 요약 (TODO)</span>
   <span class="k">data/</span>orders.csv  <span class="c"># 주문 7건</span>
+  opencode.json    <span class="c"># task 허용 (0-4)</span>
   <span class="k">tests/</span>
     test_cart.py
     test_inventory.py
@@ -421,7 +422,7 @@ $a.tools.task
 $a.permission | Where-Object permission -eq 'task'
 <span class="v">permission action pattern</span>
 task       <span class="r">deny</span>   *</pre></div>
-<pre class="xs"><span class="fn">opencode.json · minishop 폴더에 만들기</span>{
+<pre class="xs"><span class="fn">opencode.json · minishop 폴더에 이미 들어 있음</span>{
   <span class="v">"$schema"</span>: <span class="s">"https://opencode.ai/config.json"</span>,
   <span class="v">"permission"</span>: { <span class="v">"task"</span>: <span class="s">"allow"</span> },
   <span class="v">"agent"</span>: {
@@ -431,10 +432,10 @@ task       <span class="r">deny</span>   *</pre></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card c-red"><div class="lbl">task가 꺼져 있으면</div><p>task 규칙의 마지막이 <code>* deny</code>이면 OpenCode가 task 도구를 <b>목록에서 빼 버린다</b>. 모델은 "task 도구가 없다"고 말하며 subagent를 부르지 못한다.</p></div>
-      <div class="card c-blue"><div class="lbl">어디서 들어오나</div><p>기본값에는 없다. 보통 전역 설정 <code>~/.config/opencode/opencode.json</code>의 <code>permission.task</code>, <code>tools.task: false</code>, <code>agent.build.permission.task</code> 중 하나다. 전역 설정은 그대로 두고 왼쪽 파일로 이 폴더에서만 연다.</p></div>
+      <div class="card c-blue"><div class="lbl">어디서 들어오나</div><p>기본값에는 없다. 보통 전역 설정 <code>~/.config/opencode/opencode.json</code>의 <code>permission.task</code>, <code>tools.task: false</code>, <code>agent.build.permission.task</code> 중 하나다. 전역 설정은 그대로 두고, 샘플 폴더에 넣어 둔 왼쪽 파일이 이 폴더에서만 다시 연다.</p></div>
       <ul class="chk sm">
-        <li><code>tools.task</code>가 true다 (파일을 만들었다면 OpenCode를 다시 연다)</li>
-        <li>LAB 2에서 <code>opencode.json</code>을 쓸 때 이 파일에 이어서 쓴다</li>
+        <li><code>tools.task</code>가 true다 (false면 <code>git pull</code>로 이 파일이 있는지 확인한다)</li>
+        <li>LAB 2부터는 이 <code>opencode.json</code>에 이어서 쓴다</li>
       </ul>
     </div>
   </div>
@@ -643,7 +644,7 @@ opencode debug agent general | jq .tools
   <div class="kicker o">2-2 · JSON 방식</div>
   <h2>JSON에서는 키가 이름이 되고, 지시문은 파일로 빼 둘 수 있다</h2>
   <div class="split" style="align-items:start;grid-template-columns:1.15fr 1fr">
-<pre class="sm"><span class="fn">opencode.json</span>{
+<pre class="sm"><span class="fn">opencode.json · agent 안에 tester 추가</span>{
   <span class="v">"$schema"</span>: <span class="s">"https://opencode.ai/config.json"</span>,
   <span class="v">"agent"</span>: {
     <span class="v">"tester"</span>: {
@@ -666,7 +667,7 @@ opencode debug agent general | jq .tools
 "테스트 이름 / 기대값 / 실제값 / 의심되는 파일"을
 한 줄로 보고하고, 코드는 고치지 않는다.</pre>
       <div class="card c-blue"><div class="lbl">bash 규칙 읽는 법</div><p>위에서 아래로 읽고 <b>마지막으로 맞는 규칙</b>이 적용된다. 먼저 전부 막고(<code>*</code>: deny), 필요한 명령 하나만 연다. <code>python*</code>는 <code>python</code>과 <code>python3</code>를 둘 다 받는다.</p></div>
-      <p class="muted" style="font-size:17px">0-4에서 만든 <code>opencode.json</code>이 있으면 그 파일의 <code>agent</code> 안에 <code>tester</code>를 추가한다. Markdown과 JSON에 같은 이름이 있으면 두 설정이 합쳐진다.</p>
+      <p class="muted" style="font-size:17px">샘플 폴더에 이미 있는 <code>opencode.json</code>의 <code>agent</code> 안에 <code>tester</code>를 추가한다 (build 항목은 그대로 둔다). Markdown과 JSON에 같은 이름이 있으면 두 설정이 합쳐진다.</p>
     </div>
   </div>
   <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/agents/">agents · json</a><a href="https://opencode.ai/docs/permissions/">permissions</a></div>
@@ -897,7 +898,7 @@ $null -eq (opencode debug agent explore | Out-String | ConvertFrom-Json).model
   <h2><code>permission.task</code>로 부모가 맡길 수 있는 대상을 좁힌다</h2>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-<pre class="sm"><span class="fn">opencode.json (일부)</span><span class="v">"build"</span>: {
+<pre class="sm"><span class="fn">opencode.json (일부) · build의 task 값을 이렇게 바꾼다</span><span class="v">"build"</span>: {
   <span class="v">"permission"</span>: {
     <span class="v">"task"</span>: {
       <span class="v">"*"</span>: <span class="s">"deny"</span>,

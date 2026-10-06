@@ -10,6 +10,7 @@ minishop/
   report.py      주문 기록 요약 (TODO 있음)
 data/orders.csv  주문 기록 예시
 tests/           unittest 테스트 (지금은 일부 실패)
+opencode.json    task 도구 허용 (전역 설정이 막아도 이 폴더에서는 subagent 호출 가능)
 ```
 
 테스트 실행 (Python 3.10 이상, 설치할 패키지 없음):
