@@ -15,5 +15,11 @@ tests/           unittest 테스트 (지금은 일부 실패)
 테스트 실행 (Python 3.10 이상, 설치할 패키지 없음):
 
 ```bash
+# Linux · macOS
 python3 -m unittest -v
+```
+
+```powershell
+# Windows (PowerShell)
+python -m unittest -v
 ```
