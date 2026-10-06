@@ -1200,7 +1200,7 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
 <span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
 <span class="pr">$ </span>opencode --pure run -m $M "reviewer에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
 
-<span class="c"># 방금 세션에 이어서 묻기</span>
+<span class="c"># -c: 방금 세션에 이어서 묻기 (오른쪽 초록 상자)</span>
 <span class="pr">$ </span>opencode --pure run -m $M -c "같은 리뷰를 inventory.py 에도 해 줘"
 
 <span class="c"># primary(또는 all) agent로 직접 실행</span>
@@ -1214,18 +1214,21 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
 <span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
 <span class="pr">PS&gt; </span>opencode --pure run -m $M "reviewer에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
 
-<span class="c"># 방금 세션에 이어서 묻기</span>
+<span class="c"># -c: 방금 세션에 이어서 묻기 (오른쪽 초록 상자)</span>
 <span class="pr">PS&gt; </span>opencode --pure run -m $M -c "같은 리뷰를 inventory.py 에도 해 줘"
 
 <span class="c"># primary(또는 all) agent로 직접 실행</span>
 <span class="pr">PS&gt; </span>opencode --pure run -m $M --agent plan "minishop 버그 수정 계획만 세워 줘"</pre></div>
     <div style="display:flex;flex-direction:column;gap:16px">
-      <div class="card c-orange"><div class="lbl">TUI와 다른 점</div>
-        <ul><li>자식 세션을 들어가서 볼 수 없다. 대신 task가 시작될 때 한 줄 표시가 나온다</li>
+      <div class="card c-orange" style="padding:16px 20px"><div class="lbl">TUI와 다른 점</div>
+        <ul style="font-size:17px"><li>자식 세션을 들어가서 볼 수 없다. 대신 task가 시작될 때 한 줄 표시가 나온다</li>
         <li><code>ask</code> 규칙에 걸리면 <code>permission requested: … auto-rejecting</code>을 출력하고 <b>자동 거절</b>한다. <code>--auto</code>를 주면 deny가 아닌 것은 모두 자동 승인된다</li>
         <li><code>--agent</code>에는 subagent를 줄 수 없다 (LAB 4-2)</li></ul>
       </div>
-      <ul class="chk sm"><li><code>opencode --pure session list</code>에 방금 실행한 세션이 보인다</li></ul>
+      <div class="card c-green" style="padding:16px 20px"><div class="lbl"><code>-c</code>(--continue)가 하는 일</div>
+        <ul style="font-size:17px"><li>이 폴더에서 가장 최근에 쓴 <b>최상위 세션</b>(자식 세션 제외)에 이어서 보낸다. 그래서 "같은 리뷰"가 무엇인지 안다. 없으면 매번 새 세션이다</li>
+        <li>TUI에서 쓴 세션도 대상이다. 특정 세션을 이으려면 <code>-s &lt;세션 id&gt;</code>, 원본은 두고 복사본에 이으려면 <code>--fork</code>를 함께 쓴다</li></ul></div>
+      <ul class="chk sm"><li><code>-c</code>로 보낸 뒤 <code>opencode --pure session list</code>의 세션 수가 늘지 않았다</li></ul>
     </div>
   </div>
   <div class="note"><span class="nt doc">DOCS</span><a href="https://opencode.ai/docs/cli/">cli · run</a></div>
