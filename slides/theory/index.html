@@ -247,7 +247,7 @@ svg .mono{font-family:var(--mono)}
       <path d="M450,350 L420,350" stroke="#7ee787" stroke-width="2.5" stroke-dasharray="5 4"/>
     </svg>
     <div style="display:flex;flex-direction:column;gap:18px">
-      <div class="card"><div class="lbl">SKILL 심화에서 배운 것</div><h3>넣지 않기</h3><p>레퍼런스 계층화, 스크립트 위임, 외부 기억, 지도 우선 탐색으로 <b>한 창 안의 낭비</b>를 줄였다.</p></div>
+      <div class="card"><div class="lbl">먼저 해 볼 것</div><h3>덜 넣기</h3><p>필요한 자료만 그때그때 읽고, 반복 작업은 스크립트에 맡겨 <b>한 창 안의 낭비</b>를 줄인다.</p></div>
       <div class="card c-yellow"><div class="lbl">그래도 남는 문제</div><h3>일 자체가 크다</h3><p>리포 전체 점검, 30건 이슈 분석은 줄여도 넘친다. 앞 작업의 잔해가 다음 판단을 오염시킨다.</p></div>
       <div class="card c-green"><div class="lbl">이번 주제</div><h3>창을 나눈다</h3><p>일을 쪼개 <b>별도 컨텍스트</b>에 맡기고 결과만 돌려받는다. 이것이 subagent다.</p></div>
     </div>
@@ -773,7 +773,7 @@ claude --agents '{…}' <span class="c"># 이번 세션만</span></pre>
     </div>
     <div class="callout">같은 이름의 agent가 여러 곳에 있을 때 무엇이 쓰이는지는 도구마다 다르다. <b>다음 장</b>에서 순서를 정확히 본다.</div>
   </div>
-  <div class="note"><span class="nt try">TRY</span><span>OpenCode는 단수형 <code>agent/</code> 폴더도 하위 호환으로 읽는다. 기존 OpenCode 실습 리포가 어느 쪽을 쓰는지 확인해 보자.</span></div>
+  <div class="note"><span class="nt try">TRY</span><span>OpenCode는 단수형 <code>agent/</code> 폴더도 하위 호환으로 읽는다. 자기 리포가 어느 쪽을 쓰는지 확인해 보자.</span></div>
 </section>
 
 <!-- Declare 1+ : precedence -->
@@ -932,7 +932,7 @@ claude --agents '{…}' <span class="c"># 이번 세션만</span></pre>
       <path d="M294,75 L372,75" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-o2)"/><path d="M672,75 L750,75" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-o2)"/><path d="M1050,75 L1128,75" stroke="#8e9cae" stroke-width="3" marker-end="url(#a-o2)"/>
     </svg>
     <div class="g3">
-      <div class="card"><div class="lbl">왜 파일인가</div><h3>부모 예산을 지킨다</h3><p>tool_result는 부모 창에 쌓인다. 큰 산출물은 파일에 두고 경로만 넘긴다. (SKILL 심화 ⑥ 산출물 약속)</p></div>
+      <div class="card"><div class="lbl">왜 파일인가</div><h3>부모 예산을 지킨다</h3><p>tool_result는 부모 창에 쌓인다. 큰 산출물은 파일에 두고 경로만 넘긴다.</p></div>
       <div class="card"><div class="lbl">왜 코드 판정인가</div><h3>"완료했습니다"는 증거가 아니다</h3><p>자식의 자기 보고를 validator로 확인한다. (Harness: 완료 ≠ 성공)</p></div>
       <div class="card c-purple"><div class="lbl">Hook으로 강제</div><h3>통과 전에는 못 끝낸다</h3><p>Claude의 <code>SubagentStop</code> hook은 검사가 실패하면 <code>decision: "block"</code>으로 자식이 계속 일하게 한다.</p></div>
     </div>
