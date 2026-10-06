@@ -889,7 +889,7 @@ claude --agents '{…}' <span class="c"># 이번 세션만</span></pre>
   <div class="kicker">Part 1 · Common</div>
   <h1>운용 원리</h1>
   <p class="lead">정의 파일이 좋아도 <b>브리프(첫 메시지)</b>와 <b>반환 약속</b>이 나쁘면 위임은 실패한다.</p>
-  <div class="toc"><span><b>1</b>브리프 쓰는 법</span><span><b>2</b>결과 받는 법</span><span><b>3</b>네 가지 패턴</span><span><b>4</b>위임할까, 직접 할까</span><span><b>5</b>비용과 피할 패턴</span></div>
+  <div class="toc"><span><b>1</b>브리프 쓰는 법</span><span><b>2</b>브리프에 손대는 법</span><span><b>3</b>결과 받는 법</span><span><b>4</b>네 가지 패턴</span><span><b>5</b>위임할까, 직접 할까</span><span><b>6</b>비용과 피할 패턴</span></div>
 </section>
 
 <!-- Operate 1 -->
@@ -914,6 +914,40 @@ claude --agents '{…}' <span class="c"># 이번 세션만</span></pre>
       <div class="callout" style="font-size:19px;margin-top:8px"><b>알려진 것</b> 칸이 특히 중요하다. 부모가 이미 아는 것을 안 적으면 자식은 그것을 <b>다시 비용을 들여</b> 알아낸다.</div>
     </div>
   </div>
+</section>
+
+<!-- Operate 1+ -->
+<section class="slide" data-sec="운용">
+  <div class="kicker">Operate 1+ · Shaping the brief</div>
+  <h2>브리프는 <span class="blue">부모 모델</span>이 쓰고, 사용자는 <span class="green">그 재료</span>를 정한다</h2>
+  <div class="body" style="gap:18px">
+    <svg viewBox="0 0 1424 270" width="100%">
+      <defs><marker id="a-br" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8e9cae"/></marker><marker id="a-brd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5a687a"/></marker></defs>
+      <!-- inputs on top -->
+      <rect x="300" y="0" width="300" height="48" rx="10" class="sb2"/><text x="450" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#c3cdd8">프로젝트 지시문 · description</text>
+      <path d="M450,50 L450,86" stroke="#5a687a" stroke-width="2" fill="none" marker-end="url(#a-brd)"/>
+      <circle cx="300" cy="24" r="19" fill="#070b11" stroke="#58a6ff" stroke-width="2"/><text x="300" y="29" text-anchor="middle" font-size="12" font-weight="800" fill="#58a6ff">②③</text>
+      <rect x="1060" y="0" width="300" height="48" rx="10" class="sb2"/><text x="1210" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#c3cdd8">정의 파일 (시스템 프롬프트)</text>
+      <path d="M1210,50 L1210,86" stroke="#5a687a" stroke-width="2" fill="none" marker-end="url(#a-brd)"/>
+      <circle cx="1060" cy="24" r="15" fill="#070b11" stroke="#7ee787" stroke-width="2"/><text x="1060" y="29" text-anchor="middle" font-size="15" font-weight="800" fill="#7ee787">①</text>
+      <!-- main flow -->
+      <rect x="0" y="90" width="190" height="80" rx="14" fill="#18222f" stroke="#5a687a" stroke-width="2"/><text x="95" y="137" text-anchor="middle" font-size="21" font-weight="800" fill="#eef2f6">사용자</text>
+      <rect x="300" y="90" width="300" height="80" rx="14" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/><text x="450" y="126" text-anchor="middle" font-size="21" font-weight="800" fill="#eef2f6">부모 모델</text><text x="450" y="152" text-anchor="middle" font-size="14" font-weight="600" fill="#9cc7ff">브리프를 직접 쓴다</text>
+      <rect x="710" y="90" width="230" height="80" rx="14" fill="#18222f" stroke="#34445a" stroke-width="2"/><text x="825" y="126" text-anchor="middle" font-size="19" font-weight="800" fill="#eef2f6">위임 도구 호출</text><text x="825" y="152" text-anchor="middle" font-size="13" font-weight="600" fill="#8e9cae">Agent · task · spawn</text>
+      <rect x="1060" y="90" width="364" height="80" rx="14" fill="#21183a" stroke="#bc8cff" stroke-width="2"/><text x="1242" y="126" text-anchor="middle" font-size="21" font-weight="800" fill="#eef2f6">자식 agent</text><text x="1242" y="152" text-anchor="middle" font-size="14" font-weight="600" fill="#cfb7ff">시스템 프롬프트 + 브리프</text>
+      <g stroke="#8e9cae" stroke-width="2.5" fill="none"><path d="M194,130 L294,130" marker-end="url(#a-br)"/><path d="M604,130 L704,130" marker-end="url(#a-br)"/><path d="M944,130 L1054,130" marker-end="url(#a-br)"/></g>
+      <g font-size="13" font-weight="700" fill="#8e9cae"><text x="244" y="118" text-anchor="middle">요청</text><text x="654" y="118" text-anchor="middle">브리프</text><text x="999" y="118" text-anchor="middle">전달</text></g>
+      <circle cx="244" cy="154" r="15" fill="#070b11" stroke="#e3b341" stroke-width="2"/><text x="244" y="159" text-anchor="middle" font-size="15" font-weight="800" fill="#e3b341">④</text>
+      <circle cx="999" cy="154" r="15" fill="#070b11" stroke="#bc8cff" stroke-width="2"/><text x="999" y="159" text-anchor="middle" font-size="15" font-weight="800" fill="#bc8cff">⑤</text>
+      <text x="1020" y="200" font-size="13" font-weight="700" fill="#cfb7ff">hook이 끼어든다</text>
+      <!-- headless bracket -->
+      <path d="M95,174 L95,236 L825,236 L825,176" stroke="#ffa657" stroke-width="2" stroke-dasharray="6 5" fill="none" marker-end="url(#a-br)"/>
+      <circle cx="95" cy="236" r="15" fill="#070b11" stroke="#ffa657" stroke-width="2"/><text x="95" y="241" text-anchor="middle" font-size="15" font-weight="800" fill="#ffa657">⑥</text>
+      <text x="460" y="262" text-anchor="middle" font-size="14" font-weight="700" fill="#ffc58f">headless: 스크립트가 부모 대신 브리프를 직접 쓴다</text>
+    </svg>
+    <div class="g3" style="gap:14px"><div class="card c-green" style="padding:14px 20px;gap:4px"><div class="lbl"><b style="color:#7ee787">①</b> 정의 파일</div><h3 style="font-size:20px">늘 지킬 규칙은 여기에 고정</h3><p style="font-size:16px">순서 · 범위 · 반환 형식. 브리프가 부실해도 항상 적용되어 가장 확실하다.</p></div><div class="card " style="padding:14px 20px;gap:4px"><div class="lbl"><b style="color:#58a6ff">②</b> 프로젝트 지시문</div><h3 style="font-size:20px">부모에게 브리프 쓰는 법을 알린다</h3><p style="font-size:16px">CLAUDE.md · AGENTS.md에 "위임할 때 목표 · 범위 · 반환 형식을 적어라".</p></div><div class="card " style="padding:14px 20px;gap:4px"><div class="lbl"><b style="color:#58a6ff">③</b> description</div><h3 style="font-size:20px">무엇을 넘겨야 하는지 적는다</h3><p style="font-size:16px">부모는 고를 때 이 줄을 읽는다. 예: "검토할 파일 경로를 함께 넘길 것".</p></div><div class="card c-yellow" style="padding:14px 20px;gap:4px"><div class="lbl"><b style="color:#e3b341">④</b> 요청 문장</div><h3 style="font-size:20px">조건과 대상을 직접 말한다</h3><p style="font-size:16px">"auth 폴더만, file:line 10개로". 이름 지정: <code>@agent-이름</code> · <code>@이름</code> · Codex는 명시 요청.</p></div><div class="card c-purple" style="padding:14px 20px;gap:4px"><div class="lbl"><b style="color:#bc8cff">⑤</b> hook · Claude Code</div><h3 style="font-size:20px">자식 시작 전에 내용을 더한다</h3><p style="font-size:16px"><code>SubagentStart</code>의 additionalContext, 위임 도구의 <code>PreToolUse</code> updatedInput.</p></div><div class="card c-orange" style="padding:14px 20px;gap:4px"><div class="lbl"><b style="color:#ffa657">⑥</b> headless</div><h3 style="font-size:20px">사용자가 부모가 된다</h3><p style="font-size:16px"><code>claude -p</code> · <code>opencode run</code> · <code>codex exec</code>를 스크립트로 부르면 브리프를 직접 쓴다.</p></div></div>
+  </div>
+  <div class="note"><span class="nt">순서</span><span>①과 ②를 먼저 갖춰 두고, 일마다 다른 조건은 ④로 더한다. ③은 공식 문서가 아니라 동작 방식에서 나온 요령이다.</span></div>
 </section>
 
 <!-- Operate 2 -->
