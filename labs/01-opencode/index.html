@@ -395,7 +395,8 @@ title (primary)</pre></div>
         <tr><td class="h green">general</td><td>subagent</td><td>여러 단계 작업. 수정도 가능</td></tr>
         <tr><td class="h dim">compaction 외 2개</td><td>primary</td><td>요약, 제목 짓기용 내부 agent (숨김)</td></tr>
       </table>
-      <p class="muted" style="font-size:18px">primary는 사용자가 직접 대화하는 agent, subagent는 다른 agent가 일을 맡기는 agent다. <b>Tab</b> 키는 primary 사이만 오간다.</p>
+      <p class="muted" style="font-size:17px">primary는 사용자가 직접 대화하는 agent, subagent는 다른 agent가 일을 맡기는 agent다. <b>Tab</b> 키는 primary 사이만 오간다.</p>
+      <div class="card c-blue" style="padding:16px 20px"><div class="lbl">이 일곱 개는 어디에 선언돼 있나</div><p style="font-size:17px">내 프로젝트의 파일이 아니라 <b>OpenCode 프로그램 안</b>에 들어 있다. 소스 <a style="color:var(--blue)" href="https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/agent/agent.ts"><code>src/agent/agent.ts</code></a>의 <code>agents</code> 목록이고, <code>debug agent</code> 출력에서 <code>"native": true</code>로 표시된다. 같은 이름을 내 설정에 쓰면 그 위에 덧붙고, <code>disable: true</code>로 끌 수 있다.</p></div>
       <ul class="chk sm"><li>목록에 <code>explore</code>, <code>general</code>이 <code>(subagent)</code>로 보인다</li></ul>
     </div>
   </div>
