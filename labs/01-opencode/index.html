@@ -1010,10 +1010,15 @@ task       explore  <span class="gk">allow</span></pre></div>
 <section class="slide" data-sec="LAB 4">
   <div class="kicker o">4-3 · 중첩 깊이</div>
   <h2>기본값에서는 subagent가 다시 subagent를 부를 수 없다</h2>
-  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code> 후 아래 문장을 보내고, 자식 세션 안에서 오류를 본다</span><span><i>2</i><code>opencode.json</code> 맨 바깥에 <code>"subagent_depth": 2,</code>를 추가하고 OpenCode를 다시 연다</span><span><i>3</i><code>/new</code> 후 같은 문장을 보낸다</span><span><i>4</i>끝나면 추가한 줄을 지운다</span></div>
+  <div class="todo"><b>할 일</b><span><i>1</i><code>/new</code> 후 아래 문장을 보낸다. 부모 화면의 task 블록이 <code>(@general subagent)</code> 하나인지 본다</span><span><i>2</i><kbd>ctrl+x</kbd> <kbd>↓</kbd>로 general 세션에 들어가 explore를 부르려다 난 오류를 본다</span><span><i>3</i><code>opencode.json</code> 맨 바깥에 <code>"subagent_depth": 2,</code>를 추가하고 OpenCode를 다시 연다</span><span><i>4</i><code>/new</code> 후 같은 문장을 보낸다</span><span><i>5</i>끝나면 추가한 줄을 지운다</span></div>
   <div class="split" style="align-items:start">
     <div style="display:flex;flex-direction:column;gap:14px">
-      <div class="ask sm">@general report.py 의 TODO를 조사해 줘. 그 안에서 explore subagent에게 data 폴더 조사를 따로 맡겨.</div>
+      <div class="ask sm">general subagent 하나에게만 일을 맡겨 줘. 너는 explore를 직접 부르지 말고, general에게 아래 지시를 그대로 전달해.
+
+[general에게 줄 지시]
+1. minishop/report.py 의 TODO를 조사한다.
+2. data 폴더 조사는 직접 하지 말고, 반드시 task 도구로 explore subagent에게 맡긴다.
+3. 두 결과를 합쳐 보고한다.</div>
 <pre class="xs"><span class="fn">자식(general) 안에서 task를 부르면 · 실제 오류 문구</span>
 <span class="r">Subagent depth limit reached (1). Increase
 "subagent_depth" to allow nested subagents.</span></pre>
