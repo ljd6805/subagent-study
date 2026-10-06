@@ -712,51 +712,19 @@ svg .mono{font-family:var(--mono)}
 <!-- Build 4 -->
 <section class="slide" data-sec="구성">
   <div class="kicker">Components 4 · Model</div>
-  <h2>모델은 <span class="purple">왼쪽부터 확인해</span> 처음 정해진 값으로 쓴다</h2>
-  <div class="body" style="gap:30px">
-    <svg viewBox="0 0 1424 250" width="100%">
-      <defs>
-        <marker id="a-m4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5a687a"/></marker>
-        <marker id="a-m4g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7ee787"/></marker>
-      </defs>
-      <text x="0" y="20" font-size="14" font-weight="800" fill="#7ee787">구체적 · 우선</text><text x="1424" y="20" text-anchor="end" font-size="14" font-weight="800" fill="#5a687a">일반적 · 나중</text>
-      <rect x="0" y="40" width="290" height="110" rx="16" fill="#11261a" stroke="#7ee787" stroke-width="2"/>
-      <text x="145" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">① 호출할 때 지정</text>
-      <text x="145" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">이번 한 번만 쓸 모델</text>
-      <path d="M145,154 L145,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
-      <text x="157" y="182" font-size="13" font-weight="800" fill="#7ee787">있으면</text>
-      <rect x="45" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
-      <text x="145" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">이 값으로 확정</text>
-      <rect x="378" y="40" width="290" height="110" rx="16" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/>
-      <text x="523" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">② 정의 파일</text>
-      <text x="523" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">agent마다 정한 모델</text>
-      <path d="M523,154 L523,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
-      <text x="535" y="182" font-size="13" font-weight="800" fill="#7ee787">있으면</text>
-      <rect x="423" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
-      <text x="523" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">이 값으로 확정</text>
-      <rect x="756" y="40" width="290" height="110" rx="16" fill="#2a2210" stroke="#e3b341" stroke-width="2"/>
-      <text x="901" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">③ 전역 기본값</text>
-      <text x="901" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">모든 자식에 공통</text>
-      <path d="M901,154 L901,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
-      <text x="913" y="182" font-size="13" font-weight="800" fill="#7ee787">있으면</text>
-      <rect x="801" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
-      <text x="901" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">이 값으로 확정</text>
-      <rect x="1134" y="40" width="290" height="110" rx="16" fill="#21183a" stroke="#bc8cff" stroke-width="2"/>
-      <text x="1279" y="88" text-anchor="middle" font-size="22" font-weight="800" fill="#eef2f6">④ 부모 모델</text>
-      <text x="1279" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#c3cdd8">아무것도 없을 때</text>
-      <path d="M1279,154 L1279,196" stroke="#7ee787" stroke-width="2.5" fill="none" marker-end="url(#a-m4g)"/>
-      <text x="1291" y="182" font-size="13" font-weight="800" fill="#7ee787">항상</text>
-      <rect x="1179" y="202" width="200" height="44" rx="22" fill="#11261a" stroke="#2c6b3c"/>
-      <text x="1279" y="230" text-anchor="middle" font-size="16" font-weight="800" fill="#eef2f6">부모와 같은 모델</text>
-      <path d="M294,95 L372,95" stroke="#5a687a" stroke-width="3" fill="none" marker-end="url(#a-m4)"/><text x="333" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#8e9cae" dy="-6">없으면</text><path d="M672,95 L750,95" stroke="#5a687a" stroke-width="3" fill="none" marker-end="url(#a-m4)"/><text x="711" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#8e9cae" dy="-6">없으면</text><path d="M1050,95 L1128,95" stroke="#5a687a" stroke-width="3" fill="none" marker-end="url(#a-m4)"/><text x="1089" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#8e9cae" dy="-6">없으면</text>
-    </svg>
+  <h2>모델은 <span class="purple">일의 성격</span>에 맞게 고르고, 적지 않으면 <span class="purple">부모 모델</span>을 쓴다</h2>
+  <div class="body" style="gap:28px">
+    <div class="g2">
+      <div class="card c-purple"><div class="lbl">정하는 법</div><h3>정의 파일에 <code>model</code>을 적는다</h3><p>추론 강도(effort)도 함께 정할 수 있다. 부를 때 따로 지정하면 그 값이 더 우선한다.</p></div>
+      <div class="card"><div class="lbl">적지 않으면</div><h3>부모와 같은 모델로 돈다</h3><p>아무 설정이 없어도 자식은 동작한다. 비용과 속도도 부모와 같아진다.</p></div>
+    </div>
     <div class="g3">
       <div class="card"><div class="lbl">찾기 · 모으기</div><h3>작고 빠른 모델 · 낮은 추론 강도</h3><p>explore, 로그 요약처럼 양은 많고 판단은 단순한 일.</p></div>
       <div class="card"><div class="lbl">구현 · 수정</div><h3>부모와 같은 모델 (inherit)</h3><p>담당 범위가 정해진 작업자. 품질을 부모와 맞춘다.</p></div>
       <div class="card"><div class="lbl">판단 · 검토</div><h3>큰 모델 · 높은 추론 강도</h3><p>리뷰어, 설계 검토처럼 틀리면 비싼 일.</p></div>
     </div>
+    <div class="callout p">원칙: <b>찾기 · 모으기는 작고 빠른 모델</b>, <b>판단 · 설계는 큰 모델</b>.</div>
   </div>
-  <div class="note" style="align-items:flex-start"><span class="nt">도구별</span><span style="display:flex;flex-direction:column;gap:2px"><span><b>Claude Code</b> ①~④ 모두 있음. ① Agent 도구의 <code>model</code> 인자, ③ <code>CLAUDE_CODE_SUBAGENT_MODEL</code>.</span><span><b>OpenCode</b> ②와 ④만: <code>model</code>을 안 적으면 호출한 primary의 모델. <b>Codex</b> ②와 ④만: 역할 TOML의 <code>model</code>, 없으면 부모 값.</span></span></div>
 </section>
 
 <!-- ============ Part 1-03 선언 방법 ============ -->
