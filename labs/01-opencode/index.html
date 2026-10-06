@@ -994,7 +994,7 @@ task       explore  <span class="gk">allow</span></pre></div>
     </table>
     <div style="display:flex;flex-direction:column;gap:14px">
 <pre class="xs"><span class="fn">terminal · 모든 OS 공통 · 입력 1줄 + 출력 2줄</span>
-<span class="pr">$ </span>opencode --pure run --agent reviewer "cart.py 리뷰"
+<span class="pr">$ </span>opencode --pure run -m <span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span> --agent reviewer "cart.py 리뷰"
 <span class="y">! agent "reviewer" is a subagent, not a primary
   agent. Falling back to default agent</span></pre>
       <ol class="num">
@@ -1189,30 +1189,36 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
 <section class="slide" data-sec="LAB 6">
   <div class="kicker o">6-1 · run으로 위임</div>
   <h2><code>opencode run</code>도 TUI와 같은 agent와 설정을 쓴다</h2>
-  <div class="todo"><b>할 일</b><span><i>1</i>OpenCode 화면을 <code>/exit</code>로 닫는다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다</span><span><i>3</i><code>opencode --pure session list</code>로 방금 세션을 확인한다</span></div>
+  <div class="todo"><b>할 일</b><span><i>1</i>OpenCode 화면을 <code>/exit</code>로 닫는다</span><span><i>2</i>왼쪽 명령을 위에서부터 한 줄씩 실행한다. 모델 이름은 <code>M</code>에 한 번 담아 <code>-m</code>으로 넘긴다</span><span><i>3</i><code>opencode --pure session list</code>로 방금 세션을 확인한다</span></div>
   <div class="split" style="align-items:start">
 <div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal · minishop 폴더</span></div><pre class="xs" data-os="unix" style="font-size:13.5px"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
 <span class="pr">$ </span>git checkout -- minishop tests &amp;&amp; rm -rf reports
 
+<span class="c"># 3-3에서 찾은 모델 이름을 M에 담는다 (꺾쇠 없이)</span>
+<span class="pr">$ </span>M=<span class="gk">&lt;제공자ID&gt;/&lt;모델ID&gt;</span>
+
 <span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
-<span class="pr">$ </span>opencode --pure run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
+<span class="pr">$ </span>opencode --pure run -m $M "reviewer에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
 
 <span class="c"># 방금 세션에 이어서 묻기</span>
-<span class="pr">$ </span>opencode --pure run -c "같은 리뷰를 inventory.py 에도 해 줘"
+<span class="pr">$ </span>opencode --pure run -m $M -c "같은 리뷰를 inventory.py 에도 해 줘"
 
 <span class="c"># primary(또는 all) agent로 직접 실행</span>
-<span class="pr">$ </span>opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</pre><pre class="xs" data-os="win"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
+<span class="pr">$ </span>opencode --pure run -m $M --agent plan "minishop 버그 수정 계획만 세워 줘"</pre><pre class="xs" data-os="win"><span class="c"># 코드만 처음 상태로 되돌리고 시작 (agent 설정은 남김)</span>
 <span class="pr">PS&gt; </span>git checkout -- minishop tests
 <span class="pr">PS&gt; </span>Remove-Item -Recurse -Force reports -ErrorAction SilentlyContinue
 
+<span class="c"># 3-3에서 찾은 모델 이름을 $M에 담는다 (꺾쇠 없이)</span>
+<span class="pr">PS&gt; </span>$M = <span class="gk">'&lt;제공자ID&gt;/&lt;모델ID&gt;'</span>
+
 <span class="c"># 기본 agent(build)가 reviewer에게 맡긴다</span>
-<span class="pr">PS&gt; </span>opencode --pure run "reviewer subagent에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
+<span class="pr">PS&gt; </span>opencode --pure run -m $M "reviewer에게 cart.py 리뷰를 맡기고 결과만 알려 줘"
 
 <span class="c"># 방금 세션에 이어서 묻기</span>
-<span class="pr">PS&gt; </span>opencode --pure run -c "같은 리뷰를 inventory.py 에도 해 줘"
+<span class="pr">PS&gt; </span>opencode --pure run -m $M -c "같은 리뷰를 inventory.py 에도 해 줘"
 
 <span class="c"># primary(또는 all) agent로 직접 실행</span>
-<span class="pr">PS&gt; </span>opencode --pure run --agent plan "minishop 버그 수정 계획만 세워 줘"</pre></div>
+<span class="pr">PS&gt; </span>opencode --pure run -m $M --agent plan "minishop 버그 수정 계획만 세워 줘"</pre></div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="card c-orange"><div class="lbl">TUI와 다른 점</div>
         <ul><li>자식 세션을 들어가서 볼 수 없다. 대신 task가 시작될 때 한 줄 표시가 나온다</li>
@@ -1230,7 +1236,8 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
   <h2><code>--format json</code>으로 받으면 어떤 자식이 불렸는지 스크립트로 셀 수 있다</h2>
   <div class="todo"><b>할 일</b><span><i>1</i>왼쪽 첫 명령을 실행해 <code>run.jsonl</code>이 생기는지 본다</span><span><i>2</i>둘째 명령으로 task만 골라 본다</span></div>
   <div class="split" style="align-items:start">
-<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix"><span class="pr">$ </span>opencode --pure run --format json \
+<div class="os"><div class="os-tabs"><button data-os="unix">Linux · macOS</button><button data-os="win">Windows</button><span class="os-lbl">terminal</span></div><pre class="xs" data-os="unix"><span class="c"># M은 6-1에서 담은 모델 이름</span>
+<span class="pr">$ </span>opencode --pure run -m $M --format json \
   "tests 와 minishop 폴더를 explore subagent 두 개에게 동시에 조사시켜 줘" \
   &gt; run.jsonl
 
@@ -1241,7 +1248,8 @@ reports/&lt;대상&gt;.md 파일에 아래 네 줄을 쓴다.
 
 <span class="c"># 출력 예</span>
 {<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"tests 폴더 조사"</span>}
-{<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"minishop 폴더 조사"</span>}</pre><pre class="xs" data-os="win"><span class="pr">PS&gt; </span>opencode --pure run --format json `
+{<span class="v">"subagent_type"</span>:<span class="s">"explore"</span>,<span class="v">"description"</span>:<span class="s">"minishop 폴더 조사"</span>}</pre><pre class="xs" data-os="win"><span class="c"># $M은 6-1에서 담은 모델 이름</span>
+<span class="pr">PS&gt; </span>opencode --pure run -m $M --format json `
   "tests 와 minishop 폴더를 explore subagent 두 개에게 동시에 조사시켜 줘" `
   &gt; run.jsonl
 
@@ -1320,12 +1328,12 @@ explore       minishop 폴더 조사</pre></div>
 <span class="pr">$ </span>opencode --pure debug agent &lt;이름&gt; | jq .tools
 <span class="pr">$ </span>opencode --pure agent create   <span class="c"># 대화형으로 agent 파일 만들기</span>
 
-<span class="c"># 실행</span>
+<span class="c"># 실행 (M=제공자/모델)</span>
 <span class="pr">$ </span>opencode --pure                         <span class="c"># TUI</span>
-<span class="pr">$ </span>opencode --pure run "..."               <span class="c"># 한 번 실행</span>
-<span class="pr">$ </span>opencode --pure run -c "..."            <span class="c"># 직전 세션에 이어서</span>
-<span class="pr">$ </span>opencode --pure run --agent plan "..."  <span class="c"># primary/all agent로</span>
-<span class="pr">$ </span>opencode --pure run --format json "..." <span class="c"># 사건을 JSON 줄로</span>
+<span class="pr">$ </span>opencode --pure run -m $M "..."               <span class="c"># 한 번 실행</span>
+<span class="pr">$ </span>opencode --pure run -m $M -c "..."            <span class="c"># 직전 세션에 이어서</span>
+<span class="pr">$ </span>opencode --pure run -m $M --agent plan "..."  <span class="c"># primary/all agent로</span>
+<span class="pr">$ </span>opencode --pure run -m $M --format json "..." <span class="c"># 사건을 JSON 줄로</span>
 
 <span class="c"># 기록</span>
 <span class="pr">$ </span>opencode --pure session list
@@ -1336,12 +1344,12 @@ explore       minishop 폴더 조사</pre></div>
 <span class="pr">PS&gt; </span>(opencode --pure debug agent &lt;이름&gt; | Out-String | ConvertFrom-Json).tools
 <span class="pr">PS&gt; </span>opencode --pure agent create   <span class="c"># 대화형으로 agent 파일 만들기</span>
 
-<span class="c"># 실행</span>
+<span class="c"># 실행 ($M = '제공자/모델')</span>
 <span class="pr">PS&gt; </span>opencode --pure                         <span class="c"># TUI</span>
-<span class="pr">PS&gt; </span>opencode --pure run "..."               <span class="c"># 한 번 실행</span>
-<span class="pr">PS&gt; </span>opencode --pure run -c "..."            <span class="c"># 직전 세션에 이어서</span>
-<span class="pr">PS&gt; </span>opencode --pure run --agent plan "..."  <span class="c"># primary/all agent로</span>
-<span class="pr">PS&gt; </span>opencode --pure run --format json "..." <span class="c"># 사건을 JSON 줄로</span>
+<span class="pr">PS&gt; </span>opencode --pure run -m $M "..."               <span class="c"># 한 번 실행</span>
+<span class="pr">PS&gt; </span>opencode --pure run -m $M -c "..."            <span class="c"># 직전 세션에 이어서</span>
+<span class="pr">PS&gt; </span>opencode --pure run -m $M --agent plan "..."  <span class="c"># primary/all agent로</span>
+<span class="pr">PS&gt; </span>opencode --pure run -m $M --format json "..." <span class="c"># 사건을 JSON 줄로</span>
 
 <span class="c"># 기록</span>
 <span class="pr">PS&gt; </span>opencode --pure session list
