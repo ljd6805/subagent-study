@@ -547,7 +547,7 @@ svg .mono{font-family:var(--mono)}
         <rect x="320" y="158" width="120" height="46" rx="12" class="sb2"/><text x="380" y="187" fill="#eef2f6">자식</text>
         <rect x="140" y="288" width="120" height="46" rx="12" fill="#18222f" stroke="#e3b341" stroke-dasharray="5 4"/><text x="200" y="317" fill="#e3b341">손자</text>
         <rect x="140" y="418" width="120" height="46" rx="12" fill="#18222f" stroke="#bc8cff" stroke-dasharray="5 4"/><text x="200" y="447" fill="#bc8cff">증손자</text>
-        <text x="285" y="317" text-anchor="start" font-size="14" fill="#e3b341">OpenCode · Codex 기본값에선 막힘</text>
+        <text x="285" y="317" text-anchor="start" font-size="14" fill="#e3b341">OpenCode 기본값에선 막힘</text>
         <text x="285" y="447" text-anchor="start" font-size="14" fill="#bc8cff">Claude는 메인 아래 3단계까지</text>
       </g>
     </svg>
@@ -555,7 +555,7 @@ svg .mono{font-family:var(--mono)}
       <table class="sm">
         <tr><th></th><th>자식이 또 위임? (기본)</th><th>동시 실행 상한</th><th>조절</th></tr>
         <tr><td class="h"><span class="t oc">OpenCode</span></td><td><b>불가</b> · <code>subagent_depth</code> 1</td><td>명시 상한 없음</td><td><code>subagent_depth: 2</code> + 자식 <code>task</code> 허용</td></tr>
-        <tr><td class="h"><span class="t cx">Codex</span></td><td><b>불가</b> · <code>max_depth</code> 1 (root=0)</td><td><code>max_threads</code> 6</td><td><code>[agents]</code> 테이블</td></tr>
+        <tr><td class="h"><span class="t cx">Codex</span></td><td class="dim">문서에 깊이 설정 없음</td><td><code>max_concurrent_threads_per_session</code> (미지정 시 Codex 기본값)</td><td><code>[agents]</code> 테이블</td></tr>
         <tr><td class="h"><span class="t cc">Claude</span></td><td><b>가능</b> · 3단계까지</td><td>20개</td><td><code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code> 등 환경변수</td></tr>
       </table>
       <div class="callout y">상한이 있는 이유는 <b>비용과 통제</b>다. 재귀 위임은 토큰을 기하급수로 쓰고, 누가 무엇을 했는지 추적하기 어려워진다.</div>
@@ -1236,11 +1236,11 @@ You are in code review mode...</pre>
       </g>
       <path d="M680,196 L760,196" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#a-x)"/>
       <rect x="766" y="163" width="300" height="66" rx="12" fill="#11261a" stroke="#7ee787" stroke-width="2"/><text x="786" y="203" font-size="18" font-weight="700" fill="#eef2f6">메인이 결과를 모아 답 1개</text>
-      <text x="1090" y="203" font-size="15" font-weight="700" fill="#8e9cae">열린 스레드 기본 최대 6개</text>
+      <text x="1090" y="203" font-size="15" font-weight="700" fill="#8e9cae">열린 스레드 수에 상한</text>
     </svg>
     <div class="g2">
       <div class="card c-blue"><div class="lbl">자동 위임을 하지 않는다</div><p>"Codex only spawns subagents when you explicitly ask it to." description만 보고 알아서 위임하는 OpenCode · Claude와 <b>가장 큰 차이</b>다.</p></div>
-      <div class="card c-yellow"><div class="lbl">상한은 열린 스레드 수</div><p><code>agents.max_threads</code>(기본 6)는 동시에 열려 있는 agent 스레드 수를 제한한다. 비활성 스레드의 승인 요청도 메인 화면에 올라온다.</p></div>
+      <div class="card c-yellow"><div class="lbl">상한은 열린 스레드 수</div><p><code>agents.max_concurrent_threads_per_session</code>(구 이름 <code>max_threads</code>)이 동시에 열려 있는 자식 스레드 수를 제한한다. 비우면 Codex 기본값을 쓴다. 비활성 스레드의 승인 요청도 메인 화면에 올라온다.</p></div>
     </div>
   </div>
   <div class="note"><span class="nt try">TRY</span><span>같은 일을 "나눠서 해줘" 없이 시킬 때와 붙여서 시킬 때, 스레드가 생기는지 <code>/agent</code>로 비교해 보자.</span></div>
@@ -1266,9 +1266,9 @@ Return PASS/FAIL + file:line list.
 <span class="k">nickname_candidates</span> = [<span class="s">"Ada"</span>, <span class="s">"Linus"</span>]</pre>
     <div style="display:flex;flex-direction:column;gap:16px">
 <pre class="sm"><span class="fn">~/.codex/config.toml</span>[<span class="k">agents</span>]
-<span class="k">max_threads</span> = <span class="v">6</span>   <span class="c"># 동시 스레드</span>
-<span class="k">max_depth</span>   = <span class="v">1</span>   <span class="c"># 중첩 깊이 (root = 0)</span>
-<span class="c"># job_max_runtime_seconds: CSV 일괄 작업용</span></pre>
+<span class="k">max_concurrent_threads_per_session</span> = <span class="v">4</span>  <span class="c"># 동시 스레드 (구 max_threads)</span>
+<span class="k">default_subagent_model</span> = <span class="s">"…"</span>  <span class="c"># 자식 기본 모델</span>
+<span class="k">default_subagent_reasoning_effort</span> = <span class="s">"medium"</span></pre>
       <div class="card"><div class="lbl">내장 역할</div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="pill" style="font-size:17px"><b class="blue">default</b> 범용</div>
@@ -1425,7 +1425,7 @@ Return PASS/FAIL + file:line list.
     <tr><td class="h">직접 호출</td><td><code>@agent</code></td><td>자연어 요청 · 역할 지정</td><td><code>@agent-이름</code>, <code>--agent</code></td></tr>
     <tr><td class="h">권한</td><td>permission + <code>permission.task</code></td><td>sandbox 상속 + 역할별 <code>sandbox_mode</code></td><td>tools / disallowedTools / permissionMode</td></tr>
     <tr><td class="h">내장 agent</td><td>general, explore, scout</td><td>default, explorer, worker</td><td>Explore, Plan, general-purpose, fork</td></tr>
-    <tr><td class="h">중첩 · 동시</td><td>깊이 1 (조절 가능)</td><td>깊이 1 · 6 스레드</td><td>3단계 · 20개</td></tr>
+    <tr><td class="h">중첩 · 동시</td><td>깊이 1 (조절 가능)</td><td>동시 스레드 상한 (깊이는 문서에 없음)</td><td>3단계 · 20개</td></tr>
     <tr><td class="h">기록 물려주기</td><td class="dim">없음</td><td class="dim">없음</td><td><code>fork</code> agent, SendMessage 재개</td></tr>
     <tr><td class="h">자식 들여다보기</td><td>child session 이동</td><td><code>/agent</code> 스레드 전환</td><td>transcript 파일, SubagentStop hook</td></tr>
   </table>
@@ -1497,6 +1497,357 @@ Return PASS/FAIL + file:line list.
   </div>
 </section>
 
+
+<!-- ================= 부록 A · 선언 방법 상세 ================= -->
+<section class="slide divider" data-sec="부록">
+  <div class="num">A</div>
+  <div class="kicker">Appendix A</div>
+  <h1>선언 방법 상세</h1>
+  <p class="lead">세 도구에서 subagent를 <b>어디에, 어떤 형식으로</b> 선언하는지, 같은 이름이 여러 곳에 있으면 <b>어느 정의가 쓰이는지</b>를 그림과 사례로 정리한다.</p>
+  <div class="toc">
+    <span><b>A1</b>OpenCode · 두 가지 선언 방식</span><span><b>A2</b>OpenCode · 우선순위와 병합</span><span><b>A3</b>OpenCode · 사례</span>
+    <span><b>A4</b>Codex · 두 가지 선언 방식</span><span><b>A5</b>Codex · 우선순위와 상속</span><span><b>A6</b>Codex · 사례</span>
+    <span><b>A7</b>Claude Code · 선언 방식</span><span><b>A8</b>Claude Code · 우선순위와 폴더 탐색</span><span><b>A9</b>Claude Code · 사례</span><span><b>A10</b>한 장 비교</span>
+  </div>
+</section>
+
+<!-- A1 OpenCode 선언 방식 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--orange)">A1 · OpenCode · Two ways</div>
+  <h2>OpenCode는 <span class="orange">JSON 한 파일</span>에 모아 쓰거나, <span class="orange">agent마다 Markdown 파일</span>을 둔다</h2>
+  <div class="body" style="gap:20px">
+    <div class="g2" style="gap:22px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="lbl" style="font:800 14px var(--sans);letter-spacing:.12em;color:var(--orange)">방식 ① opencode.json의 "agent" 키</div>
+<pre class="xs"><span class="fn">my-repo/opencode.json</span>{
+  <span class="k">"agent"</span>: {
+    <span class="k">"review"</span>: {                       <span class="c">// 키 = agent 이름</span>
+      <span class="k">"description"</span>: <span class="s">"변경된 코드를 검토"</span>,
+      <span class="k">"mode"</span>: <span class="s">"subagent"</span>,
+      <span class="k">"model"</span>: <span class="s">"anthropic/claude-sonnet-…"</span>,
+      <span class="k">"prompt"</span>: <span class="s">"{file:./prompts/review.txt}"</span>,
+      <span class="k">"permission"</span>: { <span class="k">"edit"</span>: <span class="r">"deny"</span> }
+    }
+  }
+}</pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="lbl" style="font:800 14px var(--sans);letter-spacing:.12em;color:var(--orange)">방식 ② agents/ 폴더의 Markdown 파일</div>
+<pre class="xs"><span class="fn">my-repo/.opencode/agents/review.md</span><span class="c">---</span>
+<span class="k">description</span>: <span class="s">변경된 코드를 검토</span>
+<span class="k">mode</span>: <span class="s">subagent</span>
+<span class="k">model</span>: <span class="s">anthropic/claude-sonnet-…</span>
+<span class="k">permission</span>:
+  <span class="k">edit</span>: <span class="r">deny</span>
+<span class="c">---</span>
+너는 코드 리뷰어다.        <span class="c"># 본문 = 지시문(prompt)</span>
+변경된 파일만 읽고, 수정하지 않는다.</pre>
+      </div>
+    </div>
+    <table class="tight sm">
+      <tr><th></th><th>① opencode.json</th><th>② Markdown 파일</th></tr>
+      <tr><td class="h">이름</td><td><code>"agent"</code> 안의 키</td><td>파일명 (<code>review.md</code> → <code>review</code>)</td></tr>
+      <tr><td class="h">지시문</td><td><code>prompt</code> 필드. <code>{file:…}</code> 경로는 <b>그 설정 파일 위치</b> 기준</td><td>frontmatter 아래 본문</td></tr>
+      <tr><td class="h">프로젝트</td><td><code>my-repo/opencode.json</code></td><td><code>my-repo/.opencode/agents/*.md</code></td></tr>
+      <tr><td class="h">개인(전역)</td><td><code>~/.config/opencode/opencode.json</code></td><td><code>~/.config/opencode/agents/*.md</code></td></tr>
+    </table>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://opencode.ai/docs/agents/">OpenCode Agents</a><a href="https://opencode.ai/docs/config/">Config</a> · 단수형 <code>agent/</code> 폴더도 하위 호환으로 읽는다.</span></div>
+</section>
+
+<!-- A2 OpenCode 우선순위와 병합 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--orange)">A2 · OpenCode · Precedence &amp; merge</div>
+  <h2>OpenCode는 설정을 <span class="orange">모두 합치고</span>, 겹치는 필드만 <span class="orange">우선순위가 높은 쪽</span>으로 덮는다</h2>
+  <div class="split" style="grid-template-columns:.78fr 1.22fr;gap:36px;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="font:800 13px var(--mono);color:var(--muted);margin-bottom:2px">1 = 가장 우선 · 아래로 갈수록 먼저 읽히고 위에서 덮인다</div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">1</span><b style="font-size:17px">관리 설정</b><span class="muted" style="font-size:14px;margin-left:auto">관리 파일 · macOS 관리 환경설정</span></div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">2</span><b style="font-size:17px"><code>OPENCODE_CONFIG_CONTENT</code></b><span class="muted" style="font-size:14px;margin-left:auto">환경변수 인라인</span></div>
+      <div class="card c-orange" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark o" style="margin:0">3</span><b style="font-size:17px"><code>.opencode/</code> 폴더</b><span class="muted" style="font-size:14px;margin-left:auto">agents/*.md 포함</span></div>
+      <div class="card c-orange" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark o" style="margin:0">4</span><b style="font-size:17px">프로젝트 <code>opencode.json</code></b><span class="muted" style="font-size:14px;margin-left:auto">Git 루트까지 올라가며 찾음</span></div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">5</span><b style="font-size:17px"><code>OPENCODE_CONFIG</code></b><span class="muted" style="font-size:14px;margin-left:auto">지정한 설정 파일</span></div>
+      <div class="card c-blue" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark b" style="margin:0">6</span><b style="font-size:17px"><code>~/.config/opencode/</code></b><span class="muted" style="font-size:14px;margin-left:auto">개인 opencode.json · agents/</span></div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">7</span><b style="font-size:17px">원격 설정</b><span class="muted" style="font-size:14px;margin-left:auto">.well-known/opencode · 조직 기본값</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <svg viewBox="0 0 800 380" width="100%">
+        <defs><marker id="apx-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8e9cae"/></marker></defs>
+        <rect x="0" y="0" width="360" height="170" rx="14" fill="#0f2036" stroke="#58a6ff" stroke-width="1.6"/>
+        <text x="18" y="30" font-size="15" font-weight="800" fill="#58a6ff">⑥ ~/.config/opencode/agents/review.md</text>
+        <text x="18" y="66" class="mono" font-size="16" fill="#c3cdd8">model: <tspan fill="#eef2f6">sonnet</tspan></text>
+        <text x="18" y="98" class="mono" font-size="16" fill="#c3cdd8">temperature: <tspan fill="#eef2f6">0.1</tspan></text>
+        <text x="18" y="130" class="mono" font-size="16" fill="#c3cdd8">permission.edit: <tspan fill="#eef2f6">deny</tspan></text>
+        <rect x="0" y="200" width="360" height="130" rx="14" fill="#2c1d0e" stroke="#ffa657" stroke-width="1.6"/>
+        <text x="18" y="230" font-size="15" font-weight="800" fill="#ffa657">③ my-repo/.opencode/agents/review.md</text>
+        <text x="18" y="266" class="mono" font-size="16" fill="#c3cdd8">model: <tspan fill="#eef2f6">opus</tspan></text>
+        <text x="18" y="298" class="mono" font-size="16" fill="#c3cdd8">steps: <tspan fill="#eef2f6">20</tspan></text>
+        <path d="M368,85 C410,85 420,170 456,175" class="ar" marker-end="url(#apx-ar)"/>
+        <path d="M368,265 C410,265 420,190 456,185" class="ar" marker-end="url(#apx-ar)"/>
+        <rect x="462" y="60" width="338" height="250" rx="14" fill="#11261a" stroke="#7ee787" stroke-width="2"/>
+        <text x="482" y="92" font-size="15" font-weight="800" fill="#7ee787">실제로 쓰이는 review</text>
+        <text x="482" y="130" class="mono" font-size="16" fill="#eef2f6">model: opus</text><text x="660" y="130" font-size="13" fill="#ffa657">③이 덮음</text>
+        <text x="482" y="166" class="mono" font-size="16" fill="#eef2f6">temperature: 0.1</text><text x="660" y="166" font-size="13" fill="#58a6ff">⑥ 그대로</text>
+        <text x="482" y="202" class="mono" font-size="16" fill="#eef2f6">permission.edit: deny</text><text x="482" y="222" font-size="13" fill="#58a6ff">⑥ 그대로</text>
+        <text x="482" y="262" class="mono" font-size="16" fill="#eef2f6">steps: 20</text><text x="660" y="262" font-size="13" fill="#ffa657">③에서 추가</text>
+        <text x="0" y="368" font-size="15" fill="#8e9cae">파일 하나를 고르는 것이 아니라, <tspan fill="#eef2f6" font-weight="700">필드 단위로 합친다</tspan>.</text>
+      </svg>
+      <div class="callout y" style="font-size:18px;padding:12px 18px">문서가 직접 밝힌 것은 설정 파일의 병합 규칙("merged together, not replaced")이다. 같은 이름의 agent가 이 규칙대로 합쳐지는지는 문서에 따로 나오지 않으므로 <b>실습에서 확인</b>한다.</div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://opencode.ai/docs/config/#precedence-order">Config · Precedence order</a> "Later configs override earlier ones only for conflicting keys."</span></div>
+</section>
+
+<!-- A3 OpenCode 사례 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--orange)">A3 · OpenCode · Cases</div>
+  <h2>OpenCode에서 자주 만나는 <span class="orange">네 가지 경우</span></h2>
+  <div class="body" style="gap:16px">
+    <div class="g2" style="gap:18px;grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="card c-orange" style="padding:18px 22px;gap:8px"><div class="lbl">Case 1 · 같은 이름, JSON과 Markdown에 모두</div>
+<pre class="xs" style="padding:10px 14px"><span class="gk">my-repo/opencode.json</span>
+  "review": { "model": "sonnet", "temperature": 0.1 }
+<span class="gk">my-repo/.opencode/agents/review.md</span>
+  model: opus</pre>
+        <p><b>결과:</b> <code>.opencode/</code> 폴더(3)가 <code>opencode.json</code>(4)보다 우선이므로 <code>model</code>은 opus, <code>temperature</code>는 JSON 값 0.1이 남는다.</p></div>
+      <div class="card c-orange" style="padding:18px 22px;gap:8px"><div class="lbl">Case 2 · 같은 이름, 개인과 프로젝트에 모두</div>
+<pre class="xs" style="padding:10px 14px"><span class="k">~/.config/opencode/agents/review.md</span>
+  model: sonnet · permission.edit: deny
+<span class="gk">my-repo/.opencode/agents/review.md</span>
+  model: opus</pre>
+        <p><b>결과:</b> 프로젝트(3)가 개인(6)보다 우선. <code>model</code>만 opus로 바뀌고 개인 파일의 <code>edit: deny</code>는 그대로 적용된다.</p></div>
+      <div class="card" style="padding:18px 22px;gap:8px"><div class="lbl">Case 3 · 내장 agent 바꾸기</div>
+<pre class="xs" style="padding:10px 14px">"agent": { "build": { "model": "anthropic/claude-opus-…" },
+           "plan":  { "permission": { "edit": "deny" } } }</pre>
+        <p><b>결과:</b> 같은 이름으로 다시 정의하면 <b>적은 필드만</b> 바뀐다. build는 모델만, plan은 수정 권한만 바뀐다.</p></div>
+      <div class="card" style="padding:18px 22px;gap:8px"><div class="lbl">Case 4 · agent 끄기</div>
+<pre class="xs" style="padding:10px 14px">"agent": { "general": { "disable": true } }
+<span class="c"># 또는 .opencode/agents/general.md frontmatter에 disable: true</span></pre>
+        <p><b>결과:</b> 해당 agent가 목록에서 빠진다. 개인 설정에서 만든 agent를 특정 프로젝트에서만 끌 때도 쓴다.</p></div>
+    </div>
+    <div class="callout y" style="font-size:18px;padding:12px 18px">Case 1·2는 A2의 병합 규칙을 agent에 적용한 <b>해석</b>이다. 같은 이름을 여러 곳에 두기보다 <b>한 곳에서만 정의</b>하는 편이 안전하다.</div>
+  </div>
+  <div class="note"><span class="nt try">TRY</span><span>Case 1처럼 두 곳에 정의한 뒤 <code>opencode agent list</code>와 실제 응답 모델을 보고 어느 값이 쓰였는지 확인해 보자.</span></div>
+</section>
+
+<!-- A4 Codex 선언 방식 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--blue)">A4 · Codex · Two ways</div>
+  <h2>Codex는 <span class="blue">역할 파일 하나</span>로 쓰거나, <span class="blue">config.toml에 역할을 등록</span>한다</h2>
+  <div class="body" style="gap:20px">
+    <div class="g2" style="gap:22px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="lbl" style="font:800 14px var(--sans);letter-spacing:.12em;color:var(--blue)">방식 ① agents/ 폴더의 역할 파일</div>
+<pre class="xs"><span class="fn">my-repo/.codex/agents/reviewer.toml</span><span class="c"># 필수 세 개</span>
+<span class="k">name</span> = <span class="s">"reviewer"</span>          <span class="c"># 이름의 기준</span>
+<span class="k">description</span> = <span class="s">"PR 검토용 읽기 전용 리뷰어"</span>
+<span class="k">developer_instructions</span> = <span class="s">"""
+정확성과 테스트를 검토한다. 파일은 고치지 않는다.
+"""</span>
+<span class="c"># 선택 · 안 적으면 부모 세션 값을 쓴다</span>
+<span class="k">model_reasoning_effort</span> = <span class="s">"high"</span>
+<span class="k">sandbox_mode</span> = <span class="s">"read-only"</span></pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="lbl" style="font:800 14px var(--sans);letter-spacing:.12em;color:var(--blue)">방식 ② config.toml의 [agents.이름]</div>
+<pre class="xs"><span class="fn">~/.codex/config.toml</span>[<span class="k">agents</span>]
+<span class="k">default_subagent_model</span> = <span class="s">"…"</span>    <span class="c"># 모든 자식의 기본값</span>
+
+[<span class="k">agents.researcher</span>]
+<span class="k">description</span> = <span class="s">"자료 조사 담당"</span>  <span class="c"># 고를 때 보는 설명</span>
+<span class="k">config_file</span> = <span class="s">"./agents/researcher.toml"</span></pre>
+<pre class="xs"><span class="fn">~/.codex/agents/researcher.toml</span><span class="c"># 이 역할에만 적용할 설정 레이어</span>
+<span class="k">model_reasoning_effort</span> = <span class="s">"medium"</span></pre>
+      </div>
+    </div>
+    <table class="tight sm">
+      <tr><th></th><th>규칙</th></tr>
+      <tr><td class="h">이름</td><td><code>name</code> 필드가 기준이다. 파일명과 맞추는 것은 관례일 뿐이다 (<code>reviewer.toml</code>에 <code>name = "code-reviewer"</code>면 이름은 code-reviewer)</td></tr>
+      <tr><td class="h">config_file 경로</td><td>상대 경로는 <b>그 항목을 선언한 config 파일 위치</b> 기준으로 찾는다</td></tr>
+      <tr><td class="h">쓸 수 없는 이름</td><td><code>enabled</code>, <code>max_threads</code> 같은 <code>[agents]</code> 설정 이름은 역할 이름으로 쓸 수 없다</td></tr>
+    </table>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://developers.openai.com/codex/subagents">Codex Subagents</a><a href="https://learn.chatgpt.com/codex/config-file/config-reference">Config reference · agents.*</a></span></div>
+</section>
+
+<!-- A5 Codex 우선순위 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--blue)">A5 · Codex · Precedence &amp; inheritance</div>
+  <h2>Codex는 <span class="blue">가까운 config.toml</span>이 이기고, 자식 설정은 <span class="blue">지정 → 기본값 → 부모</span> 순으로 정해진다</h2>
+  <div class="split" style="grid-template-columns:.9fr 1.1fr;gap:36px;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="font:800 13px var(--mono);color:var(--muted);margin-bottom:2px">config.toml 우선순위 · 1 = 가장 우선</div>
+      <div class="card c-yellow" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark y" style="margin:0">1</span><b style="font-size:17px">CLI 플래그 · <code>--config</code></b><span class="muted" style="font-size:14px;margin-left:auto">이번 실행만</span></div>
+      <div class="card c-green" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0">2</span><b style="font-size:17px">프로젝트 <code>.codex/config.toml</code></b><span class="muted" style="font-size:14px;margin-left:auto">가까운 쪽 우선 · 신뢰한 프로젝트만</span></div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">3</span><b style="font-size:17px"><code>--profile</code>로 고른 프로필</b></div>
+      <div class="card c-blue" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark b" style="margin:0">4</span><b style="font-size:17px">개인 <code>~/.codex/config.toml</code></b></div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">5</span><b style="font-size:17px">클라우드 관리 기본값</b></div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">6</span><b style="font-size:17px">시스템 <code>/etc/codex/config.toml</code></b></div>
+      <div class="card" style="padding:9px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">7</span><b style="font-size:17px">내장 기본값</b></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="lbl" style="font:800 13px var(--mono);color:var(--muted)">자식의 model · reasoning effort가 정해지는 순서</div>
+      <svg viewBox="0 0 820 150" width="100%">
+        <defs><marker id="apx-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8e9cae"/></marker></defs>
+        <rect x="0" y="20" width="230" height="96" rx="14" fill="#11261a" stroke="#7ee787" stroke-width="2"/>
+        <text x="115" y="60" text-anchor="middle" font-size="19" font-weight="800" fill="#eef2f6">① 호출 때 지정</text><text x="115" y="90" text-anchor="middle" font-size="14" fill="#8e9cae">spawn 시 명시한 값</text>
+        <path d="M236,68 L284,68" class="ar" marker-end="url(#apx-ar2)"/>
+        <rect x="290" y="20" width="240" height="96" rx="14" fill="#0f2036" stroke="#58a6ff" stroke-width="2"/>
+        <text x="410" y="60" text-anchor="middle" font-size="19" font-weight="800" fill="#eef2f6">② [agents] 기본값</text><text x="410" y="90" text-anchor="middle" font-size="14" fill="#8e9cae">default_subagent_model 등</text>
+        <path d="M536,68 L584,68" class="ar" marker-end="url(#apx-ar2)"/>
+        <rect x="590" y="20" width="230" height="96" rx="14" fill="#18222f" stroke="#34445a" stroke-width="2"/>
+        <text x="705" y="60" text-anchor="middle" font-size="19" font-weight="800" fill="#eef2f6">③ 부모 값</text><text x="705" y="90" text-anchor="middle" font-size="14" fill="#8e9cae">앞에서 정해지지 않으면</text>
+      </svg>
+      <ul class="pts b" style="gap:12px">
+        <li style="font-size:19px">역할 파일에 <code>model</code>과 <code>model_reasoning_effort</code>를 <b>둘 다</b> 적으면 그 역할은 그 값을 쓴다. 모델만 정하면 effort는 그 모델의 기본값이 된다</li>
+        <li style="font-size:19px">역할 파일에 없는 <code>sandbox_mode</code> · <code>mcp_servers</code> · <code>skills.config</code>는 <b>부모 세션 값</b>을 물려받는다</li>
+        <li style="font-size:19px">프로젝트 <code>.codex/config.toml</code>은 프로젝트 루트부터 작업 폴더 쪽으로 내려오며 읽고, <b>작업 폴더에 가까운 파일</b>이 이긴다</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://learn.chatgpt.com/codex/config-file/config-basic">Config basics · precedence</a><a href="https://developers.openai.com/codex/subagents">Subagents · model resolution</a></span></div>
+</section>
+
+<!-- A6 Codex 사례 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--blue)">A6 · Codex · Cases</div>
+  <h2>Codex에서 자주 만나는 <span class="blue">네 가지 경우</span></h2>
+  <div class="body" style="gap:16px">
+    <div class="g2" style="gap:18px;grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="card c-blue" style="padding:18px 22px;gap:8px"><div class="lbl">Case 1 · 내장 역할과 같은 이름</div>
+<pre class="xs" style="padding:10px 14px">.codex/agents/explorer.toml → name = "explorer"</pre>
+        <p><b>결과:</b> 내 역할이 내장 <code>explorer</code>를 대신한다. 탐색 역할의 지시문이나 모델을 바꿀 때 쓴다.</p></div>
+      <div class="card c-red" style="padding:18px 22px;gap:8px"><div class="lbl">Case 2 · 같은 이름, 개인과 프로젝트에 모두</div>
+<pre class="xs" style="padding:10px 14px">~/.codex/agents/reviewer.toml   → name = "reviewer"
+my-repo/.codex/agents/reviewer.toml → name = "reviewer"</pre>
+        <p><b>결과:</b> 어느 쪽이 쓰이는지 <b>문서에 없다</b>. 이름을 다르게 지어 겹치지 않게 한다.</p></div>
+      <div class="card" style="padding:18px 22px;gap:8px"><div class="lbl">Case 3 · 폴더 안에 config.toml이 또 있을 때</div>
+<pre class="xs" style="padding:10px 14px">my-repo/.codex/config.toml        → default_subagent_model = "A"
+my-repo/svc/.codex/config.toml    → default_subagent_model = "B"
+작업 폴더: my-repo/svc</pre>
+        <p><b>결과:</b> 작업 폴더에 가까운 <code>svc/</code> 쪽이 이겨서 자식 기본 모델은 B다.</p></div>
+      <div class="card c-yellow" style="padding:18px 22px;gap:8px"><div class="lbl">Case 4 · 신뢰하지 않은 프로젝트</div>
+<pre class="xs" style="padding:10px 14px">프로젝트를 untrusted로 표시</pre>
+        <p><b>결과:</b> 프로젝트의 <code>.codex/</code> 레이어(설정 · hooks · rules)를 건너뛴다. 프로젝트 <code>config.toml</code>의 <code>[agents]</code> 설정이 적용되지 않는다.</p></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt try">TRY</span><span>Case 4에서 <code>.codex/agents/</code>의 역할 파일도 함께 건너뛰는지는 문서에 따로 없다. 실습에서 <code>/agent</code>로 확인해 보자.</span></div>
+</section>
+
+<!-- A7 Claude 선언 방식 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--purple)">A7 · Claude Code · Ways to declare</div>
+  <h2>Claude Code는 <span class="purple">Markdown 파일</span>이 기본이고, <span class="purple">세션 JSON</span>과 <span class="purple">플러그인</span>으로도 선언한다</h2>
+  <div class="body" style="gap:18px">
+    <div class="g2" style="gap:22px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="lbl" style="font:800 14px var(--sans);letter-spacing:.12em;color:var(--purple)">방식 ① agents/ 폴더의 Markdown 파일</div>
+<pre class="xs"><span class="fn">my-repo/.claude/agents/review/reviewer.md</span><span class="c">---</span>
+<span class="k">name</span>: <span class="s">code-reviewer</span>    <span class="c"># 이름의 기준 (파일명 무관)</span>
+<span class="k">description</span>: <span class="s">코드 변경 직후 검토. Use proactively.</span>
+<span class="k">tools</span>: <span class="s">Read, Grep, Glob</span>
+<span class="k">model</span>: <span class="s">sonnet</span>
+<span class="c">---</span>
+너는 읽기 전용 코드 리뷰어다. 파일은 고치지 않는다.</pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="lbl" style="font:800 14px var(--sans);letter-spacing:.12em;color:var(--purple)">방식 ② 실행할 때 JSON으로 (이번 세션만)</div>
+<pre class="xs"><span class="fn">터미널</span>claude --agents '{
+  <span class="k">"code-reviewer"</span>: {
+    <span class="k">"description"</span>: <span class="s">"코드 변경 직후 검토"</span>,
+    <span class="k">"prompt"</span>: <span class="s">"너는 읽기 전용 코드 리뷰어다."</span>,
+    <span class="k">"tools"</span>: [<span class="s">"Read"</span>, <span class="s">"Grep"</span>, <span class="s">"Glob"</span>],
+    <span class="k">"model"</span>: <span class="s">"sonnet"</span>
+  }
+}'</pre>
+      </div>
+    </div>
+    <div class="g3" style="gap:18px">
+      <div class="card" style="padding:16px 20px;gap:6px"><div class="lbl">방식 ③ 플러그인 agents/</div><p><code>agents/review/security.md</code>가 <code>my-plugin:review:security</code>로 등록된다. 하위 폴더가 이름에 들어간다.</p></div>
+      <div class="card" style="padding:16px 20px;gap:6px"><div class="lbl">방식 ④ 관리 설정</div><p>조직 관리자가 관리 설정 폴더의 <code>.claude/agents/</code>에 배포한다. 가장 우선한다.</p></div>
+      <div class="card" style="padding:16px 20px;gap:6px"><div class="lbl">폴더 정리</div><p>개인 · 프로젝트 폴더는 하위 폴더까지 찾는다. 하위 폴더 경로는 이름에 영향을 주지 않는다.</p></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://code.claude.com/docs/en/sub-agents">Subagents</a> · 프로젝트 <code>.claude/agents/</code>, 개인 <code>~/.claude/agents/</code></span></div>
+</section>
+
+<!-- A8 Claude 우선순위와 폴더 탐색 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--purple)">A8 · Claude Code · Precedence &amp; discovery</div>
+  <h2>Claude Code는 <span class="purple">파일 하나를 고르고</span>, 프로젝트 안에서는 <span class="purple">작업 폴더에 가까운 정의</span>를 쓴다</h2>
+  <div class="split" style="grid-template-columns:.7fr 1.3fr;gap:36px;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font:800 13px var(--mono);color:var(--muted);margin-bottom:2px">1 = 가장 우선</div>
+      <div class="card c-red" style="padding:11px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark r" style="margin:0">1</span><b style="font-size:17px">관리 설정</b><span class="muted" style="font-size:14px;margin-left:auto">조직</span></div>
+      <div class="card c-yellow" style="padding:11px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark y" style="margin:0">2</span><b style="font-size:17px"><code>--agents</code> JSON</b><span class="muted" style="font-size:14px;margin-left:auto">이번 세션</span></div>
+      <div class="card c-green" style="padding:11px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0">3</span><b style="font-size:17px"><code>.claude/agents/</code></b><span class="muted" style="font-size:14px;margin-left:auto">프로젝트</span></div>
+      <div class="card c-blue" style="padding:11px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark b" style="margin:0">4</span><b style="font-size:17px"><code>~/.claude/agents/</code></b><span class="muted" style="font-size:14px;margin-left:auto">개인</span></div>
+      <div class="card" style="padding:11px 16px;flex-direction:row;gap:12px;align-items:center"><span class="mark" style="margin:0;background:var(--dim)">5</span><b style="font-size:17px">플러그인 <code>agents/</code></b><span class="muted" style="font-size:14px;margin-left:auto">가장 낮음</span></div>
+      <div class="callout p" style="font-size:17px;padding:12px 16px;margin-top:6px">OpenCode와 달리 <b>합치지 않는다</b>. 이긴 파일의 정의를 통째로 쓰고 나머지는 무시한다.</div>
+    </div>
+    <svg viewBox="0 0 880 560" width="100%">
+      <defs><marker id="apx-ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#bc8cff"/></marker></defs>
+      <text x="0" y="22" font-size="15" font-weight="800" fill="#8e9cae">작업 폴더 my-repo/packages/api 에서 시작했을 때</text>
+      <g class="mono" font-size="16">
+        <rect x="0" y="42" width="560" height="96" rx="12" fill="#18222f" stroke="#34445a"/>
+        <text x="18" y="74" fill="#eef2f6">my-repo/</text>
+        <text x="40" y="106" fill="#c3cdd8">.claude/agents/reviewer.md</text><text x="340" y="106" fill="#8e9cae" font-family="Inter,sans-serif" font-size="14">name: reviewer (A)</text>
+        <rect x="40" y="168" width="560" height="96" rx="12" fill="#18222f" stroke="#34445a"/>
+        <text x="58" y="200" fill="#eef2f6">packages/</text>
+        <text x="80" y="232" fill="#c3cdd8">.claude/agents/ (없음)</text>
+        <rect x="80" y="294" width="560" height="96" rx="12" fill="#21183a" stroke="#bc8cff" stroke-width="2"/>
+        <text x="98" y="326" fill="#eef2f6">api/   ← 작업 폴더</text>
+        <text x="120" y="358" fill="#eef2f6">.claude/agents/reviewer.md</text><text x="420" y="358" fill="#bc8cff" font-family="Inter,sans-serif" font-size="14" font-weight="700">name: reviewer (B)</text>
+        <rect x="0" y="430" width="560" height="64" rx="12" fill="#0f2036" stroke="#27578a"/>
+        <text x="18" y="469" fill="#c3cdd8">~/.claude/agents/reviewer.md</text><text x="340" y="469" fill="#8e9cae" font-family="Inter,sans-serif" font-size="14">name: reviewer (C)</text>
+      </g>
+      <path d="M660,350 L660,90 L572,90" stroke="#bc8cff" stroke-width="2.5" fill="none" stroke-dasharray="6 5" marker-end="url(#apx-ar3)"/>
+      <text x="676" y="200" font-size="15" font-weight="700" fill="#bc8cff">저장소 루트까지</text>
+      <text x="676" y="222" font-size="15" font-weight="700" fill="#bc8cff">올라가며 모두 읽는다</text>
+      <rect x="600" y="430" width="280" height="122" rx="14" fill="#11261a" stroke="#7ee787" stroke-width="2"/>
+      <text x="620" y="462" font-size="16" font-weight="800" fill="#7ee787">결과: B를 쓴다</text>
+      <text x="620" y="492" font-size="14" fill="#c3cdd8">A보다 작업 폴더에 가깝다</text>
+      <text x="620" y="516" font-size="14" fill="#c3cdd8">C는 개인(4)이라 프로젝트(3)에 짐</text>
+      <text x="620" y="540" font-size="14" fill="#c3cdd8"><tspan class="mono">--add-dir</tspan> 폴더의 agents/도 읽음</text>
+    </svg>
+  </div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://code.claude.com/docs/en/sub-agents#choose-the-subagent-scope">Choose the subagent scope</a> "the definition closest to the working directory wins"</span></div>
+</section>
+
+<!-- A9 Claude 사례 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker" style="color:var(--purple)">A9 · Claude Code · Cases</div>
+  <h2>Claude Code에서 자주 만나는 <span class="purple">여섯 가지 경우</span></h2>
+  <div class="body" style="gap:14px">
+    <div class="g3" style="gap:16px">
+      <div class="card c-purple" style="padding:16px 20px;gap:6px"><div class="lbl">Case 1 · 개인과 프로젝트에 같은 이름</div><p><code>~/.claude/agents/</code>와 <code>.claude/agents/</code>에 모두 <code>reviewer</code> → <b>프로젝트 파일만</b> 쓴다.</p></div>
+      <div class="card c-yellow" style="padding:16px 20px;gap:6px"><div class="lbl">Case 2 · <code>--agents</code>로 같은 이름</div><p>세션 JSON(2)이 프로젝트 파일(3)보다 우선 → <b>이번 세션 동안만</b> JSON 정의를 쓴다. 파일을 고치지 않고 시험할 때 쓴다.</p></div>
+      <div class="card c-red" style="padding:16px 20px;gap:6px"><div class="lbl">Case 3 · 같은 폴더 안에 같은 name 두 개</div><p><code>agents/a.md</code>와 <code>agents/review/b.md</code>가 둘 다 <code>name: reviewer</code> → <b>하나만</b> 읽히고, 어느 쪽인지는 파일 읽는 순서에 달려 있다. 이름은 고유하게.</p></div>
+      <div class="card c-green" style="padding:16px 20px;gap:6px"><div class="lbl">Case 4 · 내장 agent 이름으로 정의</div><p><code>name: Explore</code>, <code>model: haiku</code>로 만들면 <b>내장 Explore를 대신</b>하고 자기 모델을 유지한다. 탐색을 싼 모델로 돌릴 때 쓴다.</p></div>
+      <div class="card" style="padding:16px 20px;gap:6px"><div class="lbl">Case 5 · 플러그인 agent</div><p>이름 앞에 플러그인 이름이 붙어(<code>my-plugin:reviewer</code>) 겹치지 않는다. 보안상 <code>hooks</code> · <code>mcpServers</code> · <code>permissionMode</code>는 무시된다.</p></div>
+      <div class="card c-blue" style="padding:16px 20px;gap:6px"><div class="lbl">Case 6 · 고쳤는데 반영이 안 될 때</div><p>파일 수정은 몇 초 안에 반영된다. 단 <b>agents 폴더를 처음 만든 경우</b>와 <code>--add-dir</code> 폴더 안의 agent는 <b>재시작</b>해야 읽힌다.</p></div>
+    </div>
+  </div>
+  <div class="note"><span class="nt try">TRY</span><span>Case 1을 만든 뒤 Claude에게 "reviewer의 지시문 첫 줄을 말해 줘"라고 시켜 어느 파일이 쓰였는지 확인해 보자.</span></div>
+</section>
+
+<!-- A10 한 장 비교 -->
+<section class="slide" data-sec="부록">
+  <div class="kicker">A10 · Summary</div>
+  <h2>선언 방식과 <span class="green">이름이 겹칠 때의 동작</span> 한 장 비교</h2>
+  <table class="sm">
+    <tr><th></th><th><span class="t oc">OpenCode</span></th><th><span class="t cx">Codex</span></th><th><span class="t cc">Claude Code</span></th></tr>
+    <tr><td class="h">선언 방식</td><td><code>opencode.json</code>의 <code>"agent"</code> · <code>agents/*.md</code></td><td><code>agents/*.toml</code> · <code>config.toml</code>의 <code>[agents.이름]</code></td><td><code>agents/*.md</code> · <code>--agents</code> JSON · 플러그인 · 관리 설정</td></tr>
+    <tr><td class="h">이름</td><td>JSON 키 / <b>파일명</b></td><td><code>name</code> 필드</td><td><code>name</code> 필드 (플러그인은 접두어)</td></tr>
+    <tr><td class="h">위치 우선순위</td><td>관리 &gt; 인라인 &gt; <code>.opencode/</code> &gt; 프로젝트 json &gt; 개인 &gt; 원격</td><td>config: CLI &gt; 프로젝트(가까운 쪽) &gt; 프로필 &gt; 개인<br>역할 파일끼리: <span class="dim">문서에 없음</span></td><td>관리 &gt; <code>--agents</code> &gt; 프로젝트(가까운 쪽) &gt; 개인 &gt; 플러그인</td></tr>
+    <tr><td class="h">이름이 겹치면</td><td><b>필드 단위로 합침</b>, 겹친 필드는 우선 쪽 값</td><td>내장과 겹치면 커스텀 우선. 개인·프로젝트 간은 <span class="dim">문서에 없음</span></td><td><b>파일 하나만 사용</b>, 나머지 무시</td></tr>
+    <tr><td class="h">내장 agent 바꾸기</td><td>같은 이름으로 필드만 다시 정의 · <code>disable</code></td><td>같은 이름의 역할 파일</td><td>같은 이름의 agent 파일</td></tr>
+    <tr><td class="h">안 적은 값</td><td>부모(호출한 primary) 모델 등</td><td><code>sandbox_mode</code> 등 부모 세션 값</td><td><code>tools</code> 생략 시 모든 도구, <code>model</code> 생략 시 메인 대화 모델</td></tr>
+  </table>
+  <div class="callout" style="font-size:20px;padding:12px 20px;margin-top:18px">세 도구 모두 가장 안전한 규칙은 같다: <b>같은 이름을 두 곳에 두지 않는다.</b> 바꾸고 싶으면 한 곳의 정의를 고친다.</div>
+  <div class="note"><span class="nt doc">DOCS</span><span><a href="https://opencode.ai/docs/config/">OpenCode Config</a><a href="https://learn.chatgpt.com/codex/config-file/config-basic">Codex Config basics</a><a href="https://code.claude.com/docs/en/sub-agents">Claude Code Subagents</a></span></div>
+</section>
+
 <div class="bar" id="bar"></div>
 </div>
 <nav id="ov" aria-label="슬라이드 목차"></nav>
@@ -1504,7 +1855,7 @@ Return PASS/FAIL + file:line list.
 (()=>{
 const stage=document.getElementById('stage');
 const S=[...stage.querySelectorAll('.slide')];
-const SECS=['Opening','메커니즘','구성','선언','운용','OpenCode','Codex','Claude Code','마무리'];
+const SECS=['Opening','메커니즘','구성','선언','운용','OpenCode','Codex','Claude Code','마무리','부록'];
 let i=0;
 S.forEach((el,n)=>{
   const top=document.createElement('div');top.className='chrome-top';
