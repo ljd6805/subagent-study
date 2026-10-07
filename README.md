@@ -4,6 +4,7 @@ OpenCode · Codex · Claude Code의 **subagent**를 공통 원리로 이해하�
 
 - 허브 페이지: https://ljd6805.github.io/subagent-study/
 - 이론 슬라이드: https://ljd6805.github.io/subagent-study/slides/theory/
+- 이론 슬라이드 2 (병렬 · 백그라운드 · 격리 · 팀): https://ljd6805.github.io/subagent-study/slides/theory-2/
 - OpenCode 실습 슬라이드: https://ljd6805.github.io/subagent-study/labs/01-opencode/
 - Claude Code 실습 슬라이드: https://ljd6805.github.io/subagent-study/labs/02-claude-code/
 - Codex 실습 슬라이드: https://ljd6805.github.io/subagent-study/labs/03-codex/
@@ -14,6 +15,7 @@ OpenCode · Codex · Claude Code의 **subagent**를 공통 원리로 이해하�
 |---|---|---|
 | [`index.html`](index.html) | 허브 페이지 — 슬라이드와 실습을 한곳에서 연결 | |
 | [`slides/theory/index.html`](slides/theory/index.html) | 이론 슬라이드 49장 (단일 HTML, 16:9 고정 캔버스, ←/→ 이동, `O` 목차, `#번호`로 바로 가기) | v2 |
+| [`slides/theory-2/index.html`](slides/theory-2/index.html) | 이론 슬라이드 2편 39장: 병렬 · 백그라운드 · worktree 격리 · Agent Teams 원리, Appendix에 도구별 공식 지원 현황 | v1 |
 | [`docs/outline-draft.md`](docs/outline-draft.md) | 이론 덱 목차 초안 | |
 | [`docs/research/`](docs/research/) | 도구별 조사 노트 (OpenCode · Codex · Claude Code) | |
 | [`labs/01-opencode/`](labs/01-opencode/) | OpenCode 실습 슬라이드 40장 (LAB 0–6)과 샘플 프로젝트 `minishop` | v1 |
