@@ -157,6 +157,8 @@ svg .mono{font-family:var(--mono)}
 #ov a{display:block;background:#101721;border:1px solid #233042;border-radius:10px;padding:12px 14px;color:#c9d3de;text-decoration:none;font:500 13px/1.45 var(--sans)}
 #ov a:hover,#ov a.cur{border-color:var(--green)}
 #ov a b{display:block;font:700 11px var(--mono);color:#6d7c8f;margin-bottom:4px}
+.home{position:fixed;left:14px;top:8px;z-index:40;display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;border:1px solid #233042;background:rgba(10,14,20,.7);color:#6d7c8f;font:600 12px var(--sans);text-decoration:none;transition:color .15s,border-color .15s}
+.home:hover{color:var(--green);border-color:var(--green)}
 .help{position:fixed;right:14px;top:10px;color:#3e4b5b;font:500 12px var(--sans);z-index:40}
 
 /* lab extras */
@@ -199,6 +201,7 @@ html[data-os="unix"] .os>pre[data-os="win"],html[data-os="win"] .os>pre[data-os=
 </style>
 </head>
 <body>
+<a class="home" href="../../" title="허브로 돌아가기">← Hub</a>
 <div class="help">← → Space · O 목차 · F 전체화면</div>
 <div id="stage">
 
