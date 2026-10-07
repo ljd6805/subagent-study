@@ -38,6 +38,10 @@
     .jumps a:hover{border-color:var(--blue);color:var(--blue)}
     .btn{align-self:flex-start;margin-top:6px;font-weight:700;text-decoration:none;color:#0d1117;background:var(--green);border-radius:10px;padding:8px 14px}
     .btn:hover{filter:brightness(1.08)}
+    .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+    .btns .btn{margin-top:0}
+    .btn.ghost{color:var(--muted);background:transparent;border:1px solid var(--line);font-weight:600}
+    .btn.ghost:hover{color:var(--text);border-color:var(--muted);filter:none}
     ol.track{list-style:none;margin:0;padding:0;display:grid;gap:10px}
     ol.track li{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:14px 18px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:baseline}
     .no{color:var(--purple);font-weight:800;font-family:"SFMono-Regular",Consolas,monospace;font-size:.9rem}
@@ -109,7 +113,10 @@
           <a href="labs/01-opencode/#30">LAB 5 병렬과 결과</a>
           <a href="labs/01-opencode/#35">LAB 6 터미널 실행</a>
         </div>
-        <a class="btn" href="https://github.com/ljd6805/subagent-study/tree/main/labs/01-opencode/minishop">샘플 프로젝트 minishop</a>
+        <div class="btns">
+          <a class="btn" href="labs/01-opencode/">처음부터 보기</a>
+          <a class="btn ghost" href="https://github.com/ljd6805/subagent-study/tree/main/labs/01-opencode/minishop">샘플 프로젝트 minishop (GitHub) ↗</a>
+        </div>
       </article>
       <article class="card ready">
         <span class="meta"><span class="badge b-ready">v1</span> &nbsp;Claude Code · 40장 · LAB 0–6</span>
@@ -124,7 +131,10 @@
           <a href="labs/02-claude-code/#30">LAB 5 병렬과 결과</a>
           <a href="labs/02-claude-code/#35">LAB 6 터미널 실행</a>
         </div>
-        <a class="btn" href="https://github.com/ljd6805/subagent-study/tree/main/labs/02-claude-code/minishop">샘플 프로젝트 minishop</a>
+        <div class="btns">
+          <a class="btn" href="labs/02-claude-code/">처음부터 보기</a>
+          <a class="btn ghost" href="https://github.com/ljd6805/subagent-study/tree/main/labs/02-claude-code/minishop">샘플 프로젝트 minishop (GitHub) ↗</a>
+        </div>
       </article>
       <article class="card ready">
         <span class="meta"><span class="badge b-ready">v1</span> &nbsp;Codex · 40장 · LAB 0–6</span>
@@ -139,7 +149,10 @@
           <a href="labs/03-codex/#30">LAB 5 병렬과 결과</a>
           <a href="labs/03-codex/#35">LAB 6 터미널 실행</a>
         </div>
-        <a class="btn" href="https://github.com/ljd6805/subagent-study/tree/main/labs/03-codex/minishop">샘플 프로젝트 minishop</a>
+        <div class="btns">
+          <a class="btn" href="labs/03-codex/">처음부터 보기</a>
+          <a class="btn ghost" href="https://github.com/ljd6805/subagent-study/tree/main/labs/03-codex/minishop">샘플 프로젝트 minishop (GitHub) ↗</a>
+        </div>
       </article>
     </div>
 
