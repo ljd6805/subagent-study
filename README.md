@@ -15,7 +15,7 @@ OpenCode · Codex · Claude Code의 **subagent**를 공통 원리로 이해하�
 |---|---|---|
 | [`index.html`](index.html) | 허브 페이지 — 슬라이드와 실습을 한곳에서 연결 | |
 | [`slides/theory/index.html`](slides/theory/index.html) | 이론 슬라이드 61장, 부록(용어집, 부록 A 선언 방법 상세) 포함 (단일 HTML, 16:9 고정 캔버스, ←/→ 이동, `O` 목차, `#번호`로 바로 가기) | v2 |
-| [`slides/theory-2/index.html`](slides/theory-2/index.html) | 이론 슬라이드 2편 22장: Agent Teams 소개 (왜 필요한가, 구조, worktree 격리, 언제 쓰나) | v2 |
+| [`slides/theory-2/index.html`](slides/theory-2/index.html) | 이론 슬라이드 2편 24장: Agent Teams 소개 (왜 필요한가, 구조, worktree 격리, 언제 쓰나) | v2 |
 | [`docs/outline-draft.md`](docs/outline-draft.md) | 이론 덱 목차 초안 | |
 | [`docs/research/`](docs/research/) | 도구별 조사 노트 (OpenCode · Codex · Claude Code) | |
 | [`labs/01-opencode/`](labs/01-opencode/) | OpenCode 실습 슬라이드 40장 (LAB 0–6)과 샘플 프로젝트 `minishop` | v1 |
