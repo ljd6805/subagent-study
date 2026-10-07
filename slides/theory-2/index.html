@@ -1080,8 +1080,8 @@ ul.ap code{font-size:.84em}
   <h2>도구별 공식 지원 현황 <span class="muted" style="font-size:24px;font-weight:600">· 2026-10-06 공식 문서 기준</span></h2>
   <table class="sm" style="font-size:16.5px">
     <tr><th style="width:17%">기능</th><th style="width:27%"><span class="t oc">OpenCode</span></th><th style="width:27%"><span class="t cx">Codex</span></th><th><span class="t cc">Claude Code</span></th></tr>
-    <tr><td class="h">병렬 subagent</td><td><span class="sp y">부분</span>위임은 되지만 동시 실행 상한 설정은 문서에 없음</td><td><span class="sp g">지원</span>동시 스레드 상한 설정 있음</td><td><span class="sp g">지원</span>동시 20개 (기본, 변경 가능)</td></tr>
-    <tr><td class="h">중첩 깊이 설정</td><td><span class="sp g">지원</span>기본 1단계, 설정으로 변경</td><td><span class="sp n">문서에 없음</span>깊이 설정 키 없음</td><td><span class="sp g">지원</span>기본 3단계, 설정으로 변경</td></tr>
+    <tr><td class="h">병렬 subagent</td><td><span class="sp g">지원</span>general subagent로 병렬 작업 (동시 실행 상한 설정은 문서에 없음)</td><td><span class="sp g">지원</span>동시 스레드 상한 설정 있음</td><td><span class="sp g">지원</span>동시 20개 (기본, 변경 가능)</td></tr>
+    <tr><td class="h">중첩 깊이 설정</td><td><span class="sp g">지원</span>V1: 기본 1단계, 설정으로 변경 · V2 설정 문서에는 없음</td><td><span class="sp n">문서에 없음</span>깊이 설정 키 없음</td><td><span class="sp g">지원</span>기본 3단계, 설정으로 변경</td></tr>
     <tr><td class="h">백그라운드 subagent</td><td><span class="sp y">부분</span>V2 문서에만 있음 (V1 문서에 없음)</td><td><span class="sp y">부분</span>기다릴지를 요청에 적는 방식, 완료 알림 방식은 문서에 없음</td><td><span class="sp g">지원</span>대화형 세션 기본값, 완료 알림</td></tr>
     <tr><td class="h">실행 중 자식 보기 · 멈추기</td><td><span class="sp y">부분</span>자식 세션 이동 가능, 멈추기는 세션 단위</td><td><span class="sp g">지원</span>스레드 전환 · 조정 · 닫기</td><td><span class="sp g">지원</span>패널 · 기록 보기 · 멈추기 · 이어서 지시</td></tr>
     <tr><td class="h">worktree 격리</td><td><span class="sp y">부분</span>V2에 worktree 설정 · API, subagent별 자동 격리는 문서에 없음</td><td><span class="sp y">부분</span>채팅(세션) 단위 Worktree 모드, subagent별은 문서에 없음</td><td><span class="sp g">지원</span>세션 단위 + subagent별</td></tr>
@@ -1096,7 +1096,7 @@ ul.ap code{font-size:.84em}
   <div class="g3" style="flex:1;align-items:stretch">
     <div class="card c-orange" style="gap:8px"><div class="lbl">OpenCode</div>
       <ul class="ap">
-        <li>깊이: <code>subagent_depth</code> (기본 1, 0이면 금지) · V2는 <code>experimental.subagent_depth</code></li>
+        <li>깊이 (V1): <code>subagent_depth</code> (기본 1, 0이면 금지) · V2 설정 문서에는 깊이 키가 없고 기본 1단계만 적혀 있음 (V1 이전 안내에만 <code>experimental.subagent_depth</code> 언급)</li>
         <li>위임 도구: V1 <code>task</code> → V2 <code>subagent</code></li>
         <li>백그라운드 (V2): <code>background: true</code>, 끝나면 부모에게 알림, 돌려받은 <code>sessionID</code>로 이어가기</li>
         <li>자식 세션 이동: <code>session_child_first</code> · <code>session_child_cycle</code> · <code>session_parent</code></li>
